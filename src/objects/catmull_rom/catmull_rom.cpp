@@ -4,6 +4,10 @@
 #include "../coordinates/coordinates.h"
 #include "../../datas/constants.h"
 
+CatmullRom::CatmullRom() {
+	this->coordinates = std::vector<Coordinates>();
+}
+
 CatmullRom::CatmullRom(std::vector<Coordinates> coordinates) {
 	this->coordinates = coordinates;
 }

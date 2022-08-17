@@ -11,6 +11,7 @@ private:
 	float get_degree_influence(int influence_degree, float spline_progress);
 
 public:
+	CatmullRom();
 	CatmullRom(std::vector<Coordinates> coordinates);
 	Coordinates get_coordinates(int coordinate_offset, float spline_progress);
 
