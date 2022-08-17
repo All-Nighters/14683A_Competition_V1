@@ -27,3 +27,17 @@ lv_obj_t* Graphics::draw_rectangle(Coordinates coordinates, int width, int heigh
     lv_obj_set_size(rectangle, width, height);
     return rectangle;
 }
+
+/**
+ * Draws text on Vex Brain
+ *
+ * @param coordinates the coordinates (top-left) of the rectangle
+ * @param text the text message
+ * @returns the text object
+ */
+lv_obj_t* Graphics::draw_text(Coordinates coordinates, std::string text) {
+    lv_obj_t* text_object = lv_label_create(lv_scr_act(), NULL);
+    lv_label_set_text(text_object, text.c_str());
+    lv_obj_set_pos(text_object, coordinates.get_x(), coordinates.get_y());
+    return text_object;
+}
