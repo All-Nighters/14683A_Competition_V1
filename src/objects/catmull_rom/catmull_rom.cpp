@@ -33,7 +33,7 @@ Coordinates CatmullRom::get_coordinates(int coordinate_offset, float spline_prog
 float CatmullRom::get_coordinate(int coordinate_offset, Coordinates::CoordinateType coordinate_type, float spline_progress) {
 	float influence_sum = 0;
 	for (int coordinate_index = 0; coordinate_index < 4; coordinate_index++) {
-		Coordinates loop_coordinate = this->coordinates[coordinate_index];
+		Coordinates loop_coordinate = this->coordinates[coordinate_offset + coordinate_index];
 		// get the x/y coordinate of coordinate objects (4) according to coordinate_type
 		float loop_coordinate_type_specified = coordinate_type == Coordinates::CoordinateType::X_COORDINATE ? loop_coordinate.get_x() : loop_coordinate.get_y();
 		// apply the influence to each coordinates
