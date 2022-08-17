@@ -10,14 +10,20 @@ PathFilter::PathFilter(CatmullRom spline_object, std::vector<Coordinates> anchor
 	this->deviation = deviation;
 }
 
+// can't skip anchor points
+// binary search for finding precision
+// use cache
 /*Coordinates PathFilter::get_next(float chained_progress, float sight_range) {
-
+	
 }*/
 
 float PathFilter::get_chained_distance(int coordinates_offset, float spline_progress) {
+	if (coordinates_offset <= 1 && spline_progress <= 0) {
+		return 0.0f;
+	}
 	// TODO: add distance cache heres
 	std::vector<Coordinates> chained_coordinates;
-	for (int coordinate_index = 0; coordinate_index < (coordinates_offset + 1); coordinate_index++) {
+	for (int coordinate_index = 1; coordinate_index < (coordinates_offset + 1); coordinate_index++) {
 		// request points on graph, until reaches progress
 		float spline_progress_maximum = coordinate_index < coordinates_offset ? 1.0f : spline_progress;
 		for (float progress_index = 0; progress_index < spline_progress_maximum; progress_index += this->deviation) {
