@@ -4,7 +4,7 @@
 class Coordinates {
 
 private:
-	float coordinates[];
+	float coordinates[3];
 
 public:
 	Coordinates(float x_coordinates, float y_coordinates, float direction);
@@ -20,5 +20,4 @@ public:
 		Y_COORDINATE,
 		DIRECTION
 	};
-};
 };

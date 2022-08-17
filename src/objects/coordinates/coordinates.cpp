@@ -9,8 +9,9 @@
  * @param direction the direction (in degrees) of the location
  */
 Coordinates::Coordinates(float x_coordinates, float y_coordinates, float direction) {
-	float new_coordinates[] = {x_coordinates, y_coordinates, direction};
-	this->coordinates = new_coordinates;
+	this->coordinates[0] = x_coordinates;
+	this->coordinates[1] = y_coordinates;
+	this->coordinates[2] = direction;
 }
 
 /**

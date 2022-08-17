@@ -37,7 +37,7 @@ float CatmullRom::get_coordinate(int coordinate_offset, Coordinates::CoordinateT
 		// get the x/y coordinate of coordinate objects (4) according to coordinate_type
 		float loop_coordinate_type_specified = coordinate_type == Coordinates::CoordinateType::X_COORDINATE ? loop_coordinate.get_x() : loop_coordinate.get_y();
 		// apply the influence to each coordinates
-		influence_sum += coordinate_type_specified[coordinate_index] * this->get_degree_influence(coordinate_index, spline_progress);
+		influence_sum += loop_coordinate_type_specified * this->get_degree_influence(coordinate_index, spline_progress);
 	}
 	return influence_sum;
 }
