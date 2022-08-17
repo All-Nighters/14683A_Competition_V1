@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 
 class Coordinates {
 
@@ -12,4 +13,12 @@ public:
 	float get_y();
 	float get_direction();
 
+	static float get_distance_sum(std::vector<Coordinates> chained_coordinates);
+
+	enum CoordinateType {
+		X_COORDINATE,
+		Y_COORDINATE,
+		DIRECTION
+	};
+};
 };
