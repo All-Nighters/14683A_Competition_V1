@@ -27,6 +27,7 @@ void initialize() {
 	pros::lcd::set_text(1, "Hello PROS User!");
 
 	pros::lcd::register_btn1_cb(on_center_button);
+	Odom::tare_odometry();
 }
 
 /**
@@ -76,5 +77,19 @@ void autonomous() {}
 void opcontrol() {
 
 	printf("Hello Allnighters\n");
+	printf("Move!\n");
+	Auto::moveDistance(0.1_m);
+	printf("Turn!\n");
+	Auto::turnAngle(-90_deg);
+	printf("Move!\n");
+	Auto::moveDistance(0.1_m);
+	printf("Turn!\n");
+	Auto::turnAngle(90_deg);
+	Auto::moveDistanceAsync(0.1_m);
+	printf("Move async!\n");
+	Auto::waitUntilSettled();
+	printf("Turn async!\n");
+	Auto::turnAngleAsync(90_deg);
+	printf("Done\n");
 
 }

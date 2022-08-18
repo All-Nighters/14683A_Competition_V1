@@ -41,7 +41,11 @@
  */
 #include "okapi/api.hpp"
 #include "pros/api_legacy.h"
+#include "utils/utils.hpp"
+
 #include "subsystems/globals.hpp"
+#include "subsystems/odometry.hpp"
+#include "subsystems/autoLib.hpp"
 
 /**
  * If you find doing pros::Motor() to be tedious and you'd prefer just to do
