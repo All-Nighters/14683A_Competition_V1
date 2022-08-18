@@ -3,16 +3,11 @@
 #include "../coordinates/coordinates.h"
 #include "../catmull_rom/catmull_rom.h"
 
-struct PathFilterCache {
-	Coordinates coordinates;
-	float chained_distance;
-};
-
 class PathFilter {
 
 private:
 	CatmullRom spline_object;
-	std::vector<PathFilterCache> distance_cache;
+	std::vector<float> distance_cache;
 	float deviation;
 
 	Coordinates request_coordinates(int coordinates_offset, float spline_progress);
