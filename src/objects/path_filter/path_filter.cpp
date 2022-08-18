@@ -4,9 +4,13 @@
 #include "../catmull_rom/catmull_rom.h"
 #include "../coordinates/coordinates.h"
 
-// removed callback function Coordinates(*callback_function)()
-
-PathFilter::PathFilter(CatmullRom spline_object, std::vector<Coordinates> anchor_coordinates, float deviation) {
+/**
+ * Initialize a PathFilter object
+ * 
+ * @param spline_object the spline generator object
+ * @param deviation the maximum acceptable deviation
+ */
+PathFilter::PathFilter(CatmullRom spline_object, float deviation) {
 	this->spline_object = spline_object;
 	this->deviation = deviation;
 	this->distance_cache.push_back(0.0f); // 0
@@ -20,6 +24,13 @@ Coordinates PathFilter::get_next(float chained_distance, float sight_range) {
 	return this->get_chained_coordinates(chained_distance + sight_range);
 }
 
+/**
+ * Calculates the chained distance from the beginning of the path
+ * 
+ * @param coordinates_offset the offset of the coordinates
+ * @param spline_progress the progress point in the spline
+ * @returns the chained distance from the beginning of the path
+ */
 float PathFilter::get_chained_distance(int coordinates_offset, float spline_progress) {
 	if (coordinates_offset <= 1 && spline_progress <= 0) {
 		return 0.0f;
@@ -53,6 +64,12 @@ float PathFilter::get_chained_distance(int coordinates_offset, float spline_prog
 	return chained_distance + Coordinates::get_distance_sum(chained_coordinates);
 }
 
+/**
+ * Obtains the coordinate of a point, with the chained distance from the beginning of the path
+ * 
+ * @param chained_distance the chained distance from the beginning of the path
+ * @returns the coordinate of a point with chained distance from the beginning of the path
+ */
 Coordinates PathFilter::get_chained_coordinates(float chained_distance) {
 	int base_coordinate = this->get_base_coordinate(chained_distance);
 	float base_distance = this->distance_cache[base_coordinate];
@@ -78,6 +95,12 @@ Coordinates PathFilter::get_chained_coordinates(float chained_distance) {
 	}
 }
 
+/**
+ * Obtain the base coordinate of a point, with the chained distance from the beginning of the path
+ * 
+ * @param chained_distance the chained distance from the beginning of the path
+ * @returns the base coordinate of a point, with the chained distance from the beginning of the path
+ */
 int PathFilter::get_base_coordinate(float chained_distance) {
 	int cached_last_coordinate = this->distance_cache.size() - 1;
 	float cached_last_distance = this->distance_cache[cached_last_coordinate];
@@ -101,6 +124,13 @@ int PathFilter::get_base_coordinate(float chained_distance) {
 	return 0;
 }
 
+/**
+ * Request the coordinate of a point on the spline
+ * 
+ * @param coordinates_offset the offset of the coordinates
+ * @param spline_progress the progress point in the spline
+ * @returns the coordinate of a point with chained distance from the beginning of the path
+ */
 Coordinates PathFilter::request_coordinates(int coordinates_offset, float spline_progress) {
 	return this->spline_object.get_coordinates(coordinates_offset, spline_progress);
 }
