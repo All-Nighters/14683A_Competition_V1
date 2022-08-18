@@ -60,3 +60,7 @@ float CatmullRom::get_degree_influence(int influence_degree, float spline_progre
 	}
 	return influence_sum;
 }
+
+std::vector<Coordinates> CatmullRom::get_anchors() {
+	return this->coordinates;
+}

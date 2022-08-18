@@ -14,5 +14,6 @@ public:
 	CatmullRom();
 	CatmullRom(std::vector<Coordinates> coordinates);
 	Coordinates get_coordinates(int coordinate_offset, float spline_progress);
+	std::vector<Coordinates> get_anchors();
 
 };

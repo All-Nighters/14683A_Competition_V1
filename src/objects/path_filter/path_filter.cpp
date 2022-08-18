@@ -1,4 +1,5 @@
 #include <vector>
+#include <cmath>
 #include "path_filter.h"
 #include "../catmull_rom/catmull_rom.h"
 #include "../coordinates/coordinates.h"
@@ -15,9 +16,9 @@ PathFilter::PathFilter(CatmullRom spline_object, std::vector<Coordinates> anchor
 // can't skip anchor points
 // binary search for finding precision
 // use cache
-/*Coordinates PathFilter::get_next(float chained_progress, float sight_range) {
-	
-}*/
+Coordinates PathFilter::get_next(float chained_distance, float sight_range) {
+	return this->get_chained_coordinates(chained_distance + sight_range);
+}
 
 float PathFilter::get_chained_distance(int coordinates_offset, float spline_progress) {
 	if (coordinates_offset <= 1 && spline_progress <= 0) {
@@ -50,6 +51,54 @@ float PathFilter::get_chained_distance(int coordinates_offset, float spline_prog
 	}
 	// get the distance between every coordinates
 	return chained_distance + Coordinates::get_distance_sum(chained_coordinates);
+}
+
+Coordinates PathFilter::get_chained_coordinates(float chained_distance) {
+	int base_coordinate = this->get_base_coordinate(chained_distance);
+	float base_distance = this->distance_cache[base_coordinate];
+	if (chained_distance == base_distance) {
+		// exactly on anchor point
+		return this->request_coordinates(base_coordinate, 0.0f);
+	}
+	// find point by binary search
+	float progress_minimum = 0.0f, progress_maximum = 1.0f;
+	while (true) {
+		float progress_average = (progress_minimum + progress_maximum) / 2.0f;
+		float progress_distance = this->get_chained_distance(base_coordinate, progress_average);
+		float progress_deviation = std::abs(chained_distance - progress_distance);
+		if (progress_deviation <= this->deviation || (progress_maximum - progress_minimum) <= this->deviation) {
+			// close enough or no other choice, return it
+			return this->request_coordinates(base_coordinate, progress_average);
+		} else if (progress_distance < chained_distance) {
+			progress_minimum = progress_average;
+		}
+		else {
+			progress_maximum = progress_average;
+		}
+	}
+}
+
+int PathFilter::get_base_coordinate(float chained_distance) {
+	int cached_last_coordinate = this->distance_cache.size() - 1;
+	float cached_last_distance = this->distance_cache[cached_last_coordinate];
+	int maximum_coordinate = (this->spline_object.get_anchors().size() - 2);
+	if (cached_last_distance < chained_distance) {
+		// request chained distance out of bounds
+		if (maximum_coordinate <= cached_last_coordinate) {
+			// no more cache available
+			return 0;
+		}
+		// generate cache
+		this->get_chained_distance(maximum_coordinate, 0.0f);
+	}
+	// find maximum base coordinate
+	for (int coordinate_index = 2; coordinate_index <= maximum_coordinate; coordinate_index++) {
+		if (this->distance_cache[coordinate_index] < chained_distance) {
+			continue;
+		}
+		return coordinate_index - 1;
+	}
+	return 0;
 }
 
 Coordinates PathFilter::request_coordinates(int coordinates_offset, float spline_progress) {
