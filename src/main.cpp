@@ -77,19 +77,28 @@ void autonomous() {}
 void opcontrol() {
 
 	printf("Hello Allnighters\n");
-	printf("Move!\n");
-	Auto::moveDistance(0.1_m);
-	printf("Turn!\n");
-	Auto::turnAngle(-90_deg);
-	printf("Move!\n");
-	Auto::moveDistance(0.1_m);
-	printf("Turn!\n");
-	Auto::turnAngle(90_deg);
-	Auto::moveDistanceAsync(0.1_m);
-	printf("Move async!\n");
-	Auto::waitUntilSettled();
-	printf("Turn async!\n");
-	Auto::turnAngleAsync(90_deg);
-	printf("Done\n");
 
+	// move the robot forward by 0.1 meters
+	Auto::moveDistance(0.1_m);
+	
+	// turn the robot 90 degrees to the left
+	Auto::turnAngle(-90_deg);
+
+	// move the robot forward by 0.1 meters
+	Auto::moveDistance(0.1_m);
+	
+	// turn the robot 90 degrees to the right
+	Auto::turnAngle(90_deg);
+
+	// move the robot forward by 0.1 meters (nonblocking)
+	Auto::moveDistanceAsync(0.1_m);
+	
+	// wait until the robot is settled
+	Auto::waitUntilSettled();
+	
+	// turn the robot 90 degrees to the right (nonblocking)
+	Auto::turnAngleAsync(90_deg);
+	
+	// wait until the robot is settled
+	Auto::waitUntilSettled();
 }
