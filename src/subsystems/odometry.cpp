@@ -32,7 +32,7 @@ namespace Odom {
         positionSI.y = QyPos.convert(meter);
 		positionSI.theta = QfaceAng.convert(degree);
 		// printf("%f %f %f\n", positionSI.x, positionSI.y, positionSI.theta);
-		// double theta = QfaceAng.convert(degree);
+		// float theta = QfaceAng.convert(degree);
 
 		// // convert absolute angle data to -180 to 180 deg when 0 represents the front
 		// if ((int)(theta / 180) % 2 == 1) {

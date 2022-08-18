@@ -2,23 +2,23 @@
 #include <math.h>
 
 namespace Auto {
-    double gearRatio = (double) 36/84;
-    double readingToAngleGain = (double)305 / 360;
+    float gearRatio = (float) 36/84;
+    float readingToAngleGain = (float)305 / 360;
 
     // traslational PID Coefficients
-    double Tp = 15;
-    double Ti = 0;
-    double Td = 40;
+    float Tp = 15;
+    float Ti = 0;
+    float Td = 40;
 
     // rotational PID Coefficients
-    double Rp = 170;
-    double Ri = 0;
-    double Rd = 300;
+    float Rp = 170;
+    float Ri = 0;
+    float Rd = 300;
 
     bool settled = true;
 
-    QLength target_distance_for_async; // target_distance only for usage in moveDistanceOnlyAsync()
-    QAngle ang_for_async; // ang only for usage in turnAngleOnlyAsync()
+    float target_distance_for_async; // target_distance in meters only for usage in moveDistanceOnlyAsync()
+    float ang_for_async; // angle in degrees only for usage in turnAngleOnlyAsync()
 
     std::shared_ptr<ChassisController> drive =
             ChassisControllerBuilder()
@@ -57,13 +57,12 @@ namespace Auto {
      * @param rightTW right tracking wheel encoder
      * @param target_distance target distance
      */
-    void distancePID(QLength target_distance) {
+    void distancePID(float target_distance) {
         
-        double target_distance_in_meters = target_distance.convert(meter);
-        double revs = target_distance_in_meters / (M_PI*(trackingWheelDiameter.convert(meter)));
-        double lefttargetAngle = revs * 360 + leftTW.get();
-        double righttargetAngle = revs * 360 + rightTW.get();
-        double targetFaceAngle = positionSI.theta;        
+        float revs = target_distance / (M_PI*(trackingWheelDiameter.convert(meter)));
+        float lefttargetAngle = revs * 360 + leftTW.get();
+        float righttargetAngle = revs * 360 + rightTW.get();
+        float targetFaceAngle = positionSI.theta;        
 
         int direction;
 
@@ -73,9 +72,9 @@ namespace Auto {
             direction = 1;
         }
         
-        double prevErrorLeft = abs(lefttargetAngle - leftTW.get());
-        double prevErrorRight = abs(righttargetAngle - rightTW.get());
-        double prevFaceAngleError = 0;
+        float prevErrorLeft = abs(lefttargetAngle - leftTW.get());
+        float prevErrorRight = abs(righttargetAngle - rightTW.get());
+        float prevFaceAngleError = 0;
 
 
         settled = false;
@@ -85,19 +84,19 @@ namespace Auto {
             Odom::update_odometry();
             // printf("%f %f %f\n", positionSI.x, positionSI.y, positionSI.theta);
 
-            double error_Left = abs(lefttargetAngle - leftTW.get());
-            double error_Right = abs(righttargetAngle - rightTW.get());
-            double error_Facing = positionSI.theta - targetFaceAngle;
+            float error_Left = abs(lefttargetAngle - leftTW.get());
+            float error_Right = abs(righttargetAngle - rightTW.get());
+            float error_Facing = positionSI.theta - targetFaceAngle;
 
 
-            double deriv_Left = error_Left - prevErrorLeft;
-            double deriv_Right = error_Right - prevErrorRight;
-            double deriv_Facing = error_Facing - prevFaceAngleError;
+            float deriv_Left = error_Left - prevErrorLeft;
+            float deriv_Right = error_Right - prevErrorRight;
+            float deriv_Facing = error_Facing - prevFaceAngleError;
 
 
-            double control_output_Left = error_Left * Tp + deriv_Left * Td;
-            double control_output_Right = error_Right * Tp + deriv_Right * Td;
-            double control_output_Facing = error_Facing * Rp + deriv_Facing * Rd;
+            float control_output_Left = error_Left * Tp + deriv_Left * Td;
+            float control_output_Right = error_Right * Tp + deriv_Right * Td;
+            float control_output_Facing = error_Facing * Rp + deriv_Facing * Rd;
 
 
             control_output_Left = direction * std::fmax(std::fmin(control_output_Left - control_output_Facing, 12000), 1000);
@@ -128,7 +127,7 @@ namespace Auto {
      * @brief move the robot forward with a specific distance
      * 
      */
-    void moveDistance(QLength target_distance) {
+    void moveDistance(float target_distance) {
         
         distancePID(target_distance);
     }
@@ -139,10 +138,9 @@ namespace Auto {
      * @param ang angle to the right
      */
     
-    void directionPID(QAngle ang) {
-        double angle = ang.convert(degree);
-        double target_angle = positionSI.theta + angle;
-        double prev_error = abs(angle);
+    void directionPID(float angle) {
+        float target_angle = positionSI.theta + angle;
+        float prev_error = abs(angle);
 
         settled = false;
         // printf("%f %f %f %f\n", target_angle, positionSI.x, positionSI.y, positionSI.theta);
@@ -152,13 +150,13 @@ namespace Auto {
             Odom::update_odometry();
             // printf("%f %f %f\n", positionSI.x, positionSI.y, positionSI.theta);
 
-            double error = abs(target_angle - positionSI.theta);
+            float error = abs(target_angle - positionSI.theta);
 
-            double deriv_error = error - prev_error;
+            float deriv_error = error - prev_error;
 
             // printf("%f %f\n", error, deriv_error);
 
-            double control_output = error * Rp + deriv_error * Rd;
+            float control_output = error * Rp + deriv_error * Rd;
 
             control_output = std::fmax(std::fmin(control_output, 12000), 2000);
 
@@ -194,10 +192,10 @@ namespace Auto {
     /**
      * @brief rotate the robot with a specific angle
      * 
-     * @param ang angle to the right
+     * @param angle angle to the right
      */
-    void turnAngle(QAngle ang) {
-        directionPID(ang);
+    void turnAngle(float angle) {
+        directionPID(angle);
     }
 
     /**
@@ -207,7 +205,7 @@ namespace Auto {
     void moveDistanceOnlyAsync() {
 
         distancePID(target_distance_for_async);
-        target_distance_for_async = 0_m;
+        target_distance_for_async = 0;
         
     }
 
@@ -217,7 +215,7 @@ namespace Auto {
      */
     void turnAngleOnlyAsync() {
         directionPID(ang_for_async);
-        ang_for_async = 0_deg;
+        ang_for_async = 0;
     }
 
 
@@ -225,7 +223,7 @@ namespace Auto {
      * @brief creates task to move distance asynchronously
      * 
      */
-    void moveDistanceAsync(QLength target_distance) {
+    void moveDistanceAsync(float target_distance) {
         target_distance_for_async = target_distance;
         settled = false;
         pros::Task move(moveDistanceOnlyAsync);
@@ -235,7 +233,7 @@ namespace Auto {
      * @brief creates task to turn asynchronously
      * 
      */
-    void turnAngleAsync(QAngle ang) {
+    void turnAngleAsync(float ang) {
         ang_for_async = ang;
         settled = false;
         pros::Task move(turnAngleOnlyAsync);

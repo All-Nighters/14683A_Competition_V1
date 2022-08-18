@@ -1,10 +1,10 @@
 using namespace okapi;
 
 typedef struct OdomStateSI {
-	double x;
-	double y;
-	double theta;
-	// double facing;
+	float x;
+	float y;
+	float theta;
+	// float facing;
 }OdomStateSI;
 
 
@@ -24,10 +24,10 @@ inline int frontRightMotorPort = 2;
 inline int bottomRightMotorPort = 3;
 inline int bottomLeftMotorPort = -4;
 
-inline double maximum_velocity = 400;
-inline double distancePIDCoefficient[] = {0.001, 0, 0.00001};
-inline double turnPIDCoefficient[] = {0.001, 0, 0.00001};
-inline double anglePIDCoefficient[] = {0.001, 0, 0.00001};
+inline float maximum_velocity = 400;
+inline float distancePIDCoefficient[] = {0.001, 0, 0.00001};
+inline float turnPIDCoefficient[] = {0.001, 0, 0.00001};
+inline float anglePIDCoefficient[] = {0.001, 0, 0.00001};
 
 extern OdomState position;
 extern OdomStateSI positionSI;

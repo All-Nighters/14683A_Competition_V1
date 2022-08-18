@@ -8,10 +8,10 @@ Controller controller;
 // inline int bottomRightMotorPort = 3;
 // inline int bottomLeftMotorPort = -4;
 
-// inline double maximum_velocity = 400;
-// inline double distancePIDCoefficient[] = {0.001, 0, 0.00001};
-// inline double turnPIDCoefficient[] = {0.001, 0, 0.00001};
-// inline double anglePIDCoefficient[] = {0.001, 0, 0.00001};
+// inline float maximum_velocity = 400;
+// inline float distancePIDCoefficient[] = {0.001, 0, 0.00001};
+// inline float turnPIDCoefficient[] = {0.001, 0, 0.00001};
+// inline float anglePIDCoefficient[] = {0.001, 0, 0.00001};
 
 
 // QLength wheelDiameter = 4_in;

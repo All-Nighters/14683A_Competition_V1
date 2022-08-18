@@ -79,26 +79,26 @@ void opcontrol() {
 	printf("Hello Allnighters\n");
 
 	// move the robot forward by 0.1 meters
-	Auto::moveDistance(0.1_m);
+	Auto::moveDistance(0.1);
 	
-	// turn the robot 90 degrees to the left
-	Auto::turnAngle(-90_deg);
+	// // turn the robot 90 degrees to the left
+	Auto::turnAngle(-90);
 
-	// move the robot forward by 0.1 meters
-	Auto::moveDistance(0.1_m);
+	// // move the robot forward by 0.1 meters
+	Auto::moveDistance(0.1);
 	
-	// turn the robot 90 degrees to the right
-	Auto::turnAngle(90_deg);
+	// // turn the robot 90 degrees to the right
+	Auto::turnAngle(90);
 
-	// move the robot forward by 0.1 meters (nonblocking)
-	Auto::moveDistanceAsync(0.1_m);
+	// // move the robot forward by 0.1 meters (nonblocking)
+	Auto::moveDistanceAsync(0.1);
 	
-	// wait until the robot is settled
+	// // wait until the robot is settled
 	Auto::waitUntilSettled();
 	
-	// turn the robot 90 degrees to the right (nonblocking)
-	Auto::turnAngleAsync(90_deg);
+	// // turn the robot 90 degrees to the right (nonblocking)
+	Auto::turnAngleAsync(90);
 	
-	// wait until the robot is settled
+	// // wait until the robot is settled
 	Auto::waitUntilSettled();
 }
