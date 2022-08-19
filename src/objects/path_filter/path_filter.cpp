@@ -44,7 +44,7 @@ float PathFilter::get_chained_distance(int coordinates_offset, float spline_prog
 	for (int coordinate_index = cached_coordinate; coordinate_index < (coordinates_offset + 1); coordinate_index++) {
 		// request points on graph, until reaches progress
 		float spline_progress_maximum = coordinate_index < coordinates_offset ? 1.0f : spline_progress;
-		for (float progress_index = 0; progress_index < spline_progress_maximum; progress_index += this->deviation) {
+		for (float progress_index = 0; progress_index <= spline_progress_maximum; progress_index += this->deviation) {
 			Coordinates progress_coordinates = this->request_coordinates(coordinate_index, progress_index);
 			chained_coordinates.push_back(progress_coordinates);
 			// check cache availability
@@ -85,7 +85,7 @@ Coordinates PathFilter::get_chained_coordinates(float chained_distance) {
 		float progress_deviation = std::abs(chained_distance - progress_distance);
 		if (progress_deviation <= this->deviation || (progress_maximum - progress_minimum) <= this->deviation) {
 			// close enough or no other choice, return it
-			return this->request_coordinates(base_coordinate, progress_average);
+			return this->request_coordinates(base_coordinate - 1, progress_average);
 		} else if (progress_distance < chained_distance) {
 			progress_minimum = progress_average;
 		}

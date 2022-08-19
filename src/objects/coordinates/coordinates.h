@@ -12,6 +12,8 @@ public:
 	float get_x();
 	float get_y();
 	float get_direction();
+	Coordinates get_offset(float x_offset, float y_offset, float direction_offset);
+	Coordinates get_resize(float resize_ratio);
 
 	static float get_distance_sum(std::vector<Coordinates> chained_coordinates);
 
