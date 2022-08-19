@@ -1,0 +1,3 @@
+namespace Intake {
+    void toggle();
+}

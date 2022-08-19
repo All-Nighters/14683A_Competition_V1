@@ -6,14 +6,10 @@
  * When this callback is fired, it will toggle line 2 of the LCD text between
  * "I was pressed!" and nothing.
  */
-void on_center_button() {
-	static bool pressed = false;
-	pressed = !pressed;
-	if (pressed) {
-		pros::lcd::set_text(2, "I was pressed!");
-	} else {
-		pros::lcd::clear_line(2);
-	}
+void trigger() {
+	indexer.set_value(true);
+	pros::delay(100);
+	indexer.set_value(false);
 }
 
 /**
@@ -26,7 +22,6 @@ void initialize() {
 	pros::lcd::initialize();
 	pros::lcd::set_text(1, "Hello PROS User!");
 
-	pros::lcd::register_btn1_cb(on_center_button);
 	Odom::tare_odometry();
 }
 
@@ -78,68 +73,55 @@ void opcontrol() {
 
 	printf("Hello Allnighters\n");
 
-	float upper = 8; // 8 m/s maximum
-	float lower = 1; // 1m/s minimum
-	float step = 0.00001;
-	float epoch = 20;
-	float xPos = 1.9; // 2m from the launcher
-	float yPos = 0.76835; // 0.76835m above ground
-	float a = 45; // 45 deg launcher
-	float Vh = 0;
-	float m = 0.06;
-	float g = 9.81;
-	float p = 1.225;
-	float Av = 0.015393804;
-	float Ah = 0.0028;
-	float Cv = 5;
-	float Ch = 5;
-	float launcher_height = 0.1697;
-
-
-
-
-	float targetV = projectile_trajectory::solveVelocity(upper, lower, step, epoch, xPos, a, Vh, m, g, p, Av, Ah, Cv, Ch, yPos, launcher_height);
-	float flywheelV = Flywheel::getCurrentVelocity();
+	std::shared_ptr<ChassisController> drive =
+        ChassisControllerBuilder()
+            .withMotors(
+				-1,  // Top left
+				2, // Top right (reversed)
+				3, // Bottom right (reversed)
+				-4   // Bottom left
+			)
+            // Green gearset, 4 in wheel diam, 11.5 in wheel track
+            .withDimensions({AbstractMotor::gearset::blue, (84.0 / 36.0)}, {{4_in, 13.38_in}, imev5BlueTPR})
+			.withMaxVelocity(200)
+			.withGains(
+				{0.001, 0, 0.00001}, // Distance controller gains
+				{0.008, 0, 0.0001}, // Turn controller gains
+				{0.001, 0, 0.00001}  // Angle controller gains (helps drive straight)
+			)
+            .build();
+		
+	auto xModel = std::dynamic_pointer_cast<XDriveModel>(drive->getModel());
 
 	while (true) {
-		// FlywheelMotor1.moveVelocity(600);
-		// printf("Actual rpm: %f\n", flywheelV);
-		// Flywheel::spinVelocityRPM(2000);
-		// Flywheel::setLinearEjectVelocity(6);
 
-		
-		// printf("%f\n", targetV);
-		// if (targetV == -1) {
-		// 	Flywheel::setLinearEjectVelocity(10);
-		// } else {
-		// 	Flywheel::setLinearEjectVelocity(targetV);
-		// }
-		// Flywheel::grapher::graph_velocity(3600, flywheelV);
-		float upper = 8; // 8 m/s maximum
-		float lower = 1; // 1m/s minimum
-		float step = 0.00001;
-		float epoch = 20;
-		float xPos = 2.3; // 2m from the launcher
-		float yPos = 0.76835; // 0.76835m above ground
-		float a = 45; // 45 deg launcher
-		float Vh = 0;
-		float m = 0.06;
-		float g = 9.81;
-		float p = 1.225;
-		float Av = 0.015393804;
-		float Ah = 0.0028;
-		float Cv = 3.25;
-		float Ch = 3.25;
-		float launcher_height = 0.1697;
+		// float targetEjectV = projectile_trajectory::solveVelocity(upper, lower, step, epoch, xPos, a, Vh, m, g, p, Av, Ah, Cv, Ch, yPos, launcher_height);
+
+		if (!Auto::settled) {
+			xModel->xArcade(controller.getAnalog(ControllerAnalog::rightX),
+						controller.getAnalog(ControllerAnalog::leftY),
+                        controller.getAnalog(ControllerAnalog::leftX));
+		}
+		// intake
+		if (controller.getDigital(ControllerDigital::B)) {
+			Intake::toggle();
+		}
+
+		// aiming
+		if (controller.getDigital(ControllerDigital::down)) {
+			if (!Auto::settled) {
+				if (teamColor == 0) {
+					Auto::faceCoordinateAsync(redHighGoalPosition_percent[0], redHighGoalPosition_percent[1]);
+				}
+			}
+		}
+
+		// shooting
+		if (controller.getDigital(ControllerDigital::R2)) {
+			pros::Task shoot(trigger);
+		}
 
 
-
-
-		float targetV = projectile_trajectory::solveVelocity(upper, lower, step, epoch, xPos, a, Vh, m, g, p, Av, Ah, Cv, Ch, yPos, launcher_height);
-		float flywheelV = Flywheel::getCurrentVelocity();
-		Flywheel::setLinearEjectVelocity(targetV);
-		Flywheel::grapher::graph_velocity(Flywheel::getExpectRPMFromEjectVelocity(targetV), flywheelV);
-		printf("%f\n", targetV);
 		pros::delay(20);
 	}
 	

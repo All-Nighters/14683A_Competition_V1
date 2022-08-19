@@ -20,7 +20,8 @@ namespace Auto {
 
     float target_percentage_for_async; // target_distance in meters only for usage in moveDistanceOnlyAsync()
     float ang_for_async; // angle in degrees only for usage in turnAngleOnlyAsync()
-
+    float xPercent_for_async;
+    float yPercent_for_async;
 
     /**
      * @brief PID (nonblocking) for controlling velocity
@@ -183,7 +184,8 @@ namespace Auto {
         directionPID(angle);
     }
 
-    void simpleMoveToPoint(float xPercent, float yPercent) {
+    void faceCoordinate(float xPercent, float yPercent) {
+        settled = false;
         Odom::update_odometry();
         float xDist = xPercent - positionSI.xPercent;
         float yDist = yPercent - positionSI.yPercent;
@@ -209,12 +211,45 @@ namespace Auto {
         else if (xDist != 0 && yDist == 0) {
             relativeAngle = 0;
         } else {
+            settled = true;
             return;
         }
 
         float faceAngle = formatAngle(relativeAngle - positionSI.theta);
 
         turnAngle(faceAngle);
+        settled = true;
+    }
+
+    /**
+     * @brief face position which only intended to respond from the call from faceCoordinateAsync()
+     * 
+     */
+
+    void faceCoordinateOnlyAsync() {
+        faceCoordinate(xPercent_for_async, yPercent_for_async);
+        xPercent_for_async = 0;
+        yPercent_for_async = 0;
+    }
+    
+    /**
+     * @brief creates task to face position asynchronously
+     * 
+     */
+    
+    void faceCoordinateAsync(float xPercent, float yPercent) {
+        settled = false;
+        xPercent_for_async = xPercent;
+        yPercent_for_async = yPercent;
+        pros::Task move(faceCoordinateOnlyAsync);
+    }
+
+    void simpleMoveToPoint(float xPercent, float yPercent) {
+        float xDist = xPercent - positionSI.xPercent;
+        float yDist = yPercent - positionSI.yPercent;
+        float dist = sqrt(xDist*xDist + yDist*yDist);
+
+        faceCoordinate(xPercent, yPercent);
         moveDistance(dist);
 
     }

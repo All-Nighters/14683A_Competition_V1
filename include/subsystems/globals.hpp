@@ -9,7 +9,7 @@ typedef struct OdomStateSI {
 	// float facing;
 }OdomStateSI;
 
-
+extern int teamColor;
 
 extern Controller controller;
 extern Motor LFMotor;
@@ -18,6 +18,8 @@ extern Motor RBMotor;
 extern Motor LBMotor;
 extern Motor FlywheelMotor1;
 extern Motor FlywheelMotor2;
+extern Motor IntakeMotor;
+
 extern ADIEncoder leftTW;
 extern ADIEncoder rightTW;
 
@@ -50,4 +52,5 @@ inline char leftEncoderPort[] = {'A', 'B'};
 inline char rightEncoderPort[] = {'C', 'D'};
 inline char middleEncoderPort[] = {'E', 'F'};
 
+extern pros::ADIDigitalOut indexer;
 extern pros::Imu imu_sensor;
