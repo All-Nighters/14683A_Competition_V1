@@ -31,6 +31,10 @@ inline float maximum_velocity = 400;
 inline float distancePIDCoefficient[] = {0.001, 0, 0.00001};
 inline float turnPIDCoefficient[] = {0.001, 0, 0.00001};
 inline float anglePIDCoefficient[] = {0.001, 0, 0.00001};
+inline float redHighGoalPosition_m[] = {0.45, 3.15, 0.76835};
+inline float blueHighGoalPosition_m[] = {3.15, 0.45, 0.76835};
+inline float redHighGoalPosition_percent[] = {12.33, 86, 20.99};
+inline float blueHighGoalPosition_percent[] = {86, 12.33, 20.99};
 
 extern OdomState position;
 extern OdomStateSI positionSI;
