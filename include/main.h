@@ -43,9 +43,13 @@
 #include "pros/api_legacy.h"
 #include "utils/utils.hpp"
 
+#include "../src/objects/coordinates/coordinates.h"
+
 #include "subsystems/globals.hpp"
 #include "subsystems/odometry.hpp"
+#include "subsystems/pathTracker.hpp"
 #include "subsystems/autoLib.hpp"
+
 
 /**
  * If you find doing pros::Motor() to be tedious and you'd prefer just to do

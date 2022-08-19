@@ -78,27 +78,22 @@ void opcontrol() {
 
 	printf("Hello Allnighters\n");
 
-	// move the robot forward by 0.1 meters
-	Auto::moveDistance(0.1);
+	std::vector<Coordinates> pathway;
 	
-	// // turn the robot 90 degrees to the left
-	Auto::turnAngle(-90);
+	// insert evenly distributed waypoints from (0, 0) to (40, 0)
+	for (int i = 0; i < 11; i++) {
+		pathway.push_back(Coordinates(4*i, 0, 0));
+	}
 
-	// // move the robot forward by 0.1 meters
-	Auto::moveDistance(0.1);
-	
-	// // turn the robot 90 degrees to the right
-	Auto::turnAngle(90);
+	// insert evenly distributed waypoints from (40, 0) to (40, 40)
+	for (int i = 0; i < 11; i++) {
+		pathway.push_back(Coordinates(40, 4*i, 0));
+	}
 
-	// // move the robot forward by 0.1 meters (nonblocking)
-	Auto::moveDistanceAsync(0.1);
-	
-	// // wait until the robot is settled
-	Auto::waitUntilSettled();
-	
-	// // turn the robot 90 degrees to the right (nonblocking)
-	Auto::turnAngleAsync(90);
-	
-	// // wait until the robot is settled
-	Auto::waitUntilSettled();
+	// insert evenly distributed waypoints from (40, 40) to (0, 40)
+	for (int i = 0; i < 11; i++) {
+		pathway.push_back(Coordinates(40-4*i, 40, 0));
+	}
+	pathTracker::pure_pursuit::setPath(pathway);
+	pathTracker::pure_pursuit::findLookAheadPoint();
 }

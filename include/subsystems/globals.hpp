@@ -4,6 +4,8 @@ typedef struct OdomStateSI {
 	float x;
 	float y;
 	float theta;
+	float xPercent;
+	float yPercent;
 	// float facing;
 }OdomStateSI;
 
@@ -23,6 +25,7 @@ inline int frontLeftMotorPort = -1;
 inline int frontRightMotorPort = 2;
 inline int bottomRightMotorPort = 3;
 inline int bottomLeftMotorPort = -4;
+inline int fieldLength = 3.6576;
 
 inline float maximum_velocity = 400;
 inline float distancePIDCoefficient[] = {0.001, 0, 0.00001};

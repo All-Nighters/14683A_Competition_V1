@@ -5,7 +5,7 @@ namespace Auto {
     float gearRatio = (float) 36/84;
     float readingToAngleGain = (float)305 / 360;
 
-    // traslational PID Coefficients
+    // traslational (position) PID Coefficients
     float Tp = 15;
     float Ti = 0;
     float Td = 40;
@@ -15,40 +15,24 @@ namespace Auto {
     float Ri = 0;
     float Rd = 300;
 
+
     bool settled = true;
 
-    float target_distance_for_async; // target_distance in meters only for usage in moveDistanceOnlyAsync()
+    float target_percentage_for_async; // target_distance in meters only for usage in moveDistanceOnlyAsync()
     float ang_for_async; // angle in degrees only for usage in turnAngleOnlyAsync()
 
-    std::shared_ptr<ChassisController> drive =
-            ChassisControllerBuilder()
-                .withMotors(
-                    frontLeftMotorPort,  // Top left
-                    frontRightMotorPort, // Top right (reversed)
-                    bottomRightMotorPort, // Bottom right (reversed)
-                    bottomLeftMotorPort   // Bottom left
-                )
-                // Green gearset, 4 in wheel diam, 11.5 in wheel track
-                .withDimensions({AbstractMotor::gearset::blue, (84.0 / 36.0)}, {{wheelDiameter, wheeltrackLength}, imev5BlueTPR})
-                .withMaxVelocity(maximum_velocity)
-                .withSensors(
-                    ADIEncoder{leftEncoderPort[0], leftEncoderPort[1]}, // Left encoder in ADI ports A & B (reversed)
-                    ADIEncoder{rightEncoderPort[0], rightEncoderPort[1]}  // Right encoder in ADI ports C & D
-                )
-                .withOdometry({{trackingWheelDiameter, wheeltrackLength}, quadEncoderTPR})
-                .withGains(
-                    {distancePIDCoefficient[0], distancePIDCoefficient[1], distancePIDCoefficient[2]}, // Distance controller gains
-                    {turnPIDCoefficient[0], turnPIDCoefficient[1], turnPIDCoefficient[2]}, // Turn controller gains
-                    {anglePIDCoefficient[0], anglePIDCoefficient[1], anglePIDCoefficient[2]} // Angle controller gains (helps drive straight)
-                )
-                .buildOdometry();
 
-    void test() {
-        while (true) {
-            Odom::update_odometry();
-            // printf("%f %f %f\n", positionSI.x, positionSI.y, positionSI.theta);
-            pros::delay(20);
-        }
+    /**
+     * @brief PID (nonblocking) for controlling velocity
+     * 
+     * @param leftV left side target velocity in RPM
+     * @param rightV right side target velocity in RPM
+     */
+    void trackVelocityPID(float leftV, float rightV) {
+        LFMotor.moveVelocity(leftV);
+        RFMotor.moveVelocity(rightV);
+        LBMotor.moveVelocity(leftV);
+        RBMotor.moveVelocity(rightV);
     }
     /**
      * @brief PID for controlling forward distance
@@ -57,8 +41,9 @@ namespace Auto {
      * @param rightTW right tracking wheel encoder
      * @param target_distance target distance
      */
-    void distancePID(float target_distance) {
+    void distancePID(float percentage) {
         
+        float target_distance = fieldLength * percentage / 100;
         float revs = target_distance / (M_PI*(trackingWheelDiameter.convert(meter)));
         float lefttargetAngle = revs * 360 + leftTW.get();
         float righttargetAngle = revs * 360 + rightTW.get();
@@ -99,8 +84,8 @@ namespace Auto {
             float control_output_Facing = error_Facing * Rp + deriv_Facing * Rd;
 
 
-            control_output_Left = direction * std::fmax(std::fmin(control_output_Left - control_output_Facing, 12000), 1000);
-            control_output_Right = direction * std::fmax(std::fmin(control_output_Right + control_output_Facing, 12000), 1000);
+            control_output_Left = direction * std::fmax(std::fmin(control_output_Left, 8000) - std::fmin(control_output_Facing, 4000), 1000);
+            control_output_Right = direction * std::fmax(std::fmin(control_output_Right, 8000) + std::fmin(control_output_Facing, 4000), 1000);
 
 
             prevErrorLeft = error_Left;
@@ -127,9 +112,9 @@ namespace Auto {
      * @brief move the robot forward with a specific distance
      * 
      */
-    void moveDistance(float target_distance) {
+    void moveDistance(float percentage) {
         
-        distancePID(target_distance);
+        distancePID(percentage);
     }
 
     /**
@@ -198,14 +183,50 @@ namespace Auto {
         directionPID(angle);
     }
 
+    void simpleMoveToPoint(float xPercent, float yPercent) {
+        Odom::update_odometry();
+        float xDist = xPercent - positionSI.xPercent;
+        float yDist = yPercent - positionSI.yPercent;
+        float dist = sqrt(xDist*xDist + yDist*yDist);
+
+        float relativeAngle;
+
+        if (xDist > 0 && yDist > 0) { // first quadrant
+            relativeAngle = atan(abs(yDist/xDist)) * 180 / M_PI;
+        }
+        else if (xDist > 0 && yDist < 0) { // second quadrant
+            relativeAngle = -atan(abs(yDist/xDist)) * 180 / M_PI;
+        }
+        else if (xDist < 0 && yDist < 0) { // third quadrant
+            relativeAngle = -180 + (atan(abs(yDist/xDist)) * 180 / M_PI);
+        }
+        else if (xDist < 0 && yDist > 0) { // fourth quadrant
+            relativeAngle = 180 - (atan(abs(yDist/xDist)) * 180 / M_PI);
+        }
+        else if (xDist == 0 && yDist != 0) {
+            relativeAngle = (yDist / abs(yDist))*90;
+        }
+        else if (xDist != 0 && yDist == 0) {
+            relativeAngle = 0;
+        } else {
+            return;
+        }
+
+        float faceAngle = formatAngle(relativeAngle - positionSI.theta);
+
+        turnAngle(faceAngle);
+        moveDistance(dist);
+
+    }
+
     /**
      * @brief move distance which only intended to respond from the call from moveDistanceAsync()
      * 
      */
     void moveDistanceOnlyAsync() {
 
-        distancePID(target_distance_for_async);
-        target_distance_for_async = 0;
+        distancePID(target_percentage_for_async);
+        target_percentage_for_async = 0;
         
     }
 
@@ -223,8 +244,8 @@ namespace Auto {
      * @brief creates task to move distance asynchronously
      * 
      */
-    void moveDistanceAsync(float target_distance) {
-        target_distance_for_async = target_distance;
+    void moveDistanceAsync(float target_percentage) {
+        target_percentage_for_async = target_percentage;
         settled = false;
         pros::Task move(moveDistanceOnlyAsync);
     }

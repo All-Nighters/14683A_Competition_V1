@@ -30,6 +30,9 @@ namespace Odom {
         QAngle QfaceAng = position.theta;
         positionSI.x = QxPos.convert(meter);
         positionSI.y = QyPos.convert(meter);
+		positionSI.xPercent = positionSI.x / fieldLength * 100;
+		positionSI.yPercent = positionSI.y / fieldLength * 100;
+
 		positionSI.theta = QfaceAng.convert(degree);
 		// printf("%f %f %f\n", positionSI.x, positionSI.y, positionSI.theta);
 		// float theta = QfaceAng.convert(degree);
