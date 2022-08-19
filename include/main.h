@@ -49,6 +49,7 @@
 #include "subsystems/odometry.hpp"
 #include "subsystems/pathTracker.hpp"
 #include "subsystems/autoLib.hpp"
+#include "subsystems/flywheelController.hpp"
 
 
 /**

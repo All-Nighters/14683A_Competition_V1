@@ -78,22 +78,34 @@ void opcontrol() {
 
 	printf("Hello Allnighters\n");
 
-	std::vector<Coordinates> pathway;
+	// std::vector<Coordinates> pathway;
 	
-	// insert evenly distributed waypoints from (0, 0) to (40, 0)
-	for (int i = 0; i < 11; i++) {
-		pathway.push_back(Coordinates(4*i, 0, 0));
-	}
+	// // insert evenly distributed waypoints from (0, 0) to (40, 0)
+	// for (int i = 0; i < 11; i++) {
+	// 	pathway.push_back(Coordinates(4*i, 0, 0));
+	// }
 
-	// insert evenly distributed waypoints from (40, 0) to (40, 40)
-	for (int i = 0; i < 11; i++) {
-		pathway.push_back(Coordinates(40, 4*i, 0));
-	}
+	// // insert evenly distributed waypoints from (40, 0) to (40, 40)
+	// for (int i = 0; i < 11; i++) {
+	// 	pathway.push_back(Coordinates(40, 4*i, 0));
+	// }
 
-	// insert evenly distributed waypoints from (40, 40) to (0, 40)
-	for (int i = 0; i < 11; i++) {
-		pathway.push_back(Coordinates(40-4*i, 40, 0));
+	// // insert evenly distributed waypoints from (40, 40) to (0, 40)
+	// for (int i = 0; i < 11; i++) {
+	// 	pathway.push_back(Coordinates(40-4*i, 40, 0));
+	// }
+	// pathTracker::pure_pursuit::setPath(pathway);
+	// pathTracker::pure_pursuit::findLookAheadPoint();
+
+	while (true) {
+		// FlywheelMotor1.moveVelocity(600);
+		float flywheelV = Flywheel::getCurrentVelocity();
+		Flywheel::grapher::graph_velocity(2000, flywheelV);
+		// printf("Actual rpm: %f\n", flywheelV);
+		Flywheel::spinVelocityRPM(2000);
+		// Flywheel::setLinearEjectVelocity(20);
+
+		pros::delay(20);
 	}
-	pathTracker::pure_pursuit::setPath(pathway);
-	pathTracker::pure_pursuit::findLookAheadPoint();
+	
 }

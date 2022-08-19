@@ -19,3 +19,7 @@ float meterToPercentage(float m) {
 float percentageToMeter(float p) {
     return p / 100.0 * fieldLength;
 }
+
+float clamp(float v, float lo, float hi ) {
+    return v < lo ? lo : hi < v ? hi : v;
+}
