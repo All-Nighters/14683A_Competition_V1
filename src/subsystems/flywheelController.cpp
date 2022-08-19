@@ -75,7 +75,7 @@ namespace Flywheel {
         FlywheelMotor1.moveVoltage(clamp(prevCtlOutput, -12000.0, 12000.0));
         FlywheelMotor2.moveVoltage(clamp(prevCtlOutput, -12000.0, 12000.0));
 
-        printf("verr=%f deriv_err%f dout=%f out=%f\n", v_error, deriv_error, v_error * Vp + deriv_error * Vd, prevCtlOutput);
+        // printf("verr=%f deriv_err%f dout=%f out=%f\n", v_error, deriv_error, v_error * Vp + deriv_error * Vd, prevCtlOutput);
 
         prevVError = v_error;
     }
@@ -88,7 +88,8 @@ namespace Flywheel {
         velocityPID(rpm);
     }
 
-    float getExpectRPMFromEjectVelocity(float velocity) { // needed to consider the radius of the disk
+    float getExpectRPMFromEjectVelocity(float velocity) {
+        velocity *= 2;
         float angularVelocity = velocity / (flyWheelDiameter.convert(meter) / 2.0);
         float rpm = angularVelocity / (2 * M_PI) * 60;
         return rpm;

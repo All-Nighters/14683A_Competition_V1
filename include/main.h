@@ -50,7 +50,7 @@
 #include "subsystems/pathTracker.hpp"
 #include "subsystems/autoLib.hpp"
 #include "subsystems/flywheelController.hpp"
-
+#include "utils/projectile_trajectory.hpp"
 
 /**
  * If you find doing pros::Motor() to be tedious and you'd prefer just to do

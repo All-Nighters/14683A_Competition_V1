@@ -78,33 +78,68 @@ void opcontrol() {
 
 	printf("Hello Allnighters\n");
 
-	// std::vector<Coordinates> pathway;
-	
-	// // insert evenly distributed waypoints from (0, 0) to (40, 0)
-	// for (int i = 0; i < 11; i++) {
-	// 	pathway.push_back(Coordinates(4*i, 0, 0));
-	// }
+	float upper = 8; // 8 m/s maximum
+	float lower = 1; // 1m/s minimum
+	float step = 0.00001;
+	float epoch = 20;
+	float xPos = 1.9; // 2m from the launcher
+	float yPos = 0.76835; // 0.76835m above ground
+	float a = 45; // 45 deg launcher
+	float Vh = 0;
+	float m = 0.06;
+	float g = 9.81;
+	float p = 1.225;
+	float Av = 0.015393804;
+	float Ah = 0.0028;
+	float Cv = 5;
+	float Ch = 5;
+	float launcher_height = 0.1697;
 
-	// // insert evenly distributed waypoints from (40, 0) to (40, 40)
-	// for (int i = 0; i < 11; i++) {
-	// 	pathway.push_back(Coordinates(40, 4*i, 0));
-	// }
 
-	// // insert evenly distributed waypoints from (40, 40) to (0, 40)
-	// for (int i = 0; i < 11; i++) {
-	// 	pathway.push_back(Coordinates(40-4*i, 40, 0));
-	// }
-	// pathTracker::pure_pursuit::setPath(pathway);
-	// pathTracker::pure_pursuit::findLookAheadPoint();
+
+
+	float targetV = projectile_trajectory::solveVelocity(upper, lower, step, epoch, xPos, a, Vh, m, g, p, Av, Ah, Cv, Ch, yPos, launcher_height);
+	float flywheelV = Flywheel::getCurrentVelocity();
 
 	while (true) {
 		// FlywheelMotor1.moveVelocity(600);
-		float flywheelV = Flywheel::getCurrentVelocity();
-		Flywheel::grapher::graph_velocity(2000, flywheelV);
 		// printf("Actual rpm: %f\n", flywheelV);
-		Flywheel::spinVelocityRPM(2000);
-		// Flywheel::setLinearEjectVelocity(20);
+		// Flywheel::spinVelocityRPM(2000);
+		// Flywheel::setLinearEjectVelocity(6);
 
+		
+		// printf("%f\n", targetV);
+		// if (targetV == -1) {
+		// 	Flywheel::setLinearEjectVelocity(10);
+		// } else {
+		// 	Flywheel::setLinearEjectVelocity(targetV);
+		// }
+		// Flywheel::grapher::graph_velocity(3600, flywheelV);
+		float upper = 8; // 8 m/s maximum
+		float lower = 1; // 1m/s minimum
+		float step = 0.00001;
+		float epoch = 20;
+		float xPos = 2.3; // 2m from the launcher
+		float yPos = 0.76835; // 0.76835m above ground
+		float a = 45; // 45 deg launcher
+		float Vh = 0;
+		float m = 0.06;
+		float g = 9.81;
+		float p = 1.225;
+		float Av = 0.015393804;
+		float Ah = 0.0028;
+		float Cv = 3.25;
+		float Ch = 3.25;
+		float launcher_height = 0.1697;
+
+
+
+
+		float targetV = projectile_trajectory::solveVelocity(upper, lower, step, epoch, xPos, a, Vh, m, g, p, Av, Ah, Cv, Ch, yPos, launcher_height);
+		float flywheelV = Flywheel::getCurrentVelocity();
+		Flywheel::setLinearEjectVelocity(targetV);
+		Flywheel::grapher::graph_velocity(Flywheel::getExpectRPMFromEjectVelocity(targetV), flywheelV);
+		printf("%f\n", targetV);
 		pros::delay(20);
 	}
 	

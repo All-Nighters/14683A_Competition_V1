@@ -40,6 +40,7 @@ inline QLength wheeltrackLength = 13.38_in;
 inline QLength trackingWheelDiameter = 2.75_in;
 inline QAngle turnRightAngle = 163.7_deg;
 inline QLength flyWheelDiameter = 4_in;
+inline QLength diskDiameter = 14_cm;
  
 inline char leftEncoderPort[] = {'A', 'B'};
 inline char rightEncoderPort[] = {'C', 'D'};
