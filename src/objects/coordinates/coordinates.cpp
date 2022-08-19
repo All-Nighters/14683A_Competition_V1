@@ -27,6 +27,28 @@ float Coordinates::get_distance(Coordinates target_coordinates) {
 }
 
 /**
+ * Returns a new coordinates object with offsets applied
+ * 
+ * @param x_offset the offset in x coordinates
+ * @param y_offset the offset in y coordinates
+ * @param direction_offset the offset of direction
+ * @returns a new coordinates object with offsets applied
+ */
+Coordinates Coordinates::get_offset(float x_offset, float y_offset, float direction_offset) {
+	return Coordinates(this->get_x() + x_offset, this->get_y() + y_offset, this->get_direction() + direction_offset);
+}
+
+/**
+ * Returns a new coordinates object with x/y coordinates resized by ratio
+ * 
+ * @param resize_ratio the resize ratio
+ * @returns a new coordinates object with x/y coordinates resized by ratio
+ */
+Coordinates Coordinates::get_resize(float resize_ratio) {
+	return Coordinates(this->get_x() * resize_ratio, this->get_y() * resize_ratio, this->get_direction());
+}
+
+/**
  * Access the x-coordinate of the location
  * 
  * @returns the x-coordinate of the location
