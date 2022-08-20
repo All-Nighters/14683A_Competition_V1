@@ -10,11 +10,16 @@ namespace pathTracker {
     float interpolatingDeviation = 0.05;
 
     
-
-    Coordinates absoluteToLocalCoordinate() {
+    /**
+     * @brief Convert absolute position to position relative to the robot
+     * 
+     * @param coord the coordinates to convert
+     * @returns the coordinates relative to the robot 
+     */
+    Coordinates absoluteToLocalCoordinate(Coordinates coord) {
         Coordinates selfCoordinate = Coordinates(positionSI.xPercent, positionSI.yPercent, positionSI.theta);
-        float xDist = lookAheadPoint.get_x() - selfCoordinate.get_x();
-        float yDist = lookAheadPoint.get_y() - selfCoordinate.get_y();
+        float xDist = coord.get_x() - selfCoordinate.get_x();
+        float yDist = coord.get_y() - selfCoordinate.get_y();
 
         // apply rotation matrix
         float newX = yDist*cos(selfCoordinate.get_direction()*M_PI/180.0) - xDist*sin(selfCoordinate.get_direction()*M_PI/180.0);
@@ -31,10 +36,20 @@ namespace pathTracker {
         float zeta = 0.5; // roughly the damping term
         float smallScalar = 0.01;
 
+        /**
+         * @brief set the path to follow
+         * 
+         * @param coords path to follow
+         */
         void setPath(std::vector<Coordinates> coords) {
             std::copy(coords.begin(), coords.end(), pathCoords.begin());
         }
 
+        /**
+         * @brief find the look ahead point and store it in "lookAheadPoint"
+         * 
+         * @returns success (1) or failure (0) 
+         */
         int findLookAheadPoint() {
             Odom::update_odometry();
             Coordinates selfCoordinate = Coordinates(positionSI.xPercent, positionSI.yPercent, positionSI.theta);
@@ -95,13 +110,17 @@ namespace pathTracker {
             return -1;
         }
 
+        /**
+         * @brief ramsete controller to follow the lookahead point"
+         * 
+         */
         void followPath() {
             Coordinates selfCoordinate = Coordinates(positionSI.xPercent, positionSI.yPercent, positionSI.theta);
 
             while (pathCoords[pathCoords.size()-1].get_distance(selfCoordinate) >= arriveDeviation) {
                 findLookAheadPoint();
 
-                Coordinates localLookAhead = absoluteToLocalCoordinate();
+                Coordinates localLookAhead = absoluteToLocalCoordinate(lookAheadPoint);
                 
                 float e_x = localLookAhead.get_x();
                 float e_y = localLookAhead.get_y();
@@ -130,9 +149,21 @@ namespace pathTracker {
     namespace pure_pursuit {
         std::vector<Coordinates> pathCoords;
 
+        /**
+         * @brief set the path to follow
+         * 
+         * @param coords path to follow
+         */
+
         void setPath(std::vector<Coordinates> coords) {
             std::copy(coords.begin(), coords.end(), pathCoords.begin());
         }
+
+        /**
+         * @brief find the look ahead point and store it in "lookAheadPoint"
+         * 
+         * @returns success (1) or failure (0) 
+         */
 
         int findLookAheadPoint() {
             Odom::update_odometry();
@@ -197,6 +228,10 @@ namespace pathTracker {
             return -1;
         }
 
+        /**
+         * @brief pure pursuit to follow the lookahead point"
+         * 
+         */
         void followPath() {
 
             Coordinates selfCoordinate = Coordinates(positionSI.xPercent, positionSI.yPercent, positionSI.theta);
@@ -205,7 +240,7 @@ namespace pathTracker {
             while (pathCoords[pathCoords.size()-1].get_distance(selfCoordinate) >= arriveDeviation) {
                 findLookAheadPoint();
 
-                Coordinates localLookAhead = absoluteToLocalCoordinate();
+                Coordinates localLookAhead = absoluteToLocalCoordinate(lookAheadPoint);
 
                 float curvature = (2*localLookAhead.get_y()) / (lookAheadPercentage * lookAheadPercentage);
                 
