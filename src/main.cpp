@@ -97,6 +97,8 @@ void opcontrol() {
 
 		// float targetEjectV = projectile_trajectory::solveVelocity(upper, lower, step, epoch, xPos, a, Vh, m, g, p, Av, Ah, Cv, Ch, yPos, launcher_height);
 
+
+		// locomotion
 		if (!Auto::settled) {
 			xModel->xArcade(controller.getAnalog(ControllerAnalog::rightX),
 						controller.getAnalog(ControllerAnalog::leftY),
@@ -111,7 +113,7 @@ void opcontrol() {
 		if (controller.getDigital(ControllerDigital::down)) {
 			if (!Auto::settled) {
 				if (teamColor == 0) {
-					Auto::faceCoordinateAsync(redHighGoalPosition_percent[0], redHighGoalPosition_percent[1]);
+					Auto::faceCoordinateAsync(redHighGoalPosition_percent[0], redHighGoalPosition_percent[1], true);
 				}
 			}
 		}

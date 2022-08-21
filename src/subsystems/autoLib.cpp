@@ -22,6 +22,7 @@ namespace Auto {
     float ang_for_async; // angle in degrees only for usage in turnAngleOnlyAsync()
     float xPercent_for_async;
     float yPercent_for_async;
+    float aimMode_for_async;
 
     /**
      * @brief PID (nonblocking) for controlling velocity
@@ -184,7 +185,7 @@ namespace Auto {
         directionPID(angle);
     }
 
-    void faceCoordinate(float xPercent, float yPercent) {
+    void faceCoordinate(float xPercent, float yPercent, bool aimMode) {
         settled = false;
         Odom::update_odometry();
         float xDist = xPercent - positionSI.xPercent;
@@ -215,7 +216,13 @@ namespace Auto {
             return;
         }
 
-        float faceAngle = formatAngle(relativeAngle - positionSI.theta);
+        float faceAngle;
+
+        if (aimMode) {
+            faceAngle = formatAngle((relativeAngle - positionSI.theta) + aimAngleDeviation);
+        } else {
+            faceAngle = formatAngle(relativeAngle - positionSI.theta);
+        }
 
         turnAngle(faceAngle);
         settled = true;
@@ -227,7 +234,7 @@ namespace Auto {
      */
 
     void faceCoordinateOnlyAsync() {
-        faceCoordinate(xPercent_for_async, yPercent_for_async);
+        faceCoordinate(xPercent_for_async, yPercent_for_async, aimMode_for_async);
         xPercent_for_async = 0;
         yPercent_for_async = 0;
     }
@@ -237,10 +244,11 @@ namespace Auto {
      * 
      */
     
-    void faceCoordinateAsync(float xPercent, float yPercent) {
+    void faceCoordinateAsync(float xPercent, float yPercent, bool aimMode) {
         settled = false;
         xPercent_for_async = xPercent;
         yPercent_for_async = yPercent;
+        aimMode_for_async = aimMode;
         pros::Task move(faceCoordinateOnlyAsync);
     }
 

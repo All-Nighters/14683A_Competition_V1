@@ -8,13 +8,13 @@ typedef struct base_angle_position {
 }base_angle_position;
 
 namespace Auto {
-    bool settled;
+    extern bool settled;
     void moveDistance(float target_percentage);
     void turnAngle(float ang);
     void moveDistanceAsync(float target_percentage);
     void turnAngleAsync(float ang);
     void faceCoordinate(float xPercent, float yPercent);
-    void faceCoordinateAsync(float xPercent, float yPercent);
+    void faceCoordinateAsync(float xPercent, float yPercent, bool aimMode);
     void simpleMoveToPoint(float xPercent, float yPercent);
     void waitUntilSettled();
     void trackVelocityPID(float leftV, float rightV);
