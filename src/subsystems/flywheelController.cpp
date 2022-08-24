@@ -106,4 +106,8 @@ namespace Flywheel {
         float velocity = (FlywheelMotor1.getActualVelocity() + FlywheelMotor2.getActualVelocity()) / 2.0 * 18;
         return velocity;
     }
+
+    float getCurrentEjectVelocity() {
+        return getCurrentVelocity() / 60 * (2 * M_PI) * (flyWheelDiameter.convert(meter) / 2.0) / 2;
+    }
 }

@@ -185,6 +185,14 @@ namespace Auto {
         directionPID(angle);
     }
 
+
+    /**
+     * @brief face the robot to a specific coordinate in percent
+     * 
+     * @param xPercent x coordinate of the target
+     * @param yPercent y coordinate of the target
+     * @param aimMode whether the robot is aiming the goal
+     */
     void faceCoordinate(float xPercent, float yPercent, bool aimMode) {
         settled = false;
         Odom::update_odometry();

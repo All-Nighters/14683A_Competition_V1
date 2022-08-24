@@ -1,10 +1,8 @@
 #include "main.h"
 
 /**
- * A callback function for LLEMU's center button.
+ * Moves the piston to push the disks to the flywheel
  *
- * When this callback is fired, it will toggle line 2 of the LCD text between
- * "I was pressed!" and nothing.
  */
 void trigger() {
 	indexer.set_value(true);
@@ -93,10 +91,31 @@ void opcontrol() {
 		
 	auto xModel = std::dynamic_pointer_cast<XDriveModel>(drive->getModel());
 
+	float HighGoalPositionPercent[3];
+	if (teamColor == 0) {
+		HighGoalPositionPercent[0] = redHighGoalPosition_percent[0];
+		HighGoalPositionPercent[1] = redHighGoalPosition_percent[1];
+		HighGoalPositionPercent[2] = redHighGoalPosition_percent[2];
+	} else {
+		HighGoalPositionPercent[0] = blueHighGoalPosition_percent[0];
+		HighGoalPositionPercent[1] = blueHighGoalPosition_percent[1];
+		HighGoalPositionPercent[2] = blueHighGoalPosition_percent[2];
+	}
+
+	bool shootEnabled = false; // enables shooting
+
+	bool prevShootButtonState = controller.getDigital(ControllerDigital::R2); // record the previous button state
+
 	while (true) {
+		Odom::update_odometry();
 
-		// float targetEjectV = projectile_trajectory::solveVelocity(upper, lower, step, epoch, xPos, a, Vh, m, g, p, Av, Ah, Cv, Ch, yPos, launcher_height);
+		float xDist = HighGoalPositionPercent[0]-positionSI.xPercent;
+		float yDist = HighGoalPositionPercent[1]-positionSI.yPercent;
+		float distToGoal = sqrt(xDist*xDist + yDist*yDist);
+		float targetEjectV = clamp(projectile_trajectory::solveVelocity(maxEjectVel, minEjectVel, 0.0001, 20, distToGoal, 45, 0, m, g, p, Av, Ah, Cv, Ch, HighGoalPositionPercent[1], 0.3), minEjectVel, maxEjectVel);
 
+		// flywheel control
+		Flywheel::setLinearEjectVelocity(targetEjectV);
 
 		// locomotion
 		if (!Auto::settled) {
@@ -112,17 +131,24 @@ void opcontrol() {
 		// aiming
 		if (controller.getDigital(ControllerDigital::down)) {
 			if (!Auto::settled) {
-				if (teamColor == 0) {
-					Auto::faceCoordinateAsync(redHighGoalPosition_percent[0], redHighGoalPosition_percent[1], true);
-				}
+				Auto::faceCoordinateAsync(HighGoalPositionPercent[0], HighGoalPositionPercent[1], true);
 			}
 		}
 
 		// shooting
-		if (controller.getDigital(ControllerDigital::R2)) {
-			pros::Task shoot(trigger);
+		bool shootButtonState = controller.getDigital(ControllerDigital::R2);
+		if (shootButtonState != prevShootButtonState) {
+			shootEnabled = !shootEnabled;
+			prevShootButtonState = shootButtonState;
 		}
-
+		if (shootEnabled) {
+			if (targetEjectV - Flywheel::getCurrentEjectVelocity() < 0.5) {
+				pros::Task shoot(trigger);
+				if (!fullAuto) {
+					shootEnabled = false;
+				}
+			}
+		}
 
 		pros::delay(20);
 	}

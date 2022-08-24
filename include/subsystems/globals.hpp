@@ -41,6 +41,12 @@ inline char rightEncoderPort[] = {'C', 'D'};
 inline char middleEncoderPort[] = {'E', 'F'};
 
 /**
+ * Driver settings
+*/
+inline bool fullAuto = false; // allow full auto shooting
+inline bool useXDrive = false; // allow strafe movement
+
+/**
  * Goal position corordinates
 */
 inline float redHighGoalPosition_m[] = {0.45, 3.15, 0.76835};
@@ -51,7 +57,6 @@ inline float blueHighGoalPosition_percent[] = {86, 12.33, 20.99};
 /**
  * Constants
 */
-
 inline float aimAngleDeviation = 10; // deviation of angle when aiming a point
 inline float g = 9.81; // gravitational constant
 inline float maxEjectVel = 8; // maximum eject velocity in m/s
