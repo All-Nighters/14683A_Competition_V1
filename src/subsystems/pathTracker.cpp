@@ -123,10 +123,10 @@ namespace pathTracker {
                 
                 float e_x = localLookAhead.get_x();
                 float e_y = localLookAhead.get_y();
-                float e_theta = localLookAhead.get_direction();
+                float e_theta = atan2(e_y, e_x);
 
-                float desired_linearVelocity = smallScalar * (e_x);
-                float desired_angularVelocity = smallScalar * (e_theta);
+                float desired_linearVelocity = std::fmax(std::fmin(smallScalar * abs(e_x), 10), 500);
+                float desired_angularVelocity = std::fmax(std::fmin(smallScalar * abs(e_theta), 1), 5);
                 float k = 2 * zeta * sqrt(desired_angularVelocity * desired_angularVelocity + b * desired_linearVelocity * desired_linearVelocity);
                 
                 float targetLinearVelocity = desired_linearVelocity * cos(e_theta) + k * e_x;
