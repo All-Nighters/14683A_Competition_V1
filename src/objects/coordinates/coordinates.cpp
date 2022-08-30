@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cmath>
 #include "coordinates.h"
 
@@ -9,9 +10,12 @@
  * @param direction the direction (in degrees) of the location
  */
 Coordinates::Coordinates(float x_coordinates, float y_coordinates, float direction) {
-	this->coordinates[0] = x_coordinates;
-	this->coordinates[1] = y_coordinates;
-	this->coordinates[2] = direction;
+	// calculates the direction restricted to boundaries (0~360)
+	float restricted_direction = std::fmod(direction, 360.0f);
+	if (restricted_direction < 0.0f) restricted_direction += 360.0f;
+	// assign coordinates
+	float new_coordinates[3] = {x_coordinates, y_coordinates, restricted_direction};
+	std::copy(new_coordinates, new_coordinates + 3, this->coordinates);
 }
 
 /**
