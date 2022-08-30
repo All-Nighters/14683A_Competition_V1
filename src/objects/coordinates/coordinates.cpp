@@ -31,6 +31,18 @@ float Coordinates::get_distance(Coordinates target_coordinates) {
 }
 
 /**
+ * Calculates the acute angle between two coordinates' directions
+ * 
+ * @param target_coordinates the target coordinates
+ * @returns the acute angle between two coordinates' directions
+ */
+float Coordinates::get_acute(Coordinates target_coordinates) {
+	float direction_min = std::min(this->get_direction(), target_coordinates.get_direction());
+	float direction_max = std::max(this->get_direction(), target_coordinates.get_direction());
+	return std::min(direction_max - direction_min, direction_min - direction_max + 360.0f);
+}
+
+/**
  * Access the x-coordinate of the location
  * 
  * @returns the x-coordinate of the location
