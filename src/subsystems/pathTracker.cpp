@@ -10,16 +10,11 @@ namespace pathTracker {
     float interpolatingDeviation = 0.05;
 
     
-    /**
-     * @brief Convert absolute position to position relative to the robot
-     * 
-     * @param coord the coordinates to convert
-     * @returns the coordinates relative to the robot 
-     */
-    Coordinates absoluteToLocalCoordinate(Coordinates coord) {
+
+    Coordinates absoluteToLocalCoordinate() {
         Coordinates selfCoordinate = Coordinates(positionSI.xPercent, positionSI.yPercent, positionSI.theta);
-        float xDist = coord.get_x() - selfCoordinate.get_x();
-        float yDist = coord.get_y() - selfCoordinate.get_y();
+        float xDist = lookAheadPoint.get_x() - selfCoordinate.get_x();
+        float yDist = lookAheadPoint.get_y() - selfCoordinate.get_y();
 
         // apply rotation matrix
         float newX = yDist*cos(selfCoordinate.get_direction()*M_PI/180.0) - xDist*sin(selfCoordinate.get_direction()*M_PI/180.0);
@@ -36,20 +31,27 @@ namespace pathTracker {
         float zeta = 0.5; // roughly the damping term
         float smallScalar = 0.01;
 
-        /**
-         * @brief set the path to follow
-         * 
-         * @param coords path to follow
-         */
         void setPath(std::vector<Coordinates> coords) {
             std::copy(coords.begin(), coords.end(), pathCoords.begin());
         }
 
-        /**
-         * @brief find the look ahead point and store it in "lookAheadPoint"
-         * 
-         * @returns success (1) or failure (0) 
-         */
+        int closest() {
+            float xDist = (pathCoords[0].get_x() - positionSI.xPercent);
+            float yDist = (pathCoords[0].get_y() - positionSI.yPercent);
+            float dist = sqrt(xDist*xDist + yDist*yDist);
+            float idx = 0;
+            for (int i = 0; i < pathCoords.size(); i++) {
+                float xD = (pathCoords[i].get_x() - positionSI.xPercent);
+                float yD = (pathCoords[i].get_y() - positionSI.yPercent);
+                float D = sqrt(xD*xD + yD*yD);
+                if (D < dist) {
+                    dist = D;
+                    idx = i;
+                }
+            }
+            return idx;
+        }
+
         int findLookAheadPoint() {
             Odom::update_odometry();
             Coordinates selfCoordinate = Coordinates(positionSI.xPercent, positionSI.yPercent, positionSI.theta);
@@ -59,7 +61,8 @@ namespace pathTracker {
 
                 // if suitable distance is found
                 if (coord.get_distance(selfCoordinate) > lookAheadPercentage && 
-                prevCoord.get_distance(selfCoordinate) < lookAheadPercentage) {
+                prevCoord.get_distance(selfCoordinate) < lookAheadPercentage && 
+                closest() < i) {
 
                     // interpolation
                     float prevX = prevCoord.get_x();
@@ -110,24 +113,20 @@ namespace pathTracker {
             return -1;
         }
 
-        /**
-         * @brief ramsete controller to follow the lookahead point"
-         * 
-         */
         void followPath() {
             Coordinates selfCoordinate = Coordinates(positionSI.xPercent, positionSI.yPercent, positionSI.theta);
 
             while (pathCoords[pathCoords.size()-1].get_distance(selfCoordinate) >= arriveDeviation) {
                 findLookAheadPoint();
 
-                Coordinates localLookAhead = absoluteToLocalCoordinate(lookAheadPoint);
+                Coordinates localLookAhead = absoluteToLocalCoordinate();
                 
                 float e_x = localLookAhead.get_x();
                 float e_y = localLookAhead.get_y();
-                float e_theta = localLookAhead.get_direction();
+                float e_theta = atan2(e_y, e_x);
 
-                float desired_linearVelocity = smallScalar * (e_x);
-                float desired_angularVelocity = smallScalar * (e_theta);
+                float desired_linearVelocity = std::fmax(std::fmin(smallScalar * abs(e_x), 10), 500);
+                float desired_angularVelocity = std::fmax(std::fmin(smallScalar * abs(e_theta), 1), 5);
                 float k = 2 * zeta * sqrt(desired_angularVelocity * desired_angularVelocity + b * desired_linearVelocity * desired_linearVelocity);
                 
                 float targetLinearVelocity = desired_linearVelocity * cos(e_theta) + k * e_x;
@@ -149,21 +148,26 @@ namespace pathTracker {
     namespace pure_pursuit {
         std::vector<Coordinates> pathCoords;
 
-        /**
-         * @brief set the path to follow
-         * 
-         * @param coords path to follow
-         */
-
         void setPath(std::vector<Coordinates> coords) {
             std::copy(coords.begin(), coords.end(), pathCoords.begin());
         }
 
-        /**
-         * @brief find the look ahead point and store it in "lookAheadPoint"
-         * 
-         * @returns success (1) or failure (0) 
-         */
+        int closest() {
+            float xDist = (pathCoords[0].get_x() - positionSI.xPercent);
+            float yDist = (pathCoords[0].get_y() - positionSI.yPercent);
+            float dist = sqrt(xDist*xDist + yDist*yDist);
+            float idx = 0;
+            for (int i = 0; i < pathCoords.size(); i++) {
+                float xD = (pathCoords[i].get_x() - positionSI.xPercent);
+                float yD = (pathCoords[i].get_y() - positionSI.yPercent);
+                float D = sqrt(xD*xD + yD*yD);
+                if (D < dist) {
+                    dist = D;
+                    idx = i;
+                }
+            }
+            return idx;
+        }
 
         int findLookAheadPoint() {
             Odom::update_odometry();
@@ -174,7 +178,8 @@ namespace pathTracker {
 
                 // if suitable distance is found
                 if (coord.get_distance(selfCoordinate) > lookAheadPercentage && 
-                prevCoord.get_distance(selfCoordinate) < lookAheadPercentage) {
+                prevCoord.get_distance(selfCoordinate) < lookAheadPercentage &&
+                closest() < i) {
 
                     // interpolation
                     float prevX = prevCoord.get_x();
@@ -228,10 +233,6 @@ namespace pathTracker {
             return -1;
         }
 
-        /**
-         * @brief pure pursuit to follow the lookahead point"
-         * 
-         */
         void followPath() {
 
             Coordinates selfCoordinate = Coordinates(positionSI.xPercent, positionSI.yPercent, positionSI.theta);
@@ -240,7 +241,7 @@ namespace pathTracker {
             while (pathCoords[pathCoords.size()-1].get_distance(selfCoordinate) >= arriveDeviation) {
                 findLookAheadPoint();
 
-                Coordinates localLookAhead = absoluteToLocalCoordinate(lookAheadPoint);
+                Coordinates localLookAhead = absoluteToLocalCoordinate();
 
                 float curvature = (2*localLookAhead.get_y()) / (lookAheadPercentage * lookAheadPercentage);
                 
