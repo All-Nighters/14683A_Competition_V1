@@ -51,8 +51,8 @@ inline bool useXDrive = false; // allow strafe movement
 */
 inline float redHighGoalPosition_m[] = {0.45, 3.15, 0.76835};
 inline float blueHighGoalPosition_m[] = {3.15, 0.45, 0.76835};
-inline float redHighGoalPosition_percent[] = {12.33, 86, 20.99};
-inline float blueHighGoalPosition_percent[] = {86, 12.33, 20.99};
+inline float redHighGoalPosition_percent[] = {14.54, 86, 20.99};
+inline float blueHighGoalPosition_percent[] = {86, 14.54, 20.99};
 
 /**
  * Flywheel constants
