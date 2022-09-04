@@ -55,7 +55,7 @@ inline float redHighGoalPosition_percent[] = {12.33, 86, 20.99};
 inline float blueHighGoalPosition_percent[] = {86, 12.33, 20.99};
 
 /**
- * Constants
+ * Flywheel constants
 */
 inline float aimAngleDeviation = 10; // deviation of angle when aiming a point
 inline float g = 9.81; // gravitational constant

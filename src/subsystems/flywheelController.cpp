@@ -66,7 +66,7 @@ namespace Flywheel {
     void velocityPID(float target_velocity) {
         float current_velocity = (FlywheelMotor1.getActualVelocity() + FlywheelMotor2.getActualVelocity()) / 2.0 * 18;
 
-        float v_error = target_velocity - current_velocity;
+        float v_error = std::fmax(std::fmin(target_velocity, 3600), 0) - current_velocity;
         float deriv_error = v_error - prevVError;
         
 

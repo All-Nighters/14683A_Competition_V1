@@ -71,6 +71,9 @@ void opcontrol() {
 
 	printf("Hello Allnighters\n");
 
+	/*
+	 set up drive model
+	*/
 	std::shared_ptr<ChassisController> drive =
         ChassisControllerBuilder()
             .withMotors(
@@ -91,6 +94,10 @@ void opcontrol() {
 		
 	auto xModel = std::dynamic_pointer_cast<XDriveModel>(drive->getModel());
 
+	
+	/*
+	 set up goal coordinates
+	*/
 	float HighGoalPositionPercent[3];
 	if (teamColor == 0) {
 		HighGoalPositionPercent[0] = redHighGoalPosition_percent[0];
