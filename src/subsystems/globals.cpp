@@ -1,3 +1,10 @@
+/**
+ * @file globals.cpp
+ *
+ * @brief Initializes global objects
+ *
+ */
+
 #include "main.h"
 
 using namespace okapi;

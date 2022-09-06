@@ -1,3 +1,10 @@
+/**
+ * @file pathTracker.cpp
+ *
+ * @brief Path tracking algorithm code
+ *
+ */
+
 #include "main.h"
 #include <math.h>
 #include <vector>
