@@ -1,3 +1,10 @@
+/**
+ * @file projectile_trajectory.hpp
+ *
+ * @brief Projectile trajectory computation
+ *
+ */
+
 #include "main.h"
 #include <math.h>
 

@@ -1,3 +1,10 @@
+/**
+ * @file utils.cpp
+ *
+ * @brief utility functions
+ *
+ */
+
 #include "main.h"
 
 float formatAngle(float a);

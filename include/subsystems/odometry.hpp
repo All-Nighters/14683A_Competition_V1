@@ -1,3 +1,10 @@
+/**
+ * @file odometry.hpp
+ *
+ * @brief Basic odometry
+ *
+ */
+
 extern std::shared_ptr<OdomChassisController> odomChassis;
 
 namespace Odom {

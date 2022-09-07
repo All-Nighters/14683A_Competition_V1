@@ -1,3 +1,10 @@
+/**
+ * @file globals.hpp
+ *
+ * @brief Initializes global objects
+ *
+ */
+
 using namespace okapi;
 
 typedef struct OdomStateSI {

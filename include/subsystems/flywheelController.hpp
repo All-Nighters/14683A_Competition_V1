@@ -1,3 +1,11 @@
+/**
+ * @file flywheelController.hpp
+ *
+ * @brief Basic flywheel controlling functions
+ *
+ */
+
+
 namespace Flywheel {
     void spinVelocityRPM(float rpm);
     void setLinearEjectVelocity(float velocity);

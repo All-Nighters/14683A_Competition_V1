@@ -1,10 +1,3 @@
-/**
- * @file intake.cpp
- *
- * @brief Intake code
- *
- */
-
 #include "main.h"
 
 namespace Intake {

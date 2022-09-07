@@ -1,3 +1,10 @@
+/**
+ * @file autoLib.hpp
+ *
+ * @brief Basic autonomous movement functions
+ *
+ */
+
 #include "main.h"
 
 typedef struct base_angle_position {

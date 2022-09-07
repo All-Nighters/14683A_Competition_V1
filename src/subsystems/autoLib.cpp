@@ -1,11 +1,3 @@
-/**
- * @file autoLib.cpp
- *
- * @brief Basic autonomous movement functions code
- *
- */
-
-
 #include "main.h"
 #include <math.h>
 

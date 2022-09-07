@@ -1,11 +1,3 @@
-/**
- * @file flywheelController.cpp
- *
- * @brief Basic flywheel controlling functions code
- *
- */
-
-
 #include "main.h"
 
 namespace Flywheel {
