@@ -42,5 +42,6 @@ ADIEncoder leftTW = ADIEncoder(leftEncoderPort[0], leftEncoderPort[1]);
 ADIEncoder rightTW = ADIEncoder(rightEncoderPort[0], rightEncoderPort[1]);
 
 pros::ADIDigitalOut indexer('G');
+pros::ADIDigitalOut piston('H');
 
 pros::Imu imu_sensor(10);

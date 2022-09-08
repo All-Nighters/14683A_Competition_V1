@@ -92,6 +92,7 @@ void opcontrol() {
             .build();
 		
 	auto xModel = std::dynamic_pointer_cast<XDriveModel>(drive->getModel());
+	int round_begin_milliseconds = pros::millis();
 
 	while (true) {
 
@@ -121,6 +122,9 @@ void opcontrol() {
 			pros::Task shoot(trigger);
 		}
 
+		if (controller.getDigital(ControllerDigital::Y) && pros::millis() - round_begin_milliseconds >= 50 * 1000) {
+			piston.set_value(false);
+		}
 
 		pros::delay(20);
 	}
