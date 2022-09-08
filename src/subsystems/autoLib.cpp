@@ -86,8 +86,8 @@ namespace Auto {
             float control_output_Facing = error_Facing * Rp + deriv_Facing * Rd;
 
 
-            control_output_Left = direction * std::fmax(std::fmin(control_output_Left, 8000) - std::fmin(control_output_Facing, 4000), 1000);
-            control_output_Right = direction * std::fmax(std::fmin(control_output_Right, 8000) + std::fmin(control_output_Facing, 4000), 1000);
+            control_output_Left = direction * std::fmax(std::fmax(std::fmin(control_output_Left, 8000), -8000) - std::fmax(std::fmin(control_output_Facing, 4000), -400), -12000);
+            control_output_Right = direction * std::fmax(std::fmax(std::fmin(control_output_Right, 8000), -8000) + std::fmax(std::fmin(control_output_Facing, 4000), -4000), -12000);
 
 
             prevErrorLeft = error_Left;
@@ -267,6 +267,16 @@ namespace Auto {
 
         faceCoordinate(xPercent, yPercent);
         moveDistance(dist);
+
+    }
+
+    void simpleMoveToPointBackwards(float xPercent, float yPercent) {
+        float xDist = xPercent - positionSI.xPercent;
+        float yDist = yPercent - positionSI.yPercent;
+        float dist = sqrt(xDist*xDist + yDist*yDist);
+
+        faceCoordinate(-xPercent, -yPercent);
+        moveDistance(-dist);
 
     }
 

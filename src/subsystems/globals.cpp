@@ -17,6 +17,7 @@ Motor LBMotor(-4);
 Motor FlywheelMotor1(5);
 Motor FlywheelMotor2(6);
 Motor IntakeMotor(7);
+Motor RollerMotor(8);
 
 ADIEncoder leftTW = ADIEncoder(leftEncoderPort[0], leftEncoderPort[1]);
 ADIEncoder rightTW = ADIEncoder(rightEncoderPort[0], rightEncoderPort[1]);

@@ -11,7 +11,7 @@ std::shared_ptr<OdomChassisController> odomChassis =
 		// green gearset, 4 inch wheel diameter, 11.5 inch wheel track
 		.withDimensions({AbstractMotor::gearset::blue, (84.0 / 36.0)}, {{wheelDiameter, wheeltrackLength}, imev5BlueTPR})
 		.withSensors(
-			ADIEncoder{leftEncoderPort[0], leftEncoderPort[1]}, // Left encoder in ADI ports A & B (reversed)
+			ADIEncoder{leftEncoderPort[0], leftEncoderPort[1], true}, // Left encoder in ADI ports A & B (reversed)
 			ADIEncoder{rightEncoderPort[0], rightEncoderPort[1]},  // Right encoder in ADI ports C & D
 			ADIEncoder{middleEncoderPort[0], middleEncoderPort[1]} // Middle encoder in ADI ports
 		)
@@ -20,9 +20,12 @@ std::shared_ptr<OdomChassisController> odomChassis =
 
 namespace Odom {
     void tare_odometry() {
-        odomChassis->setState({0_m, 0_m, 0_deg});
+        odomChassis->setState({0.36684_m, 0.96984_m, 0_deg});
 		update_odometry();
     }
+	void test_odometry() {
+		printf("x=%f, y=%f, a=%f\n", positionSI.x*100, positionSI.y*100, positionSI.theta);
+	}
     void update_odometry() {
         position = odomChassis->getState();
         QLength QxPos = position.x;

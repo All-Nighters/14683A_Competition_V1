@@ -23,6 +23,7 @@ namespace Auto {
     void faceCoordinate(float xPercent, float yPercent);
     void faceCoordinateAsync(float xPercent, float yPercent, bool aimMode);
     void simpleMoveToPoint(float xPercent, float yPercent);
+    void simpleMoveToPointBackwards(float xPercent, float yPercent);
     void waitUntilSettled();
     void trackVelocityPID(float leftV, float rightV);
 }

@@ -50,7 +50,10 @@
 #include "subsystems/pathTracker.hpp"
 #include "subsystems/autoLib.hpp"
 #include "subsystems/flywheelController.hpp"
+#include "subsystems/roller.hpp"
 #include "utils/projectile_trajectory.hpp"
+
+#include "autos/autos.hpp"
 
 #include "subsystems/intake.hpp"
 /**

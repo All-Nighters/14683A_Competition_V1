@@ -21,6 +21,13 @@ void initialize() {
 	pros::lcd::set_text(1, "Hello PROS User!");
 
 	Odom::tare_odometry();
+
+	LFMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
+	RFMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
+	RBMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
+	LBMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
+
+	
 }
 
 /**
@@ -52,7 +59,10 @@ void competition_initialize() {}
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-void autonomous() {}
+void autonomous() {
+	// Auto::turnAngle(90);
+	Autos::run("minimum");
+}
 
 /**
  * Runs the operator control code. This function will be started in its own task
@@ -68,6 +78,8 @@ void autonomous() {}
  * task, not resume it from where it left off.
  */
 void opcontrol() {
+
+	autonomous();
 
 	printf("Hello Allnighters\n");
 
@@ -116,46 +128,57 @@ void opcontrol() {
 	while (true) {
 		Odom::update_odometry();
 
-		float xDist = HighGoalPositionPercent[0]-positionSI.xPercent;
-		float yDist = HighGoalPositionPercent[1]-positionSI.yPercent;
-		float distToGoal = sqrt(xDist*xDist + yDist*yDist);
-		float targetEjectV = clamp(projectile_trajectory::solveVelocity(maxEjectVel, minEjectVel, 0.0001, 20, distToGoal, 45, 0, m, g, p, Av, Ah, Cv, Ch, HighGoalPositionPercent[1], 0.3), minEjectVel, maxEjectVel);
+		// float xDist = HighGoalPositionPercent[0]-positionSI.xPercent;
+		// float yDist = HighGoalPositionPercent[1]-positionSI.yPercent;
+		// float distToGoal = sqrt(xDist*xDist + yDist*yDist);
+		// float targetEjectV = clamp(projectile_trajectory::solveVelocity(maxEjectVel, minEjectVel, 0.0001, 20, distToGoal, 45, 0, m, g, p, Av, Ah, Cv, Ch, HighGoalPositionPercent[1], 0.3), minEjectVel, maxEjectVel);
 
 		// flywheel control
-		Flywheel::setLinearEjectVelocity(targetEjectV);
+		// Flywheel::setLinearEjectVelocity(targetEjectV);
 
 		// locomotion
-		if (!Auto::settled) {
-			xModel->xArcade(controller.getAnalog(ControllerAnalog::rightX),
-						controller.getAnalog(ControllerAnalog::leftY),
-                        controller.getAnalog(ControllerAnalog::leftX));
+		// if (!Auto::settled) {
+			
+		// }
+
+		// printf("x=%f, y=%f, a=%f\n", positionSI.x, positionSI.y, positionSI.theta);
+
+		xModel->xArcade(-controller.getAnalog(ControllerAnalog::rightX),
+						-controller.getAnalog(ControllerAnalog::leftY),
+                        -controller.getAnalog(ControllerAnalog::leftX));
+
+		if (controller.getDigital(ControllerDigital::R1)) {
+			RollerMotor.moveVelocity(200);
+		} else {
+			RollerMotor.moveVelocity(0);
 		}
+
 		// intake
-		if (controller.getDigital(ControllerDigital::B)) {
-			Intake::toggle();
-		}
+		// if (controller.getDigital(ControllerDigital::B)) {
+		// 	Intake::toggle();
+		// }
 
 		// aiming
-		if (controller.getDigital(ControllerDigital::down)) {
-			if (!Auto::settled) {
-				Auto::faceCoordinateAsync(HighGoalPositionPercent[0], HighGoalPositionPercent[1], true);
-			}
-		}
+		// if (controller.getDigital(ControllerDigital::down)) {
+		// 	if (!Auto::settled) {
+		// 		Auto::faceCoordinateAsync(HighGoalPositionPercent[0], HighGoalPositionPercent[1], true);
+		// 	}
+		// }
 
 		// shooting
-		bool shootButtonState = controller.getDigital(ControllerDigital::R2);
-		if (shootButtonState != prevShootButtonState) {
-			shootEnabled = !shootEnabled;
-			prevShootButtonState = shootButtonState;
-		}
-		if (shootEnabled) {
-			if (targetEjectV - Flywheel::getCurrentEjectVelocity() < 0.5) {
-				pros::Task shoot(trigger);
-				if (!fullAuto) {
-					shootEnabled = false;
-				}
-			}
-		}
+		// bool shootButtonState = controller.getDigital(ControllerDigital::R2);
+		// if (shootButtonState != prevShootButtonState) {
+		// 	shootEnabled = !shootEnabled;
+		// 	prevShootButtonState = shootButtonState;
+		// }
+		// if (shootEnabled) {
+		// 	if (targetEjectV - Flywheel::getCurrentEjectVelocity() < 0.5) {
+		// 		pros::Task shoot(trigger);
+		// 		if (!fullAuto) {
+		// 			shootEnabled = false;
+		// 		}
+		// 	}
+		// }
 
 		pros::delay(20);
 	}
