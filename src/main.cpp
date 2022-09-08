@@ -105,6 +105,7 @@ void opcontrol() {
             .build();
 		
 	auto xModel = std::dynamic_pointer_cast<XDriveModel>(drive->getModel());
+	int round_begin_milliseconds = pros::millis();
 
 	
 	/*
@@ -165,20 +166,14 @@ void opcontrol() {
 		// 	}
 		// }
 
-		// shooting
-		// bool shootButtonState = controller.getDigital(ControllerDigital::R2);
-		// if (shootButtonState != prevShootButtonState) {
-		// 	shootEnabled = !shootEnabled;
-		// 	prevShootButtonState = shootButtonState;
-		// }
-		// if (shootEnabled) {
-		// 	if (targetEjectV - Flywheel::getCurrentEjectVelocity() < 0.5) {
-		// 		pros::Task shoot(trigger);
-		// 		if (!fullAuto) {
-		// 			shootEnabled = false;
-		// 		}
-		// 	}
-		// }
+		// expansion
+		if (controller.getDigital(ControllerDigital::R2)) {
+			pros::Task shoot(trigger);
+		}
+
+		if (controller.getDigital(ControllerDigital::Y) && pros::millis() - round_begin_milliseconds >= 50 * 1000) {
+			piston.set_value(false);
+		}
 
 		pros::delay(20);
 	}

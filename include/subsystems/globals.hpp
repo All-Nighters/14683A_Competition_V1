@@ -93,3 +93,7 @@ inline QAngle turnRightAngle = 163.7_deg;
 inline QLength flyWheelDiameter = 4_in;
 inline QLength diskDiameter = 14_cm;
 inline int fieldLength = 3.6576;
+
+extern pros::ADIDigitalOut indexer;
+extern pros::ADIDigitalOut piston;
+extern pros::Imu imu_sensor;
