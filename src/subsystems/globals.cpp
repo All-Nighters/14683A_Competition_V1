@@ -19,7 +19,7 @@ Motor FlywheelMotor2(6);
 Motor IntakeMotor(7);
 Motor RollerMotor(8);
 
-ADIEncoder leftTW = ADIEncoder(leftEncoderPort[0], leftEncoderPort[1]);
+ADIEncoder leftTW = ADIEncoder(leftEncoderPort[0], leftEncoderPort[1], true);
 ADIEncoder rightTW = ADIEncoder(rightEncoderPort[0], rightEncoderPort[1]);
 
 pros::ADIDigitalOut indexer('G');
