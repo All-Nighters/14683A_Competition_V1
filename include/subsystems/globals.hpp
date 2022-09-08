@@ -53,4 +53,5 @@ inline char rightEncoderPort[] = {'C', 'D'};
 inline char middleEncoderPort[] = {'E', 'F'};
 
 extern pros::ADIDigitalOut indexer;
+extern pros::ADIDigitalOut piston;
 extern pros::Imu imu_sensor;
