@@ -2,13 +2,13 @@
 
 using namespace okapi;
 
-// 0 for red, 1 for blue
-int teamColor = 0;
+teamColor team = REDTEAM;
 
 OdomState position;
 OdomStateSI positionSI;
 
-Controller controller;
+Controller controller(okapi::ControllerId::master);
+Controller partner(okapi::ControllerId::partner);
 
 Motor LFMotor(-1);
 Motor RFMotor(2);
@@ -19,6 +19,7 @@ Motor FlywheelMotor2(6);
 Motor IntakeMotor(7);
 Motor RollerMotor(8);
 
+// remember to also change the reversin in odometry.cpp
 ADIEncoder leftTW = ADIEncoder(leftEncoderPort[0], leftEncoderPort[1], true);
 ADIEncoder rightTW = ADIEncoder(rightEncoderPort[0], rightEncoderPort[1]);
 

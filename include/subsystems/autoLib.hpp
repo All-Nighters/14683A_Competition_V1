@@ -20,7 +20,7 @@ namespace Auto {
     void turnAngle(float ang);
     void moveDistanceAsync(float target_percentage);
     void turnAngleAsync(float ang);
-    void faceCoordinate(float xPercent, float yPercent);
+    void faceCoordinate(float xPercent, float yPercent, bool aimMode);
     void faceCoordinateAsync(float xPercent, float yPercent, bool aimMode);
     void simpleMoveToPoint(float xPercent, float yPercent);
     void simpleMoveToPointBackwards(float xPercent, float yPercent);

@@ -2,7 +2,7 @@
 
 namespace Roller {
     void roll(std::string rollerTeam) {
-        if (teamColor == 0) { // red team
+        if (team == REDTEAM) { // red team
             if (rollerTeam == "red") {
                 RollerMotor.moveVelocity(200);
             }
@@ -10,7 +10,7 @@ namespace Roller {
                 RollerMotor.moveVelocity(-200);
             }
         }
-        else if (teamColor == 1) { // blue team
+        else if (team == BLUETEAM) { // blue team
             if (rollerTeam == "red") {
                 RollerMotor.moveVelocity(-200);
             }
@@ -18,5 +18,8 @@ namespace Roller {
                 RollerMotor.moveVelocity(200);
             }
         }
+    }
+    void stop() {
+        RollerMotor.moveVelocity(0);
     }
 }

@@ -15,7 +15,8 @@ typedef struct OdomStateSI {
 	float yPercent;
 }OdomStateSI;
 
-extern int teamColor; // 0 for red, 1 for blue
+enum teamColor {REDTEAM=0, BLUETEAM=1};
+extern teamColor team; // 0 for red, 1 for blue
 
 extern Controller controller;
 extern Motor LFMotor;

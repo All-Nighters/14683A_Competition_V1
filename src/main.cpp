@@ -79,7 +79,7 @@ void autonomous() {
  */
 void opcontrol() {
 
-	autonomous();
+	// autonomous();
 
 	printf("Hello Allnighters\n");
 
@@ -112,7 +112,7 @@ void opcontrol() {
 	 set up goal coordinates
 	*/
 	float HighGoalPositionPercent[3];
-	if (teamColor == 0) {
+	if (team == REDTEAM) {
 		HighGoalPositionPercent[0] = redHighGoalPosition_percent[0];
 		HighGoalPositionPercent[1] = redHighGoalPosition_percent[1];
 		HighGoalPositionPercent[2] = redHighGoalPosition_percent[2];
@@ -128,6 +128,7 @@ void opcontrol() {
 
 	while (true) {
 		Odom::update_odometry();
+		Odom::test_odometry();
 
 		// float xDist = HighGoalPositionPercent[0]-positionSI.xPercent;
 		// float yDist = HighGoalPositionPercent[1]-positionSI.yPercent;
@@ -138,7 +139,7 @@ void opcontrol() {
 		// Flywheel::setLinearEjectVelocity(targetEjectV);
 
 		// locomotion
-		// if (!Auto::settled) {
+		// if (Auto::settled) {
 			
 		// }
 
@@ -166,13 +167,13 @@ void opcontrol() {
 		// 	}
 		// }
 
-		// expansion
-		if (controller.getDigital(ControllerDigital::R2)) {
-			pros::Task shoot(trigger);
-		}
+		// if (controller.getDigital(ControllerDigital::R2)) {
+		// 	pros::Task shoot(trigger);
+		// }
 
+		// expansion
 		if (controller.getDigital(ControllerDigital::Y) && pros::millis() - round_begin_milliseconds >= 50 * 1000) {
-			piston.set_value(false);
+			piston.set_value(false); // remember to change the value in autos.cpp
 		}
 
 		pros::delay(20);
