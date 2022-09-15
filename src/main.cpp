@@ -79,7 +79,7 @@ void autonomous() {
  */
 void opcontrol() {
 
-	// autonomous();
+	autonomous();
 
 	printf("Hello Allnighters\n");
 
@@ -89,10 +89,10 @@ void opcontrol() {
 	std::shared_ptr<ChassisController> drive =
         ChassisControllerBuilder()
             .withMotors(
-				-1,  // Top left
-				2, // Top right (reversed)
-				3, // Bottom right (reversed)
-				-4   // Bottom left
+				frontLeftMotorPort,  // Top left
+				frontRightMotorPort, // Top right (reversed)
+				bottomRightMotorPort, // Bottom right (reversed)
+				bottomLeftMotorPort   // Bottom left
 			)
             // Green gearset, 4 in wheel diam, 11.5 in wheel track
             .withDimensions({AbstractMotor::gearset::blue, (84.0 / 36.0)}, {{4_in, 13.38_in}, imev5BlueTPR})
@@ -145,12 +145,25 @@ void opcontrol() {
 
 		// printf("x=%f, y=%f, a=%f\n", positionSI.x, positionSI.y, positionSI.theta);
 
+		// if ((controller.getAnalog(ControllerAnalog::rightX) != 0 || 
+		// 	controller.getAnalog(ControllerAnalog::leftY) != 0 ||
+		// 	controller.getAnalog(ControllerAnalog::leftX) != 0 ||
+		// 	controller.getDigital(ControllerDigital::R1) ||
+		// 	controller.getDigital(ControllerDigital::Y)) && 
+		// 	round_begin_milliseconds == 0
+		// 	) 
+		// {
+		// 	round_begin_milliseconds = pros::millis();
+		// }
+
 		xModel->xArcade(-controller.getAnalog(ControllerAnalog::rightX),
 						-controller.getAnalog(ControllerAnalog::leftY),
-                        -controller.getAnalog(ControllerAnalog::leftX));
+                        controller.getAnalog(ControllerAnalog::leftX)*0.7);
 
 		if (controller.getDigital(ControllerDigital::R1)) {
-			RollerMotor.moveVelocity(200);
+			RollerMotor.moveVelocity(100);
+		} else if (controller.getDigital(ControllerDigital::R2)) {
+			RollerMotor.moveVelocity(-100);
 		} else {
 			RollerMotor.moveVelocity(0);
 		}
@@ -172,8 +185,9 @@ void opcontrol() {
 		// }
 
 		// expansion
-		if (controller.getDigital(ControllerDigital::Y) && pros::millis() - round_begin_milliseconds >= 50 * 1000) {
-			piston.set_value(false); // remember to change the value in autos.cpp
+		if (controller.getDigital(ControllerDigital::Y)) {
+			piston.set_value(true); // remember to change the value in autos.cpp
+			
 		}
 
 		pros::delay(20);

@@ -11,8 +11,8 @@ std::shared_ptr<OdomChassisController> odomChassis =
 		// green gearset, 4 inch wheel diameter, 11.5 inch wheel track
 		.withDimensions({AbstractMotor::gearset::blue, (84.0 / 36.0)}, {{wheelDiameter, wheeltrackLength}, imev5BlueTPR})
 		.withSensors(
-			ADIEncoder{leftEncoderPort[0], leftEncoderPort[1], true}, // Left encoder in ADI ports A & B (reversed)
-			ADIEncoder{rightEncoderPort[0], rightEncoderPort[1]},  // Right encoder in ADI ports C & D
+			ADIEncoder{leftEncoderPort[0], leftEncoderPort[1]}, // Left encoder in ADI ports A & B (reversed)
+			ADIEncoder{rightEncoderPort[0], rightEncoderPort[1], true},  // Right encoder in ADI ports C & D
 			ADIEncoder{middleEncoderPort[0], middleEncoderPort[1]} // Middle encoder in ADI ports
 		) // remember to also change the reversin in globals.cpp
 		.withOdometry({{trackingWheelDiameter, wheeltrackLength, 3_in, trackingWheelDiameter}, quadEncoderTPR})

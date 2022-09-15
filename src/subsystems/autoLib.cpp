@@ -49,7 +49,9 @@ namespace Auto {
         float revs = target_distance / (M_PI*(trackingWheelDiameter.convert(meter)));
         float lefttargetAngle = revs * 360 + leftTW.get();
         float righttargetAngle = revs * 360 + rightTW.get();
-        float targetFaceAngle = positionSI.theta;        
+        float targetFaceAngle = positionSI.theta; 
+        float start_time = pros::millis();  
+        float timeout = 10; // maximum runtime in seconds
 
         int direction;
 
@@ -66,10 +68,11 @@ namespace Auto {
 
         settled = false;
 
-        while (abs(((lefttargetAngle + righttargetAngle)/2.0) - ((leftTW.get() + rightTW.get())/2.0)) >= 10) {
+        while (abs(((lefttargetAngle + righttargetAngle)/2.0) - ((leftTW.get() + rightTW.get())/2.0)) >= 10 && 
+        pros::millis() - start_time <= timeout*1000) {
 
             Odom::update_odometry();
-            // printf("%f %f %f\n", positionSI.x, positionSI.y, positionSI.theta);
+            printf("%f %f %f\n", lefttargetAngle, leftTW.get(), rightTW.get());
 
             float error_Left = abs(lefttargetAngle - leftTW.get());
             float error_Right = abs(righttargetAngle - rightTW.get());
@@ -88,6 +91,15 @@ namespace Auto {
 
             control_output_Left = direction * std::fmax(std::fmin(control_output_Left, 8000), -8000) - std::fmax(std::fmin(control_output_Facing, 4000), -4000);
             control_output_Right = direction * std::fmax(std::fmin(control_output_Right, 8000), -8000) + std::fmax(std::fmin(control_output_Facing, 4000), -4000);
+
+            if (abs(control_output_Left) < 4000 && direction < 0) {
+                control_output_Left = -4000;
+                control_output_Right = -4000;
+            }
+            else if (abs(control_output_Left) < 4000 && direction > 0) {
+                control_output_Left = 4000;
+                control_output_Right = 4000;
+            }
 
 
             prevErrorLeft = error_Left;
@@ -128,24 +140,20 @@ namespace Auto {
     void directionPID(float angle) {
         float target_angle = positionSI.theta + angle;
         float prev_error = abs(angle);
+        float start_time = pros::millis();  
+        float timeout = 10; // maximum runtime in seconds
 
         settled = false;
-        // printf("%f %f %f %f\n", target_angle, positionSI.x, positionSI.y, positionSI.theta);
-        // Odom::update_odometry();
-        // printf("%f %f %f %f\n", target_angle, positionSI.x, positionSI.y, positionSI.theta);
-        while (abs(target_angle - positionSI.theta) >= 1) {
+
+        while (abs(target_angle - positionSI.theta) >= 1 && pros::millis() - start_time <= timeout*1000) {
             Odom::update_odometry();
-            // printf("%f %f %f\n", positionSI.x, positionSI.y, positionSI.theta);
 
             float error = abs(target_angle - positionSI.theta);
 
             float deriv_error = error - prev_error;
 
-            // printf("%f %f\n", error, deriv_error);
-
             float control_output = error * Rp + deriv_error * Rd;
 
-            control_output = std::fmax(std::fmin(control_output, 12000), 2000);
 
             prev_error = error;
 

@@ -22,57 +22,80 @@ namespace Autos {
     };
 
     void run(std::string mode) {
-        int touchDelay = 500;
+        int touchDelay = 300;
 
         int round_begin_milliseconds = pros::millis();
+        // while (pros::millis() - round_begin_milliseconds < 45*1000) {
+        //     printf("%f\n", pros::millis() - round_begin_milliseconds);
+        // }
         if (mode == "minimum") {
-            for (int i = 0; i < sizeof(minimum)/sizeof(minimum[0]); i++) {
-                Coordinates c = minimum[i];
-                Auto::simpleMoveToPoint(c.get_x(), c.get_y());
+            // Auto::moveDistance(-40);
+            // Auto::turnAngle(90);
 
-                // if (i == 0) { // first roller
-                //     Roller::roll("blue");
-                //     pros::delay(touchDelay);
-                //     Roller::stop();
-                // }
-                // else if (i == 2) { // second roller
-                //     Auto::turnAngle(135);
-                //     Roller::roll("red");
-                //     LFMotor.moveVelocity(-400);
-                //     RFMotor.moveVelocity(-400);
-                //     LBMotor.moveVelocity(-400);
-                //     RBMotor.moveVelocity(-400);
-                //     pros::delay(touchDelay);
-                //     Roller::stop();
-                // }
-                // else if (i == 4) { // third roller
-                //     Auto::turnAngle(135);
-                //     Roller::roll("red");
-                //     LFMotor.moveVelocity(-400);
-                //     RFMotor.moveVelocity(-400);
-                //     LBMotor.moveVelocity(-400);
-                //     RBMotor.moveVelocity(-400);
-                //     pros::delay(touchDelay);
-                //     Roller::stop();
-                // }
-                // else if (i == 6) { // fourth roller
-                //     Auto::turnAngle(135);
-                //     Roller::roll("blue");
-                //     LFMotor.moveVelocity(-400);
-                //     RFMotor.moveVelocity(-400);
-                //     LBMotor.moveVelocity(-400);
-                //     RBMotor.moveVelocity(-400);
-                //     pros::delay(touchDelay);
-                //     Roller::stop();
-                // }
-
+            Roller::roll("red");
+            LFMotor.moveVelocity(400);
+            RFMotor.moveVelocity(400);
+            LBMotor.moveVelocity(400);
+            RBMotor.moveVelocity(400);
+            pros::delay(touchDelay);
+            Roller::stop();
+            Auto::moveDistance(-10);
+            Auto::turnAngle(45);
+            Auto::moveDistance(-10);
+            pros::delay(40);
+            while (pros::millis() - round_begin_milliseconds < 45*1000) {
+                ;
             }
+            piston.set_value(true); // remember to change the value in main.cpp
+            pros::delay(500);
+            Auto::moveDistance(10);
+
+
+
+            // for (int i = 0; i < sizeof(minimum)/sizeof(minimum[0]); i++) {
+            //     Coordinates c = minimum[i];
+            //     Auto::simpleMoveToPoint(c.get_x(), c.get_y());
+
+            //     // if (i == 0) { // first roller
+            //     //     Roller::roll("blue");
+            //     //     pros::delay(touchDelay);
+            //     //     Roller::stop();
+            //     // }
+            //     // else if (i == 2) { // second roller
+            //     //     Auto::turnAngle(135);
+            //     //     Roller::roll("red");
+            //     //     LFMotor.moveVelocity(-400);
+            //     //     RFMotor.moveVelocity(-400);
+            //     //     LBMotor.moveVelocity(-400);
+            //     //     RBMotor.moveVelocity(-400);
+            //     //     pros::delay(touchDelay);
+            //     //     Roller::stop();
+            //     // }
+            //     // else if (i == 4) { // third roller
+            //     //     Auto::turnAngle(135);
+            //     //     Roller::roll("red");
+            //     //     LFMotor.moveVelocity(-400);
+            //     //     RFMotor.moveVelocity(-400);
+            //     //     LBMotor.moveVelocity(-400);
+            //     //     RBMotor.moveVelocity(-400);
+            //     //     pros::delay(touchDelay);
+            //     //     Roller::stop();
+            //     // }
+            //     // else if (i == 6) { // fourth roller
+            //     //     Auto::turnAngle(135);
+            //     //     Roller::roll("blue");
+            //     //     LFMotor.moveVelocity(-400);
+            //     //     RFMotor.moveVelocity(-400);
+            //     //     LBMotor.moveVelocity(-400);
+            //     //     RBMotor.moveVelocity(-400);
+            //     //     pros::delay(touchDelay);
+            //     //     Roller::stop();
+            //     // }
+
+            // }
             
             //     Auto::turnAngle(-45);
             
-            if (pros::millis() - round_begin_milliseconds >= 50*1000) {
-                piston.set_value(false); // remember to change the value in main.cpp
-            }
         }
     }
 }

@@ -37,10 +37,10 @@ extern pros::Imu imu_sensor;
 /**
  * Motor ports
 */
-inline int frontLeftMotorPort = -1;
-inline int frontRightMotorPort = 2;
-inline int bottomRightMotorPort = 3;
-inline int bottomLeftMotorPort = -4;
+inline int frontLeftMotorPort = 1;
+inline int frontRightMotorPort = -2;
+inline int bottomRightMotorPort = -3;
+inline int bottomLeftMotorPort = 4;
 
 /**
  * Encoder ports
