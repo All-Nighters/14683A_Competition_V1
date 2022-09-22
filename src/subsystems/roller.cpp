@@ -7,7 +7,7 @@ namespace Roller {
                 RollerMotor.moveVelocity(-100);
             }
             else if (rollerTeam == "blue") {
-                RollerMotor.moveVelocity(-100);
+                RollerMotor.moveVelocity(100);
             }
         }
         else if (team == BLUETEAM) { // blue team

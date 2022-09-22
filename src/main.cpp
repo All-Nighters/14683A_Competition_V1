@@ -128,7 +128,7 @@ void opcontrol() {
 
 	while (true) {
 		Odom::update_odometry();
-		Odom::test_odometry();
+		// Odom::test_odometry();
 
 		// float xDist = HighGoalPositionPercent[0]-positionSI.xPercent;
 		// float yDist = HighGoalPositionPercent[1]-positionSI.yPercent;
@@ -156,8 +156,8 @@ void opcontrol() {
 		// 	round_begin_milliseconds = pros::millis();
 		// }
 
-		xModel->xArcade(-controller.getAnalog(ControllerAnalog::rightX),
-						-controller.getAnalog(ControllerAnalog::leftY),
+		xModel->xArcade(controller.getAnalog(ControllerAnalog::rightX),
+						controller.getAnalog(ControllerAnalog::leftY),
                         controller.getAnalog(ControllerAnalog::leftX)*0.7);
 
 		if (controller.getDigital(ControllerDigital::R1)) {

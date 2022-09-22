@@ -60,8 +60,8 @@ namespace pathTracker {
                 Coordinates prevCoord = pathCoords[i-1];
 
                 // if suitable distance is found
-                if (coord.get_distance(selfCoordinate) > lookAheadPercentage && 
-                prevCoord.get_distance(selfCoordinate) < lookAheadPercentage && 
+                if (coord.get_distance(selfCoordinate) > lookAheadRadius && 
+                prevCoord.get_distance(selfCoordinate) < lookAheadRadius && 
                 closest() < i) {
 
                     // interpolation
@@ -89,10 +89,10 @@ namespace pathTracker {
 
                         float distToSelf = lookAheadPoint.get_distance(selfCoordinate);
 
-                        if (distToSelf < lookAheadPercentage - interpolatingDeviation) {
+                        if (distToSelf < lookAheadRadius - interpolatingDeviation) {
                             minT = midT + interpolatingDeviation;
                         }
-                        else if (distToSelf > lookAheadPercentage + interpolatingDeviation) {
+                        else if (distToSelf > lookAheadRadius + interpolatingDeviation) {
                             maxT = midT - interpolatingDeviation;
                         }
                         else {
@@ -106,10 +106,11 @@ namespace pathTracker {
             }
             
             // if reached the end of path
-            if (pathCoords[pathCoords.size()-1].get_distance(selfCoordinate) < lookAheadPercentage) {
+            if (pathCoords[pathCoords.size()-1].get_distance(selfCoordinate) < lookAheadRadius) {
                 lookAheadPoint = pathCoords[pathCoords.size()-1];
                 return 1;
             }
+            lookAheadPoint = pathCoords[closest()];
             return -1;
         }
 
@@ -177,8 +178,8 @@ namespace pathTracker {
                 Coordinates prevCoord = pathCoords[i-1];
 
                 // if suitable distance is found
-                if (coord.get_distance(selfCoordinate) > lookAheadPercentage && 
-                prevCoord.get_distance(selfCoordinate) < lookAheadPercentage &&
+                if (coord.get_distance(selfCoordinate) > lookAheadRadius && 
+                prevCoord.get_distance(selfCoordinate) < lookAheadRadius &&
                 closest() < i) {
 
                     // interpolation
@@ -206,10 +207,10 @@ namespace pathTracker {
 
                         float distToSelf = lookAheadPoint.get_distance(selfCoordinate);
 
-                        if (distToSelf < lookAheadPercentage - interpolatingDeviation) {
+                        if (distToSelf < lookAheadRadius - interpolatingDeviation) {
                             minT = midT + interpolatingDeviation;
                         }
-                        else if (distToSelf > lookAheadPercentage + interpolatingDeviation) {
+                        else if (distToSelf > lookAheadRadius + interpolatingDeviation) {
                             maxT = midT - interpolatingDeviation;
                         }
                         else {
@@ -224,7 +225,7 @@ namespace pathTracker {
             }
             
             // if reached the end of path
-            if (pathCoords[pathCoords.size()-1].get_distance(selfCoordinate) < lookAheadPercentage) {
+            if (pathCoords[pathCoords.size()-1].get_distance(selfCoordinate) < lookAheadRadius) {
                 lookAheadPoint = pathCoords[pathCoords.size()-1];
                 printf("x=%f, y=%f\n", lookAheadPoint.get_x(), lookAheadPoint.get_y());
                 return 1;
@@ -243,7 +244,7 @@ namespace pathTracker {
 
                 Coordinates localLookAhead = absoluteToLocalCoordinate();
 
-                float curvature = (2*localLookAhead.get_y()) / (lookAheadPercentage * lookAheadPercentage);
+                float curvature = (2*localLookAhead.get_y()) / (lookAheadRadius * lookAheadRadius);
                 
                 float targetV = 400;
                 float percentTrackWidth = wheeltrackLength.convert(meter) / fieldLength * 100;

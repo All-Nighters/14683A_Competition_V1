@@ -29,18 +29,21 @@ extern Motor IntakeMotor;
 extern Motor RollerMotor;
 
 extern ADIEncoder leftTW; // left tracking wheel
+extern ADIEncoder leftTWRev;
 extern ADIEncoder rightTW; // right tracking wheel
 
 extern pros::ADIDigitalOut indexer; // indexer piston
 extern pros::Imu imu_sensor;
 
+inline int reverse = 1;
+
 /**
  * Motor ports
 */
-inline int frontLeftMotorPort = 1;
-inline int frontRightMotorPort = -2;
-inline int bottomRightMotorPort = -3;
-inline int bottomLeftMotorPort = 4;
+inline int frontLeftMotorPort = -reverse * 1;
+inline int frontRightMotorPort = reverse * 2;
+inline int bottomRightMotorPort = reverse * 3;
+inline int bottomLeftMotorPort = -reverse * 4;
 
 /**
  * Encoder ports
@@ -93,7 +96,7 @@ inline QLength trackingWheelDiameter = 2.75_in;
 inline QAngle turnRightAngle = 163.7_deg;
 inline QLength flyWheelDiameter = 4_in;
 inline QLength diskDiameter = 14_cm;
-inline int fieldLength = 3.6576;
+inline float fieldLength = 3.6576;
 
 extern pros::ADIDigitalOut indexer;
 extern pros::ADIDigitalOut piston;

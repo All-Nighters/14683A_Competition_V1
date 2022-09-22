@@ -20,7 +20,8 @@ Motor IntakeMotor(7);
 Motor RollerMotor(8);
 
 // remember to also change the reversin in odometry.cpp
-ADIEncoder leftTW = ADIEncoder(leftEncoderPort[0], leftEncoderPort[1]);
+ADIEncoder leftTW = ADIEncoder(leftEncoderPort[0], leftEncoderPort[1], false);
+ADIEncoder leftTWRev = ADIEncoder(leftEncoderPort[0], leftEncoderPort[1], true);
 ADIEncoder rightTW = ADIEncoder(rightEncoderPort[0], rightEncoderPort[1], true);
 
 pros::ADIDigitalOut indexer('G');
