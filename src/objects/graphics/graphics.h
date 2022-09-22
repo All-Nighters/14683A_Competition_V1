@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include "main.h"
 #include "../coordinates/coordinates.h"
 
 class Graphics {

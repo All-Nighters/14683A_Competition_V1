@@ -4,6 +4,10 @@
 #include "../catmull_rom/catmull_rom.h"
 #include "../coordinates/coordinates.h"
 
+#include "../graphics/graphics.h"
+#include "main.h"
+#include <sstream>
+
 /**
  * Initialize a PathFilter object
  * 
@@ -31,37 +35,52 @@ Coordinates PathFilter::get_next(float chained_distance, float sight_range) {
  * @param spline_progress the progress point in the spline
  * @returns the chained distance from the beginning of the path
  */
-float PathFilter::get_chained_distance(int coordinates_offset, float spline_progress) {
-	if (coordinates_offset <= 1 && spline_progress <= 0) {
-		return 0.0f;
-	}
-	// load distance cache
-	int cached_coordinate = std::min((int) this->distance_cache.size() - 1, coordinates_offset);
-	float cached_distance = this->distance_cache[cached_coordinate];
-	// calculate the remaining distance
-	std::vector<Coordinates> chained_coordinates;
-	float chained_distance = cached_distance;
-	for (int coordinate_index = cached_coordinate; coordinate_index < (coordinates_offset + 1); coordinate_index++) {
-		// request points on graph, until reaches progress
-		float spline_progress_maximum = coordinate_index < coordinates_offset ? 1.0f : spline_progress;
-		for (float progress_index = 0; progress_index <= spline_progress_maximum; progress_index += this->deviation) {
-			Coordinates progress_coordinates = this->request_coordinates(coordinate_index, progress_index);
-			chained_coordinates.push_back(progress_coordinates);
-			// check cache availability
-			if (progress_index != 0 || this->distance_cache.size() != coordinate_index) {
-				// already cached or somehow couldn't cache
-				continue;
+float PathFilter::get_chained_distance(int coordinates_offset, float spline_progress) { // 4 - 0
+	int cached_coordinate = std::min((int) this->distance_cache.size() - 1, coordinates_offset); // 1/4 -> 1
+	float sum_distance = this->distance_cache[cached_coordinate]; // [1]->0
+
+	std::stringstream ss;
+	ss << "cached to " << this->distance_cache.size() - 1 << ", requested to " << coordinates_offset << ", start at " << cached_coordinate << " sum=" << sum_distance;
+	printf("%s\n", ss.str().c_str());
+	
+	for (int coordinate_index = cached_coordinate + 1; coordinate_index <= coordinates_offset + 1; coordinate_index++) { // 2~5
+		std::vector<Coordinates> spline_coordinates;
+		float coordinate_progress_maximum = (coordinate_index == (coordinates_offset + 1) ? spline_progress : 1.0f); // 2!=4 3~=4 4==4 -> 1, 1, 0
+		for (float progress_index = 0; progress_index < coordinate_progress_maximum; progress_index += this->deviation) {
+			spline_coordinates.push_back(this->request_coordinates(coordinate_index - 2, progress_index)); // HERE
+			//Graphics::draw_rectangle(spline_coordinates[spline_coordinates.size() - 1].get_resize(4.0f).get_offset(0.0f, 5.0f, 0.0f), 5, 5, LV_COLOR_PURPLE);
+		}
+		spline_coordinates.push_back(this->request_coordinates(coordinate_index - 2, 1.0f)); // HERE
+		float spline_length = Coordinates::get_distance_sum(spline_coordinates);
+
+		float before = sum_distance;
+
+		printf("Spline Length: %f\n", spline_length);
+		sum_distance += spline_length;
+
+		std::stringstream ss2;
+		ss2 << "before=" << before << " after=" << sum_distance;
+		printf("%s\n", ss2.str().c_str());
+
+		if (this->distance_cache.size() == coordinate_index) {
+			this->distance_cache.push_back(sum_distance);
+
+			std::stringstream ss2;
+			ss2 << "expanded cache to " << coordinate_index << ", value: " << sum_distance << " (increase by " << spline_length << ")";
+
+			if (spline_length > 100) {
+				for (int index = 0; index < spline_coordinates.size(); index++) {
+					Coordinates loop = spline_coordinates[index];
+					ss2 << "\n" << loop.get_x() << "-" << loop.get_y();
+				}
 			}
-			// cache anchor point distance
-			chained_distance += Coordinates::get_distance_sum(chained_coordinates);
-			this->distance_cache.push_back(chained_distance);
-			// clear calculated progress coordinates
-			chained_coordinates.clear();
-			chained_coordinates.push_back(progress_coordinates);
+
+			printf("%s\n", ss2.str().c_str());
+
+
 		}
 	}
-	// get the distance between every coordinates
-	return chained_distance + Coordinates::get_distance_sum(chained_coordinates);
+	return sum_distance;
 }
 
 /**
