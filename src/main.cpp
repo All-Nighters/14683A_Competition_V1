@@ -1,4 +1,5 @@
 #include "main.h"
+#include "objects/graphics/graphics.h"
 
 /**
  * A callback function for LLEMU's center button.
@@ -6,15 +7,7 @@
  * When this callback is fired, it will toggle line 2 of the LCD text between
  * "I was pressed!" and nothing.
  */
-void on_center_button() {
-	static bool pressed = false;
-	pressed = !pressed;
-	if (pressed) {
-		pros::lcd::set_text(2, "I was pressed!");
-	} else {
-		pros::lcd::clear_line(2);
-	}
-}
+void on_center_button() {}
 
 /**
  * Runs initialization code. This occurs as soon as the program is started.
@@ -23,10 +16,40 @@ void on_center_button() {
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
-	pros::lcd::initialize();
-	pros::lcd::set_text(1, "Hello PROS User!");
-
-	pros::lcd::register_btn1_cb(on_center_button);
+	pros::Vision vision_sensor(1);
+	//auto TEST_SIG = pros::Vision::signature_from_utility(1, 9923, 10415, 10169, -1261, -863, -1062, 11.0, 0);
+	auto RED_SIG = pros::Vision::signature_from_utility(1, 5327, 9741, 7534, -905, -405, -655, 2, 0);
+	auto BLUE_SIG = pros::Vision::signature_from_utility(2, -2991, -2499, -2745, 10223, 15139, 12681, 4.3, 0);
+	/*auto RED_SIG = pros::Vision::signature_from_utility(1, 1987, 6583, 4285, -597, 201, -198, 1.3, 0);
+	auto BLUE_SIG = pros::Vision::signature_from_utility(2, -2127, -819, -1473, 7139, 12803, 9971, 2.4, 0);*/
+	//vision_sensor.set_signature(1, &TEST_SIG);
+	vision_sensor.set_signature(1, &RED_SIG);
+	vision_sensor.set_signature(2, &BLUE_SIG);
+	lv_obj_t* label = Graphics::draw_text(Coordinates(10, 10, 0), "Default Text");
+	while (true) {
+		//auto rtn = vision_sensor.get_by_sig(0, 1);
+		int color_locations[2];
+		color_locations[0] = 0;
+		color_locations[1] = 0;
+		int size_index = -1;
+		while (true) {
+			size_index++;
+			auto object = vision_sensor.get_by_size(size_index);
+			//int object_area = object.width * object.height;
+			//if (object_area < 50 * 50 || object.signature == 255) break;
+			if (object.width < 50 || object.signature == 255) break;
+			if (color_locations[object.signature - 1] > 0) continue;
+			color_locations[object.signature - 1] = object.top_coord;
+		}
+		std::string result = "R=" + std::to_string(color_locations[0]) + " B=" + std::to_string(color_locations[1]);
+		printf("R=%d B=%d\n", color_locations[0], color_locations[1]);
+		lv_label_set_text(label, result.c_str());
+		/*for (int i = 0; i < 1; i++) {
+			auto rtn = vision_sensor.get_by_size(i);
+			printf("#%d: H=%d SIG=%d LC=%d TC=%d\n", i + 1, rtn.height, rtn.signature, rtn.left_coord, rtn.top_coord);
+		}*/
+		pros::delay(10);
+	}
 }
 
 /**
@@ -73,8 +96,4 @@ void autonomous() {}
  * operator control task will be stopped. Re-enabling the robot will restart the
  * task, not resume it from where it left off.
  */
-void opcontrol() {
-
-	printf("Hello Allnighters\n");
-
-}
+void opcontrol() {}
