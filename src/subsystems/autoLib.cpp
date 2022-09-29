@@ -8,12 +8,12 @@ namespace Auto {
     // traslational (position) PID Coefficients
     float Tp = 15;
     float Ti = 0;
-    float Td = 40;
+    float Td = 100;
 
     // rotational PID Coefficients
     float Rp = 170;
     float Ri = 0;
-    float Rd = 300;
+    float Rd = 350;
 
 
     bool settled = true;
@@ -44,7 +44,6 @@ namespace Auto {
      * @param target_distance target distance
      */
     void distancePID(float percentage) {
-
         float target_distance = fieldLength * percentage / 100;
         float revs = target_distance / (M_PI*(trackingWheelDiameter.convert(meter)));
         float lefttargetAngle = revs * 360 + reverse*leftTW.get();
@@ -152,7 +151,7 @@ namespace Auto {
 
             float deriv_error = error - prev_error;
 
-            float control_output = std::fmax(error * Rp + deriv_error * Rd, 4000);
+            float control_output = std::fmax(error * Rp + deriv_error * Rd, 3000);
 
 
             prev_error = error;
@@ -205,7 +204,7 @@ namespace Auto {
 
             float deriv_error = error - prev_error;
 
-            float control_output = std::fmax(error * Rp + deriv_error * Rd, 4000);
+            float control_output = std::fmax(error * Rp + deriv_error * Rd, 3000);
 
 
             prev_error = error;

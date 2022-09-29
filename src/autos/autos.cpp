@@ -98,19 +98,54 @@ namespace Autos {
             
         }
         else if (mode == "BlueLeft") {
-            // Odom::set_state(0.368826057_m, 0.888775_m, 0_deg);
+            Odom::set_state(0.368826057_m, 0.888775_m, 0_deg);
 
-            // Roller::roll("blue");
-            // LFMotor.moveVelocity(-400);
-            // RFMotor.moveVelocity(-400);
-            // LBMotor.moveVelocity(-400);
-            // RBMotor.moveVelocity(-400);
-            // pros::delay(touchDelay);
-            // Roller::stop();
+            Roller::roll("blue");
+            LFMotor.moveVelocity(-400);
+            RFMotor.moveVelocity(-400);
+            LBMotor.moveVelocity(-400);
+            RBMotor.moveVelocity(-400);
+            pros::delay(touchDelay);
+            Roller::stop();
+            LFMotor.moveVelocity(0);
+            RFMotor.moveVelocity(0);
+            LBMotor.moveVelocity(0);
+            RBMotor.moveVelocity(0);
+            pros::delay(1000);
 
-            Auto::simpleMoveToPoint(15, 24.35);
+            Auto::moveDistance(2);
+
+            Auto::faceCoordinate(blueHighGoalPosition_percent[0], blueHighGoalPosition_percent[1], true);
+            pros::delay(2000);
+
             Auto::simpleMoveToPoint(36.94444444444444, 53.05555555555555);
             Auto::faceCoordinate(blueHighGoalPosition_percent[0], blueHighGoalPosition_percent[1], true);
+            pros::delay(2000);
+        }
+        else if (mode == "BlueLeftSupportive") {
+            Odom::set_state(0.368826057_m, 0.888775_m, 0_deg);
+
+            Roller::roll("blue");
+            LFMotor.moveVelocity(-400);
+            RFMotor.moveVelocity(-400);
+            LBMotor.moveVelocity(-400);
+            RBMotor.moveVelocity(-400);
+            pros::delay(touchDelay);
+            Roller::stop();
+            LFMotor.moveVelocity(0);
+            RFMotor.moveVelocity(0);
+            LBMotor.moveVelocity(0);
+            RBMotor.moveVelocity(0);
+            pros::delay(1000);
+
+            Auto::moveDistance(2);
+
+            Auto::faceCoordinate(blueHighGoalPosition_percent[0], blueHighGoalPosition_percent[1], true);
+            pros::delay(2000);
+
+            Auto::faceAngle(50);
+            Auto::moveDistance(90);
+            // Auto::simpleMoveToPoint(64.07407407407408, 89.53703703703704);
         }
     }
 }

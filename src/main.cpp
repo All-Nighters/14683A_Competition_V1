@@ -61,7 +61,7 @@ void competition_initialize() {}
  */
 void autonomous() {
 	// Auto::turnAngle(90);
-	Autos::run("BlueLeft");
+	Autos::run("BlueLeftSupportive");
 }
 
 void PPTest() {
@@ -100,7 +100,6 @@ void PPTest() {
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-
 	// PPTest();
 	// odomChassis->turnToAngle(180_deg);
 	// Auto::faceAngle(90);
