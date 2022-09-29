@@ -61,7 +61,29 @@ void competition_initialize() {}
  */
 void autonomous() {
 	// Auto::turnAngle(90);
-	Autos::run("minimum");
+	Autos::run("BlueLeft");
+}
+
+void PPTest() {
+	std::vector<Coordinates> pathway;
+	
+	// insert evenly distributed waypoints from (0, 0) to (40, 0)
+	for (int i = 0; i < 11; i++) {
+		pathway.push_back(Coordinates(4*i, 0, 0));
+	}
+
+	// insert evenly distributed waypoints from (40, 0) to (40, 40)
+	for (int i = 0; i < 11; i++) {
+		pathway.push_back(Coordinates(40, 4*i, 0));
+	}
+
+	// insert evenly distributed waypoints from (40, 40) to (0, 40)
+	for (int i = 0; i < 11; i++) {
+		pathway.push_back(Coordinates(40-4*i, 40, 0));
+	}
+	pathTracker::ramsete::setPath(pathway);
+	pathTracker::ramsete::findLookAheadPoint();
+	pathTracker::ramsete::followPath();
 }
 
 /**
@@ -78,6 +100,19 @@ void autonomous() {
  * task, not resume it from where it left off.
  */
 void opcontrol() {
+
+	// PPTest();
+	// odomChassis->turnToAngle(180_deg);
+	// Auto::faceAngle(90);
+	// controller.setText(0,0,std::to_string(positionSI.theta));
+	// Auto::faceAngle(-90);
+	// controller.setText(0,0,std::to_string(positionSI.theta));
+	// Auto::faceAngle(90);
+	// controller.setText(0,0,std::to_string(positionSI.theta));
+	// Auto::faceAngle(-90);
+	// controller.setText(0,0,std::to_string(positionSI.theta));
+	// Auto::faceAngle(0);
+	// controller.setText(0,0,std::to_string(positionSI.theta));
 
 	autonomous();
 

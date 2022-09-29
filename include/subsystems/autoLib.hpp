@@ -18,6 +18,7 @@ namespace Auto {
     extern bool settled;
     void moveDistance(float target_percentage);
     void turnAngle(float ang);
+    void faceAngle(float ang);
     void moveDistanceAsync(float target_percentage);
     void turnAngleAsync(float ang);
     void faceCoordinate(float xPercent, float yPercent, bool aimMode);

@@ -44,7 +44,7 @@ namespace Auto {
      * @param target_distance target distance
      */
     void distancePID(float percentage) {
-        
+
         float target_distance = fieldLength * percentage / 100;
         float revs = target_distance / (M_PI*(trackingWheelDiameter.convert(meter)));
         float lefttargetAngle = revs * 360 + reverse*leftTW.get();
@@ -145,14 +145,14 @@ namespace Auto {
 
         settled = false;
 
-        while (abs(target_angle - positionSI.theta) >= 1 && pros::millis() - start_time <= timeout*1000) {
+        while (abs(target_angle - positionSI.theta) >= 0.5 && pros::millis() - start_time <= timeout*1000) {
             Odom::update_odometry();
 
             float error = abs(target_angle - positionSI.theta);
 
             float deriv_error = error - prev_error;
 
-            float control_output = std::fmax(error * Rp + deriv_error * Rd, 2000);
+            float control_output = std::fmax(error * Rp + deriv_error * Rd, 4000);
 
 
             prev_error = error;
@@ -185,12 +185,75 @@ namespace Auto {
     }
 
     /**
+     * @brief PID controlling robot's absolute direction
+     * 
+     * @param ang angle
+     */
+    
+    void directionPIDAbs(float angle) {
+        float target_angle = angle;
+        float prev_error = abs(angle);
+        float start_time = pros::millis();  
+        float timeout = 10; // maximum runtime in seconds
+
+        settled = false;
+
+        while (abs(target_angle - positionSI.theta) >= 0.5 && pros::millis() - start_time <= timeout*1000) {
+            Odom::update_odometry();
+
+            float error = abs(target_angle - positionSI.theta);
+
+            float deriv_error = error - prev_error;
+
+            float control_output = std::fmax(error * Rp + deriv_error * Rd, 4000);
+
+
+            prev_error = error;
+
+            if (target_angle - positionSI.theta > 0) {
+                LFMotor.moveVoltage(control_output);
+                LBMotor.moveVoltage(control_output);
+                RFMotor.moveVoltage(-control_output);
+                RBMotor.moveVoltage(-control_output);
+            } else {
+                LFMotor.moveVoltage(-control_output);
+                LBMotor.moveVoltage(-control_output);
+                RFMotor.moveVoltage(control_output);
+                RBMotor.moveVoltage(control_output);
+            }
+
+
+            pros::delay(20);
+        }
+        printf("Angle reached\n");
+
+        LFMotor.moveVoltage(0);
+        RFMotor.moveVoltage(0);
+        LBMotor.moveVoltage(0);
+        RBMotor.moveVoltage(0);
+        pros::delay(200);
+        
+        settled = true;
+
+        Odom::setState(position.x, position.y, position.theta);
+    }
+
+    /**
      * @brief rotate the robot with a specific angle
      * 
      * @param angle angle to the right
      */
     void turnAngle(float angle) {
         directionPID(angle);
+    }
+
+    /**
+     * @brief face the robot with a specific angle
+     * 
+     * @param angle angle to the right
+     */
+    void faceAngle(float angle) {
+        directionPIDAbs(angle);
     }
 
 

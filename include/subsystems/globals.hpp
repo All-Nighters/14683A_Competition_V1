@@ -69,7 +69,7 @@ inline float blueHighGoalPosition_percent[] = {86, 14.54, 20.99};
 /**
  * Flywheel constants
 */
-inline float aimAngleDeviation = 10; // deviation of angle when aiming a point
+inline float aimAngleDeviation = 5; // deviation of angle when aiming a point
 inline float g = 9.81; // gravitational constant
 inline float maxEjectVel = 8; // maximum eject velocity in m/s
 inline float minEjectVel = 1; // minimum eject velocity in m/s

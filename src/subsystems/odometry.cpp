@@ -24,6 +24,10 @@ namespace Odom {
 		// odomChassis->setState({0_m, 0_m, 0_deg});
 		update_odometry();
     }
+	void set_state(QLength x, QLength y, QAngle deg) {
+		odomChassis->setState({x, y, deg});
+		update_odometry();
+	}
 	void test_odometry() {
 		printf("Odometry: x=%f, y=%f, a=%f\n", positionSI.xPercent, positionSI.yPercent, positionSI.theta);
 		printf("Encoder: l=%f, r=%f\n", reverse * leftTW.get(), reverse * rightTW.get());
