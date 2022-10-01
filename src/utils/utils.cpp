@@ -23,3 +23,16 @@ float percentageToMeter(float p) {
 float clamp(float v, float lo, float hi ) {
     return v < lo ? lo : hi < v ? hi : v;
 }
+
+Coordinates absoluteToLocalCoordinate(Coordinates coord) {
+    Odom::update_odometry();
+    Coordinates selfCoordinate = Coordinates(positionSI.xPercent, positionSI.yPercent, positionSI.theta);
+    float xDist = coord.get_x() - selfCoordinate.get_x();
+    float yDist = coord.get_y() - selfCoordinate.get_y();
+
+    // apply rotation matrix
+    float newX = yDist*cos(selfCoordinate.get_direction()*M_PI/180.0) - xDist*sin(selfCoordinate.get_direction()*M_PI/180.0);
+    float newY = yDist*sin(selfCoordinate.get_direction()*M_PI/180.0) + xDist*cos(selfCoordinate.get_direction()*M_PI/180.0);
+
+    return Coordinates(newX, newY, positionSI.theta);
+}

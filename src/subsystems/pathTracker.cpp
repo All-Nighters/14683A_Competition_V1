@@ -125,6 +125,7 @@ namespace pathTracker {
             Coordinates selfCoordinate = Coordinates(positionSI.xPercent, positionSI.yPercent, positionSI.theta);
 
             while (pathCoords[pathCoords.size()-1].get_distance(selfCoordinate) >= arriveDeviation) {
+                Odom::update_odometry();
                 selfCoordinate = Coordinates(positionSI.xPercent, positionSI.yPercent, positionSI.theta);
                 controller.setText(0,0,std::to_string(pathCoords[pathCoords.size()-1].get_distance(selfCoordinate)));
                 findLookAheadPoint();

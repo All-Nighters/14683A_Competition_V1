@@ -29,8 +29,8 @@ extern Motor IntakeMotor;
 extern Motor RollerMotor;
 
 extern ADIEncoder leftTW; // left tracking wheel
-extern ADIEncoder leftTWRev;
 extern ADIEncoder rightTW; // right tracking wheel
+extern ADIEncoder midTW; // middle tracking wheel
 
 extern pros::ADIDigitalOut indexer; // indexer piston
 extern pros::Imu imu_sensor;

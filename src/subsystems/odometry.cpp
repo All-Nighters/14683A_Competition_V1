@@ -15,7 +15,7 @@ std::shared_ptr<OdomChassisController> odomChassis =
 			ADIEncoder{rightEncoderPort[0], rightEncoderPort[1], reverse},  // Right encoder in ADI ports C & D
 			ADIEncoder{middleEncoderPort[0], middleEncoderPort[1]} // Middle encoder in ADI ports
 		) // remember to also change the reversin in globals.cpp
-		.withOdometry({{trackingWheelDiameter, wheeltrackLength, 3_in, trackingWheelDiameter}, quadEncoderTPR})
+		.withOdometry({{trackingWheelDiameter, wheeltrackLength, middleEncoderDistance, trackingWheelDiameter}, quadEncoderTPR})
 		.buildOdometry();
 
 namespace Odom {
