@@ -39,9 +39,7 @@ namespace Auto {
     /**
      * @brief PID for controlling forward distance
      * 
-     * @param leftTW left tracking wheel encoder
-     * @param rightTW right tracking wheel encoder
-     * @param target_distance target distance
+     * @param percentage forward distance in percentage unit
      */
     void distancePID(float percentage) {
         float target_distance = fieldLength * percentage / 100;
@@ -124,6 +122,7 @@ namespace Auto {
     /**
      * @brief move the robot forward with a specific distance
      * 
+     * @param percentage percentage forward distance in percentage unit
      */
     void moveDistance(float percentage) {
         
@@ -186,7 +185,7 @@ namespace Auto {
     /**
      * @brief PID controlling robot's absolute direction
      * 
-     * @param ang angle
+     * @param ang disired absolute angle facing
      */
     
     void directionPIDAbs(float angle) {
@@ -326,6 +325,9 @@ namespace Auto {
     /**
      * @brief creates task to face position asynchronously
      * 
+     * @param x x coorinate in percentage of the target
+     * @param y y coorinate in percentage of the target
+     * @param aimMode whether the robot is aiming to shoot
      */
     
     void faceCoordinateAsync(float xPercent, float yPercent, bool aimMode) {
@@ -336,6 +338,12 @@ namespace Auto {
         pros::Task move(faceCoordinateOnlyAsync);
     }
 
+    /**
+     * Move the robot to a specific coordinate in the field. The function may be inaccurate over long distances.
+     * 
+     * @param xPercent x coordinate of the target
+     * @param yPercent y coordinate of the target
+     */
     void simpleMoveToPoint(float xPercent, float yPercent) {
         float xDist = xPercent - positionSI.xPercent;
         float yDist = yPercent - positionSI.yPercent;
@@ -348,6 +356,7 @@ namespace Auto {
 
     }
 
+    
     void simpleMoveToPointBackwards(float xPercent, float yPercent) {
         float xDist = xPercent - positionSI.xPercent;
         float yDist = yPercent - positionSI.yPercent;
@@ -382,6 +391,7 @@ namespace Auto {
     /**
      * @brief creates task to move distance asynchronously
      * 
+     * @param target_percentage forward distance in percentage unit
      */
     void moveDistanceAsync(float target_percentage) {
         target_percentage_for_async = target_percentage;
@@ -392,6 +402,7 @@ namespace Auto {
     /**
      * @brief creates task to turn asynchronously
      * 
+     * @param angle angle to the right
      */
     void turnAngleAsync(float ang) {
         ang_for_async = ang;
