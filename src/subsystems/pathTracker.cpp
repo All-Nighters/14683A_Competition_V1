@@ -32,6 +32,7 @@ namespace pathTracker {
         float smallScalar = 0.5;
 
         void setPath(std::vector<Coordinates> coords) {
+            pathCoords.clear();
             for (int i = 0; i < coords.size(); i++) {
                 pathCoords.push_back(coords[i]);
             }
@@ -162,6 +163,7 @@ namespace pathTracker {
         std::vector<Coordinates> pathCoords;
 
         void setPath(std::vector<Coordinates> coords) {
+            pathCoords.clear();
             for (int i = 0; i < coords.size(); i++) {
                 pathCoords.push_back(coords[i]);
             }
