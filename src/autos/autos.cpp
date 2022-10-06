@@ -145,7 +145,84 @@ namespace Autos {
 
             Auto::faceAngle(50);
             Auto::moveDistance(90);
+
+            Auto::faceAngle(-90);
+            Roller::roll("blue");
+            LFMotor.moveVelocity(-400);
+            RFMotor.moveVelocity(-400);
+            LBMotor.moveVelocity(-400);
+            RBMotor.moveVelocity(-400);
+            pros::delay(1.5*touchDelay);
+            Roller::stop();
+            LFMotor.moveVelocity(0);
+            RFMotor.moveVelocity(0);
+            LBMotor.moveVelocity(0);
+            RBMotor.moveVelocity(0);
+            pros::delay(1000);
             // Auto::simpleMoveToPoint(64.07407407407408, 89.53703703703704);
+        }
+        else if (mode == "RedLeft") {
+            Odom::set_state(3.261342592592593_m, 2.774675925925926_m, 180_deg);
+
+            Roller::roll("red");
+            LFMotor.moveVelocity(-400);
+            RFMotor.moveVelocity(-400);
+            LBMotor.moveVelocity(-400);
+            RBMotor.moveVelocity(-400);
+            pros::delay(touchDelay);
+            Roller::stop();
+            LFMotor.moveVelocity(0);
+            RFMotor.moveVelocity(0);
+            LBMotor.moveVelocity(0);
+            RBMotor.moveVelocity(0);
+            pros::delay(1000);
+
+            Auto::moveDistance(2);
+
+            Auto::faceCoordinate(redHighGoalPosition_percent[0], redHighGoalPosition_percent[1], true);
+            pros::delay(2000);
+
+            Auto::simpleMoveToPoint(58.33333333333333, 42.5);
+            Auto::faceCoordinate(redHighGoalPosition_percent[0], redHighGoalPosition_percent[1], true);
+            pros::delay(2000);
+        }
+        else if (mode == "RedLeftSupportive") {
+            Odom::set_state(3.261342592592593_m, 2.774675925925926_m, 180_deg);
+
+            Roller::roll("red");
+            LFMotor.moveVelocity(-400);
+            RFMotor.moveVelocity(-400);
+            LBMotor.moveVelocity(-400);
+            RBMotor.moveVelocity(-400);
+            pros::delay(touchDelay);
+            Roller::stop();
+            LFMotor.moveVelocity(0);
+            RFMotor.moveVelocity(0);
+            LBMotor.moveVelocity(0);
+            RBMotor.moveVelocity(0);
+            pros::delay(1000);
+
+            Auto::moveDistance(2);
+
+            Auto::faceCoordinate(redHighGoalPosition_percent[0], redHighGoalPosition_percent[1], true);
+            pros::delay(2000);
+
+            Auto::faceAngle(230);
+            Auto::moveDistance(90);
+
+            Auto::faceAngle(90);
+            Roller::roll("red");
+            LFMotor.moveVelocity(-400);
+            RFMotor.moveVelocity(-400);
+            LBMotor.moveVelocity(-400);
+            RBMotor.moveVelocity(-400);
+            pros::delay(1.5*touchDelay);
+            Roller::stop();
+            LFMotor.moveVelocity(0);
+            RFMotor.moveVelocity(0);
+            LBMotor.moveVelocity(0);
+            RBMotor.moveVelocity(0);
+            pros::delay(1000);
         }
     }
 }

@@ -20,8 +20,8 @@ std::shared_ptr<OdomChassisController> odomChassis =
 
 namespace Odom {
     void tare_odometry() {
-        // odomChassis->setState({0.368826057_m, 0.888775_m, 0_deg});
-		odomChassis->setState({0_m, 0_m, 0_deg});
+        odomChassis->setState({0.368826057_m, 0.888775_m, 0_deg});
+		// odomChassis->setState({0_m, 0_m, 0_deg});
 		update_odometry();
     }
 	void set_state(QLength x, QLength y, QAngle deg) {

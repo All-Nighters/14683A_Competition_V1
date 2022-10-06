@@ -61,7 +61,7 @@ void competition_initialize() {}
  */
 void autonomous() {
 	// Auto::turnAngle(90);
-	Autos::run("BlueLeftSupportive");
+	Autos::run("RedLeftSupportive");
 }
 
 void PPTest() {
@@ -101,7 +101,7 @@ void PPTest() {
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-	PPTest();
+	// PPTest();
 	// odomChassis->turnToAngle(180_deg);
 	// Auto::faceAngle(90);
 	// controller.setText(0,0,std::to_string(positionSI.theta));
@@ -114,7 +114,7 @@ void opcontrol() {
 	// Auto::faceAngle(0);
 	// controller.setText(0,0,std::to_string(positionSI.theta));
 
-	// autonomous();
+	autonomous();
 
 	printf("Hello Allnighters\n");
 
