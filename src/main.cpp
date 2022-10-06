@@ -81,6 +81,7 @@ void PPTest() {
 	for (int i = 0; i < 11; i++) {
 		pathway.push_back(Coordinates(40-4*i, 40, 0));
 	}
+	pros::delay(2000);
 	pathTracker::ramsete::setPath(pathway);
 	pathTracker::ramsete::findLookAheadPoint();
 	pathTracker::ramsete::followPath();
@@ -100,7 +101,7 @@ void PPTest() {
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-	// PPTest();
+	PPTest();
 	// odomChassis->turnToAngle(180_deg);
 	// Auto::faceAngle(90);
 	// controller.setText(0,0,std::to_string(positionSI.theta));
@@ -113,7 +114,7 @@ void opcontrol() {
 	// Auto::faceAngle(0);
 	// controller.setText(0,0,std::to_string(positionSI.theta));
 
-	autonomous();
+	// autonomous();
 
 	printf("Hello Allnighters\n");
 

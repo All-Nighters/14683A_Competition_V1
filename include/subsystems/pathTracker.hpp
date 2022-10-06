@@ -9,7 +9,7 @@
 #include <vector>
 
 namespace pathTracker {
-    inline float lookAheadRadius = 15;
+    inline float lookAheadRadius = 10;
     namespace ramsete {
         void setPath(std::vector<Coordinates> coords);
 
