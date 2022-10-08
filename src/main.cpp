@@ -61,7 +61,7 @@ void competition_initialize() {}
  */
 void autonomous() {
 	// Auto::turnAngle(90);
-	Autos::run("RedLeftSupportive");
+	Autos::run("RedFirstSupportive");
 }
 
 void PPTest() {
