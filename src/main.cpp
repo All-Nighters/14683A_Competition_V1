@@ -97,3 +97,77 @@ void autonomous() {}
  * task, not resume it from where it left off.
  */
 void opcontrol() {}
+
+	bool shootEnabled = false; // enables shooting
+
+	bool prevShootButtonState = controller.getDigital(ControllerDigital::R2); // record the previous button state
+
+	while (true) {
+		Odom::update_odometry();
+		// Odom::test_odometry();
+
+		// float xDist = HighGoalPositionPercent[0]-positionSI.xPercent;
+		// float yDist = HighGoalPositionPercent[1]-positionSI.yPercent;
+		// float distToGoal = sqrt(xDist*xDist + yDist*yDist);
+		// float targetEjectV = clamp(projectile_trajectory::solveVelocity(maxEjectVel, minEjectVel, 0.0001, 20, distToGoal, 45, 0, m, g, p, Av, Ah, Cv, Ch, HighGoalPositionPercent[1], 0.3), minEjectVel, maxEjectVel);
+
+		// flywheel control
+		// Flywheel::setLinearEjectVelocity(targetEjectV);
+
+		// locomotion
+		// if (Auto::settled) {
+			
+		// }
+
+		// printf("x=%f, y=%f, a=%f\n", positionSI.x, positionSI.y, positionSI.theta);
+
+		// if ((controller.getAnalog(ControllerAnalog::rightX) != 0 || 
+		// 	controller.getAnalog(ControllerAnalog::leftY) != 0 ||
+		// 	controller.getAnalog(ControllerAnalog::leftX) != 0 ||
+		// 	controller.getDigital(ControllerDigital::R1) ||
+		// 	controller.getDigital(ControllerDigital::Y)) && 
+		// 	round_begin_milliseconds == 0
+		// 	) 
+		// {
+		// 	round_begin_milliseconds = pros::millis();
+		// }
+
+		xModel->xArcade(controller.getAnalog(ControllerAnalog::rightX),
+						controller.getAnalog(ControllerAnalog::leftY),
+                        controller.getAnalog(ControllerAnalog::leftX)*0.7);
+
+		if (controller.getDigital(ControllerDigital::R1)) {
+			RollerMotor.moveVelocity(100);
+		} else if (controller.getDigital(ControllerDigital::R2)) {
+			RollerMotor.moveVelocity(-100);
+		} else {
+			RollerMotor.moveVelocity(0);
+		}
+
+		// intake
+		// if (controller.getDigital(ControllerDigital::B)) {
+		// 	Intake::toggle();
+		// }
+
+		// aiming
+		// if (controller.getDigital(ControllerDigital::down)) {
+		// 	if (!Auto::settled) {
+		// 		Auto::faceCoordinateAsync(HighGoalPositionPercent[0], HighGoalPositionPercent[1], true);
+		// 	}
+		// }
+
+		// if (controller.getDigital(ControllerDigital::R2)) {
+		// 	pros::Task shoot(trigger);
+		// }
+
+		// expansion
+		if (controller.getDigital(ControllerDigital::Y)) {
+			piston.set_value(true); // remember to change the value in autos.cpp
+			
+		}
+
+		pros::delay(20);
+	}
+	
+}
+>>>>>>> main

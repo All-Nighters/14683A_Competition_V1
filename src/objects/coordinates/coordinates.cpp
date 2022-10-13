@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cmath>
 #include "coordinates.h"
 
@@ -9,9 +10,12 @@
  * @param direction the direction (in degrees) of the location
  */
 Coordinates::Coordinates(float x_coordinates, float y_coordinates, float direction) {
-	this->coordinates[0] = x_coordinates;
-	this->coordinates[1] = y_coordinates;
-	this->coordinates[2] = direction;
+	// calculates the direction restricted to boundaries (0~360)
+	float restricted_direction = std::fmod(direction, 360.0f);
+	if (restricted_direction < 0.0f) restricted_direction += 360.0f;
+	// assign coordinates
+	float new_coordinates[3] = {x_coordinates, y_coordinates, restricted_direction};
+	std::copy(new_coordinates, new_coordinates + 3, this->coordinates);
 }
 
 /**
@@ -24,6 +28,18 @@ float Coordinates::get_distance(Coordinates target_coordinates) {
 	float x_difference = target_coordinates.get_x() - this->get_x();
 	float y_difference = target_coordinates.get_y() - this->get_y();
 	return std::sqrt(std::pow(x_difference, 2) + std::pow(y_difference, 2));
+}
+
+/**
+ * Calculates the acute angle between two coordinates' directions
+ * 
+ * @param target_coordinates the target coordinates
+ * @returns the acute angle between two coordinates' directions
+ */
+float Coordinates::get_acute(Coordinates target_coordinates) {
+	float direction_min = std::min(this->get_direction(), target_coordinates.get_direction());
+	float direction_max = std::max(this->get_direction(), target_coordinates.get_direction());
+	return std::min(direction_max - direction_min, direction_min - direction_max + 360.0f);
 }
 
 /**
