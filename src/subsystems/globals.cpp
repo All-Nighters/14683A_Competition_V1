@@ -15,7 +15,7 @@ Motor RFMotor(frontRightMotorPort);
 Motor RBMotor(bottomRightMotorPort);
 Motor LBMotor(bottomLeftMotorPort);
 Motor FlywheelMotor1(5);
-Motor FlywheelMotor2(6);
+Motor FlywheelMotor2(-6);
 Motor IntakeMotor(7);
 Motor RollerMotor(8);
 
@@ -27,4 +27,5 @@ ADIEncoder midTW = ADIEncoder(middleEncoderPort[0], middleEncoderPort[1], false)
 pros::ADIDigitalOut indexer('G');
 pros::ADIDigitalOut piston('H');
 
-pros::Imu imu_sensor(10);
+pros::Imu imu_sensor_1(9);
+pros::Imu imu_sensor_2(10);

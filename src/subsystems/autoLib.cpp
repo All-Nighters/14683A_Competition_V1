@@ -68,7 +68,7 @@ namespace Auto {
         while (abs(((lefttargetAngle + righttargetAngle)/2.0) - ((reverse*leftTW.get() +reverse*rightTW.get())/2.0)) >= 10 && 
         pros::millis() - start_time <= timeout*1000) {
 
-            Odom::update_odometry();
+            // Odom::update_odometry();
             printf("%f %f %f\n", lefttargetAngle, reverse*leftTW.get(), reverse*rightTW.get());
 
             float error_Left = abs(lefttargetAngle - reverse*leftTW.get());
@@ -139,22 +139,26 @@ namespace Auto {
         float target_angle = positionSI.theta + angle;
         float prev_error = abs(angle);
         float start_time = pros::millis();  
-        float timeout = 10; // maximum runtime in seconds
+        float timeout = 1000; // maximum runtime in seconds
 
         settled = false;
 
         while (abs(target_angle - positionSI.theta) >= 0.5 && pros::millis() - start_time <= timeout*1000) {
-            Odom::update_odometry();
+            // Odom::update_odometry();
 
+            
             float error = abs(target_angle - positionSI.theta);
+            // printf("%f\n", positionSI.theta + angle);
 
             float deriv_error = error - prev_error;
 
-            float control_output = std::fmax(error * Rp + deriv_error * Rd, 3000);
+            float control_output = std::fmax(error * Rp + deriv_error * Rd, 2000);
 
 
             prev_error = error;
 
+            printf("%f, %f\n", positionSI.theta, target_angle);
+            controller.setText(0,0,std::to_string(positionSI.theta) + ", " + std::to_string(target_angle));
             if (target_angle - positionSI.theta > 0) {
                 LFMotor.moveVoltage(control_output);
                 LBMotor.moveVoltage(control_output);
@@ -167,7 +171,7 @@ namespace Auto {
                 RBMotor.moveVoltage(control_output);
             }
 
-
+            // Odom::debug();
             pros::delay(20);
         }
         printf("Angle reached\n");
@@ -178,8 +182,6 @@ namespace Auto {
         RBMotor.moveVoltage(0);
         
         settled = true;
-
-        Odom::setState(position.x, position.y, position.theta);
     }
 
     /**
@@ -197,7 +199,7 @@ namespace Auto {
         settled = false;
 
         while (abs(target_angle - positionSI.theta) >= 0.5 && pros::millis() - start_time <= timeout*1000) {
-            Odom::update_odometry();
+            // Odom::update_odometry();
 
             float error = abs(target_angle - positionSI.theta);
 
@@ -233,7 +235,7 @@ namespace Auto {
         
         settled = true;
 
-        Odom::setState(position.x, position.y, position.theta);
+        Odom::set_state(position.x, position.y, position.theta);
     }
 
     /**
@@ -264,7 +266,7 @@ namespace Auto {
      */
     void faceCoordinate(float xPercent, float yPercent, bool aimMode) {
         settled = false;
-        Odom::update_odometry();
+        // Odom::update_odometry();
         float xDist = xPercent - positionSI.xPercent;
         float yDist = yPercent - positionSI.yPercent;
 

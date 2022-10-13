@@ -56,7 +56,7 @@ namespace pathTracker {
         }
 
         int findLookAheadPoint() {
-            Odom::update_odometry();
+            // Odom::update_odometry();
             Coordinates selfCoordinate = Coordinates(positionSI.xPercent, positionSI.yPercent, positionSI.theta);
             for (int i = 1; i < pathCoords.size(); i++) {
                 Coordinates coord = pathCoords[i];
@@ -125,7 +125,7 @@ namespace pathTracker {
             Coordinates selfCoordinate = Coordinates(positionSI.xPercent, positionSI.yPercent, positionSI.theta);
 
             while (pathCoords[pathCoords.size()-1].get_distance(selfCoordinate) >= arriveDeviation) {
-                Odom::update_odometry();
+                // Odom::update_odometry();
                 selfCoordinate = Coordinates(positionSI.xPercent, positionSI.yPercent, positionSI.theta);
                 findLookAheadPoint();
 
@@ -192,7 +192,7 @@ namespace pathTracker {
         }
 
         int findLookAheadPoint() {
-            Odom::update_odometry();
+            // Odom::update_odometry();
             Coordinates selfCoordinate = Coordinates(positionSI.xPercent, positionSI.yPercent, positionSI.theta);
             for (int i = 1; i < pathCoords.size(); i++) {
                 Coordinates coord = pathCoords[i];
@@ -263,7 +263,7 @@ namespace pathTracker {
 
             // if not reached the end
             while (pathCoords[pathCoords.size()-1].get_distance(selfCoordinate) >= arriveDeviation) {
-                Odom::update_odometry();
+                // Odom::update_odometry();
                 findLookAheadPoint();
                 // controller.setText(0,0,"(" + std::to_string(positionSI.xPercent) + ", " + std::to_string(positionSI.yPercent) + ")");
 

@@ -20,7 +20,10 @@ void initialize() {
 	pros::lcd::initialize();
 	pros::lcd::set_text(1, "Hello PROS User!");
 
-	Odom::tare_odometry();
+	// Odom::tare_odometry();
+	imu_sensor_1.tare();
+	imu_sensor_2.tare();
+	Odom::init(TWOWHEELIMU);
 
 	LFMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
 	RFMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
@@ -60,11 +63,19 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
+	pros::delay(2000);
 	// Auto::turnAngle(90);
-	Autos::run("RedFirstSupportive");
+	// Odom::set_state(0.368826057_m, 0.888775_m, 0_deg);
+
+	// Odom::set_state(1.8288_m, 1.8288_m, 0_deg);
+	// Auto::faceCoordinate(blueHighGoalPosition_percent[0], blueHighGoalPosition_percent[1], true);
+	Odom::set_state(3.261342592592593_m, 2.774675925925926_m, 180_deg);
+	Auto::faceCoordinate(redHighGoalPosition_percent[0], redHighGoalPosition_percent[1], false);
+	// Autos::run("RedFirstScoring");
 }
 
 void PPTest() {
+	Odom::set_state(0_m, 0_m, 0_deg);
 	std::vector<Coordinates> pathway;
 	
 	// insert evenly distributed waypoints from (0, 0) to (40, 0)
@@ -114,7 +125,7 @@ void opcontrol() {
 	// Auto::faceAngle(0);
 	// controller.setText(0,0,std::to_string(positionSI.theta));
 
-	autonomous();
+	// autonomous();
 
 	printf("Hello Allnighters\n");
 
@@ -162,8 +173,9 @@ void opcontrol() {
 	bool prevShootButtonState = controller.getDigital(ControllerDigital::R2); // record the previous button state
 
 	while (true) {
-		Odom::update_odometry();
-		// Odom::test_odometry();
+		// Odom::update_odometry();
+		Flywheel::spinVelocityRPM(3600);
+		Odom::debug();
 
 		// float xDist = HighGoalPositionPercent[0]-positionSI.xPercent;
 		// float yDist = HighGoalPositionPercent[1]-positionSI.yPercent;

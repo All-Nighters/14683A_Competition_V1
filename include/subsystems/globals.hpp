@@ -8,14 +8,16 @@
 using namespace okapi;
 
 typedef struct OdomStateSI {
-	float x;
-	float y;
-	float theta;
-	float xPercent;
-	float yPercent;
+	float x; // x position in meters
+	float y; // y position in meters
+	float theta; // rotation in degrees
+	float xPercent; // x position in percentage
+	float yPercent; // y position in percentage
 }OdomStateSI;
 
+enum odomMode {THREEWHEEL=0, TWOWHEELIMU=1};
 enum teamColor {REDTEAM=0, BLUETEAM=1};
+
 extern teamColor team; // 0 for red, 1 for blue
 
 extern Controller controller;
@@ -100,4 +102,5 @@ inline float fieldLength = 3.6576;
 
 extern pros::ADIDigitalOut indexer;
 extern pros::ADIDigitalOut piston;
-extern pros::Imu imu_sensor;
+extern pros::Imu imu_sensor_1;
+extern pros::Imu imu_sensor_2;

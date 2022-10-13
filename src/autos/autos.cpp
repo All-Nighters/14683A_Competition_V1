@@ -90,11 +90,12 @@ namespace Autos {
 
         Auto::moveDistance(2);
 
-        Auto::faceCoordinate(blueHighGoalPosition_percent[0], blueHighGoalPosition_percent[1], true);
+        Auto::faceCoordinate(blueHighGoalPosition_percent[0], blueHighGoalPosition_percent[1], false);
         pros::delay(2000);
 
-        Auto::simpleMoveToPoint(36.94444444444444, 53.05555555555555);
-        Auto::faceCoordinate(blueHighGoalPosition_percent[0], blueHighGoalPosition_percent[1], true);
+        Auto::simpleMoveToPoint(41.57407407407407, 58.7037037037037);
+        pros::delay(300);
+        Auto::faceCoordinate(blueHighGoalPosition_percent[0], blueHighGoalPosition_percent[1], false);
         pros::delay(2000);
     }
 
@@ -181,6 +182,7 @@ namespace Autos {
      * 
      */
     void red_first_scoring() {
+        controller.setText(0,0,"RED");
         Odom::set_state(3.261342592592593_m, 2.774675925925926_m, 180_deg);
 
         Roller::roll("red");
@@ -198,11 +200,11 @@ namespace Autos {
 
         Auto::moveDistance(2);
 
-        Auto::faceCoordinate(redHighGoalPosition_percent[0], redHighGoalPosition_percent[1], true);
+        Auto::faceCoordinate(redHighGoalPosition_percent[0], redHighGoalPosition_percent[1], false);
         pros::delay(2000);
 
-        Auto::simpleMoveToPoint(58.33333333333333, 42.5);
-        Auto::faceCoordinate(redHighGoalPosition_percent[0], redHighGoalPosition_percent[1], true);
+        Auto::simpleMoveToPoint(61.29629629629629, 45.37037037037037);
+        Auto::faceCoordinate(redHighGoalPosition_percent[0], redHighGoalPosition_percent[1], false);
         pros::delay(2000);
     }
 
