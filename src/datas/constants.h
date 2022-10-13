@@ -11,4 +11,9 @@ namespace Constants {
 		};
 	}
 
+	namespace GraphicalInterface {
+		inline int SCREEN_WIDTH = 480;
+		inline int SCREEN_HEIGHT = 272 - 30;
+	}
+
 }
