@@ -41,8 +41,21 @@
  */
 #include "okapi/api.hpp"
 #include "pros/api_legacy.h"
-#include "subsystems/globals.hpp"
+#include "utils/utils.hpp"
 
+#include "../src/objects/coordinates/coordinates.h"
+
+#include "subsystems/globals.hpp"
+#include "subsystems/odometry.hpp"
+#include "subsystems/pathTracker.hpp"
+#include "subsystems/autoLib.hpp"
+#include "subsystems/flywheelController.hpp"
+#include "subsystems/roller.hpp"
+#include "utils/projectile_trajectory.hpp"
+
+#include "autos/autos.hpp"
+
+#include "subsystems/intake.hpp"
 /**
  * If you find doing pros::Motor() to be tedious and you'd prefer just to do
  * Motor, you can use the namespace with the following commented out line.
