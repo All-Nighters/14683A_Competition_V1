@@ -171,9 +171,13 @@ namespace Odom {
 		printf("Encoder: l=%f, r=%f, m=%f, imu=%f\n", reverse * leftTW.get(), reverse * rightTW.get(), -midTW.get(), (imu_sensor_1.get_rotation() + imu_sensor_2.get_rotation())/2);
 	}
 	void set_state(QLength x, QLength y, QAngle angle) {
-		xPosGlobal = x.convert(meter);
-		yPosGlobal = y.convert(meter);
-		currentAbsoluteOrientation = angle.convert(radian);
+		X_START = x.convert(meter);
+		Y_START = y.convert(meter);
+		THETA_START = angle.convert(radian);
+
+		xPosGlobal = X_START;
+		yPosGlobal = Y_START;
+		currentAbsoluteOrientation = THETA_START;
 		save_results();
 	}
 }
