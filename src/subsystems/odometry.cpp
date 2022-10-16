@@ -181,6 +181,9 @@ namespace Odom {
 		odometry_mode = mode;
 		imu_sensor_1.tare();
 		imu_sensor_2.tare();
+		leftTW.reset();
+		rightTW.reset();
+		midTW.reset();
 		pros::Task tracking(position_tracking);
 	}
 

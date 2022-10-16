@@ -71,7 +71,7 @@ void autonomous() {
 	// Auto::faceCoordinate(blueHighGoalPosition_percent[0], blueHighGoalPosition_percent[1], true);
 	Odom::set_state(3.261342592592593_m, 2.774675925925926_m, 180_deg);
 	Auto::faceCoordinate(redHighGoalPosition_percent[0], redHighGoalPosition_percent[1], false);
-	// Autos::run("RedFirstScoring");
+	// Autos::run(RED_FIRST_SCORING);
 }
 
 void PPTest() {

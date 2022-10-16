@@ -182,7 +182,6 @@ namespace Autos {
      * 
      */
     void red_first_scoring() {
-        controller.setText(0,0,"RED");
         Odom::set_state(3.261342592592593_m, 2.774675925925926_m, 180_deg);
 
         Roller::roll("red");
@@ -267,16 +266,13 @@ namespace Autos {
         
     }
 
-    void run(std::string mode) {
+    void run(AutoProcedure mode) {
 
         int round_begin_milliseconds = pros::millis();
         // while (pros::millis() - round_begin_milliseconds < 45*1000) {
         //     printf("%f\n", pros::millis() - round_begin_milliseconds);
         // }
-        if (mode == "minimum") {
-            minimum();
-        }
-        else if (mode == "Idle") {
+        if (mode == IDLE) {
             ;
         }
 
@@ -287,16 +283,16 @@ namespace Autos {
             2. Supportive mode
             3. Idle
         */
-        else if (mode == "BlueFirstScoring") {
+        else if (mode == BLUE_FIRST_SCORING) {
             blue_first_scoring();
         }
-        else if (mode == "BlueFirstSupportive") {
+        else if (mode == BLUE_FIRST_SUPPORTIVE) {
             blue_first_supportive();
         }
-        else if (mode == "RedFirstScoring") {
+        else if (mode == RED_FIRST_SCORING) {
             red_first_scoring();
         }
-        else if (mode == "RedFirstSupportive") {
+        else if (mode == RED_FIRST_SUPPORTIVE) {
             red_first_supportive();
         }
     }
