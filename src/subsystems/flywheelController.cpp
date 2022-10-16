@@ -16,7 +16,12 @@ namespace Flywheel {
 
         lv_obj_t * chart;
         
-        
+        /**
+         * @brief Graph current and target flywheel RPM
+         * 
+         * @param target target flywheel RPM
+         * @param current current flywheel RPM
+         */
         void graph_velocity(float target, float current)
         {
             lv_obj_clean(lv_scr_act());
@@ -62,7 +67,13 @@ namespace Flywheel {
             lv_chart_refresh(chart); /*Required after direct set*/
         }
     }
-    
+
+
+    /**
+     * @brief PID for controlling flywheel velocity
+     * 
+     * @param target_velocity target RPM of the flywheel
+     */
     void velocityPID(float target_velocity) {
         float current_velocity = (FlywheelMotor1.getActualVelocity() + FlywheelMotor2.getActualVelocity()) / 2.0 * 15;
 
@@ -80,7 +91,11 @@ namespace Flywheel {
         prevVError = v_error;
     }
     
-
+    /**
+     * @brief Spin the flywheel with specific velicity
+     * 
+     * @param rpm target RPM of the flywheel
+     */
     void spinVelocityRPM(float rpm) {
         // FlywheelMotor1.moveVelocity(rpm / 18);
         // FlywheelMotor2.moveVelocity(rpm / 18);
@@ -88,6 +103,12 @@ namespace Flywheel {
         velocityPID(rpm);
     }
 
+    /**
+     * @brief Get the Expect R P M From Eject Velocity object
+     * 
+     * @param velocity eject velocity in meters/second
+     * @returns target RPM of the flywheel 
+     */
     float getExpectRPMFromEjectVelocity(float velocity) {
         velocity *= 2;
         float angularVelocity = velocity / (flyWheelDiameter.convert(meter) / 2.0);
@@ -95,18 +116,33 @@ namespace Flywheel {
         return rpm;
     }
 
+    /**
+     * @brief Set the linear eject velocity (meters/second) of the flywheel
+     * 
+     * @param velocity target eject velocity in meters/second
+     */
     void setLinearEjectVelocity(float velocity) {
         float rpm = getExpectRPMFromEjectVelocity(velocity);
 
         // printf("Expected rpm: %f\n", rpm);
         spinVelocityRPM(rpm);
     }
-
+    
+    /**
+     * @brief Get the current velocity of the flywheel in RPM
+     * 
+     * @return current RPM of the flywheel
+     */
     float getCurrentVelocity() {
         float velocity = (FlywheelMotor1.getActualVelocity() + FlywheelMotor2.getActualVelocity()) / 2.0 * 15;
         return velocity;
     }
 
+    /**
+     * @brief Get the current eject velocity of the flywheel (meters/second)
+     * 
+     * @return current eject velocity of the flywheel (meters/second)
+     */
     float getCurrentEjectVelocity() {
         return getCurrentVelocity() / 60 * (2 * M_PI) * (flyWheelDiameter.convert(meter) / 2.0) / 2;
     }

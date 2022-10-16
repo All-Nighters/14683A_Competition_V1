@@ -66,6 +66,11 @@ namespace Odom {
 
 
 	odomMode odometry_mode = TWOWHEELIMU;
+
+	/**
+	 * @brief Save global position and rotation to positionSI structure
+	 * 
+	 */
 	void save_results() {
 		positionSI.x = xPosGlobal;
 		positionSI.xPercent = meterToPercentage(xPosGlobal);
@@ -75,6 +80,12 @@ namespace Odom {
 
 		positionSI.theta = currentAbsoluteOrientation * 180 / pi;
 	}
+
+	/**
+	 * @brief Loop to run odometry
+	 * 
+	 * @returns 1 
+	 */
 	int position_tracking() {
 		while(1) {
 			//Get encoder values (DEGREES)
@@ -160,16 +171,32 @@ namespace Odom {
 		}
 		return 1;
 	}
+	
+	/**
+	 * @brief Initializes odometry 
+	 * 
+	 * @param mode odometry mode
+	 */
 	void init(odomMode mode) {
 		odometry_mode = mode;
 		imu_sensor_1.tare();
 		imu_sensor_2.tare();
 		pros::Task tracking(position_tracking);
 	}
+
+	/**
+	 * @brief Prints debug message
+	 * 
+	 */
 	void debug() {
 		printf("Odometry: x=%f, y=%f, a=%f\n", positionSI.xPercent, positionSI.yPercent, positionSI.theta);
 		printf("Encoder: l=%f, r=%f, m=%f, imu=%f\n", reverse * leftTW.get(), reverse * rightTW.get(), -midTW.get(), (imu_sensor_1.get_rotation() + imu_sensor_2.get_rotation())/2);
 	}
+
+	/**
+	 * @brief Set new odometry state
+	 * 
+	 */
 	void set_state(QLength x, QLength y, QAngle angle) {
 		X_START = x.convert(meter);
 		Y_START = y.convert(meter);

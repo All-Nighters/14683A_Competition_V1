@@ -10,7 +10,11 @@ namespace pathTracker {
     float interpolatingDeviation = 0.05;
 
     
-
+    /**
+     * @brief Turn absolute coordinates to local coordinates
+     * 
+     * @returns local coordinates 
+     */
     Coordinates absoluteToLocalCoordinate() {
         Coordinates selfCoordinate = Coordinates(positionSI.xPercent, positionSI.yPercent, positionSI.theta);
         float xDist = lookAheadPoint.get_x() - selfCoordinate.get_x();
@@ -31,6 +35,10 @@ namespace pathTracker {
         float zeta = 0.6; // roughly the damping term
         float smallScalar = 0.5;
 
+        /**
+         * @brief Set the path to follow
+         * 
+         */
         void setPath(std::vector<Coordinates> coords) {
             pathCoords.clear();
             for (int i = 0; i < coords.size(); i++) {
@@ -38,6 +46,11 @@ namespace pathTracker {
             }
         }
 
+        /**
+         * @brief Get the index of the closest point to the robot
+         * 
+         * @returns the index of the closest point to the robot
+         */
         int closest() {
             float xDist = (pathCoords[0].get_x() - positionSI.xPercent);
             float yDist = (pathCoords[0].get_y() - positionSI.yPercent);
@@ -55,6 +68,12 @@ namespace pathTracker {
             return idx;
         }
 
+
+        /**
+         * @brief Find the look ahead point of the robot
+         * 
+         * @return 1 for success, -1 for failure 
+         */
         int findLookAheadPoint() {
             // Odom::update_odometry();
             Coordinates selfCoordinate = Coordinates(positionSI.xPercent, positionSI.yPercent, positionSI.theta);
@@ -121,6 +140,10 @@ namespace pathTracker {
             return -1;
         }
 
+        /**
+         * @brief Follow the path with RAMSETE controller
+         * 
+         */
         void followPath() {
             Coordinates selfCoordinate = Coordinates(positionSI.xPercent, positionSI.yPercent, positionSI.theta);
 
@@ -167,6 +190,10 @@ namespace pathTracker {
     namespace pure_pursuit {
         std::vector<Coordinates> pathCoords;
 
+        /**
+         * @brief Set the path to follow
+         * 
+         */
         void setPath(std::vector<Coordinates> coords) {
             pathCoords.clear();
             for (int i = 0; i < coords.size(); i++) {
@@ -174,6 +201,12 @@ namespace pathTracker {
             }
         }
 
+
+        /**
+         * @brief Get the index of the closest point to the robot
+         * 
+         * @returns the index of the closest point to the robot
+         */
         int closest() {
             float xDist = (pathCoords[0].get_x() - positionSI.xPercent);
             float yDist = (pathCoords[0].get_y() - positionSI.yPercent);
@@ -191,6 +224,12 @@ namespace pathTracker {
             return idx;
         }
 
+
+        /**
+         * @brief Find the look ahead point of the robot
+         * 
+         * @return 1 for success, -1 for failure 
+         */
         int findLookAheadPoint() {
             // Odom::update_odometry();
             Coordinates selfCoordinate = Coordinates(positionSI.xPercent, positionSI.yPercent, positionSI.theta);
@@ -257,6 +296,10 @@ namespace pathTracker {
             return -1;
         }
 
+         /**
+         * @brief Follow the path with pure pursuit controller
+         * 
+         */
         void followPath() {
 
             Coordinates selfCoordinate = Coordinates(positionSI.xPercent, positionSI.yPercent, positionSI.theta);
