@@ -7,13 +7,6 @@
 
 #include "main.h"
 
-typedef struct base_angle_position {
-    float LF;
-    float RF;
-    float RB;
-    float LB;
-}base_angle_position;
-
 namespace Auto {
     extern bool settled;
     void moveDistance(float target_percentage);
