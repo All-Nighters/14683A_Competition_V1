@@ -38,6 +38,7 @@ namespace pathTracker {
         /**
          * @brief Set the path to follow
          * 
+         * @param coords the path to follow
          */
         void setPath(std::vector<Coordinates> coords) {
             pathCoords.clear();
@@ -193,6 +194,7 @@ namespace pathTracker {
         /**
          * @brief Set the path to follow
          * 
+         * @param coords the path to follow
          */
         void setPath(std::vector<Coordinates> coords) {
             pathCoords.clear();

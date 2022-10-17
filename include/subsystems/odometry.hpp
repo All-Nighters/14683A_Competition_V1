@@ -1,3 +1,10 @@
+/**
+ * @file odometry.hpp
+ * @brief Odometry code
+ */
+
+#include "main.h"
+
 namespace Odom {
 	void save_results();
 	int position_tracking();
