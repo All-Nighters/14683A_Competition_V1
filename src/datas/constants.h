@@ -1,4 +1,5 @@
 #pragma once
+#include "main.h"
 
 namespace Constants {
 
@@ -12,8 +13,15 @@ namespace Constants {
 	}
 
 	namespace GraphicalInterface {
-		inline int SCREEN_WIDTH = 480;
+		inline int SCREEN_WIDTH  = 480;
 		inline int SCREEN_HEIGHT = 272 - 30;
+
+		inline lv_color_t CONTAINER_BACKGROUND       = LV_COLOR_HEX(0x1E293B);
+		inline lv_color_t BUTTON_BACKGROUND_RELEASED = LV_COLOR_HEX(0x475569);
+		inline lv_color_t BUTTON_BACKGROUND_PRESSED  = LV_COLOR_HEX(0x94A3B8);
+		inline lv_color_t BUTTON_FOREGROUND_RELEASED = LV_COLOR_HEX(0xFFFFFF);
+		inline lv_color_t BUTTON_FOREGROUND_PRESSED  = LV_COLOR_HEX(0xFFFFFF);
+		inline lv_color_t LABEL_FOREGROUND           = LV_COLOR_HEX(0xFFFFFF);
 	}
 
 }
