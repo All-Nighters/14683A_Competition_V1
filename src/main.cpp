@@ -5,9 +5,7 @@
  *
  */
 void trigger() {
-	indexer.set_value(true);
-	pros::delay(100);
-	indexer.set_value(false);
+	IndexerMotor.moveVoltage(6000);
 }
 
 /**
@@ -25,11 +23,11 @@ void initialize() {
 	imu_sensor_2.tare();
 	Odom::init(TWOWHEELIMU);
 
-	LFMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
-	RFMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
-	RBMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
-	LBMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
-
+	// LFMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
+	// RFMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
+	// RBMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
+	// LBMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
+	IndexerMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::hold);
 	
 }
 
@@ -70,8 +68,8 @@ void autonomous() {
 	// Odom::set_state(1.8288_m, 1.8288_m, 0_deg);
 	// Auto::faceCoordinate(blueHighGoalPosition_percent[0], blueHighGoalPosition_percent[1], true);
 	Odom::set_state(3.261342592592593_m, 2.774675925925926_m, 180_deg);
-	Auto::faceCoordinate(redHighGoalPosition_percent[0], redHighGoalPosition_percent[1], false);
-	// Autos::run(RED_FIRST_SCORING);
+	// Auto::faceCoordinate(redHighGoalPosition_percent[0], redHighGoalPosition_percent[1], false);
+	Autos::run(RED_FIRST_SCORING);
 }
 
 void PPTest() {
@@ -88,10 +86,10 @@ void PPTest() {
 		pathway.push_back(Coordinates(40, 4*i, 0));
 	}
 
-	// insert evenly distributed waypoints from (40, 40) to (0, 40)
-	for (int i = 0; i < 11; i++) {
-		pathway.push_back(Coordinates(40-4*i, 40, 0));
-	}
+	// // insert evenly distributed waypoints from (40, 40) to (0, 40)
+	// for (int i = 0; i < 11; i++) {
+	// 	pathway.push_back(Coordinates(40-4*i, 40, 0));
+	// }
 	pros::delay(2000);
 	pathTracker::ramsete::setPath(pathway);
 	pathTracker::ramsete::findLookAheadPoint();
@@ -174,7 +172,8 @@ void opcontrol() {
 
 	while (true) {
 		// Odom::update_odometry();
-		Flywheel::spinVelocityRPM(3600);
+		Flywheel::grapher::graph_velocity(3000, Flywheel::getCurrentVelocity());
+		Flywheel::spinVelocityRPM(3000);
 		Odom::debug();
 
 		// float xDist = HighGoalPositionPercent[0]-positionSI.xPercent;
@@ -227,9 +226,11 @@ void opcontrol() {
 		// 	}
 		// }
 
-		// if (controller.getDigital(ControllerDigital::R2)) {
-		// 	pros::Task shoot(trigger);
-		// }
+		if (controller.getDigital(ControllerDigital::R2)) {
+			pros::Task shoot(trigger);
+		} else {
+			IndexerMotor.moveVoltage(0);
+		}
 
 		// expansion
 		if (controller.getDigital(ControllerDigital::Y)) {

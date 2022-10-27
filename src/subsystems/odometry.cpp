@@ -17,7 +17,7 @@ namespace Odom {
 	//Distances of tracking wheels from tracking center (meters)
 	float LTrackRadius = wheeltrackLength.convert(meter)/2.0; 
 	float RTrackRadius = wheeltrackLength.convert(meter)/2.0; 
-	float STrackRadius = middleEncoderDistance.convert(meter)/2.0;
+	float STrackRadius = middleEncoderDistance.convert(meter);
 
 	//Calculated Values (every loop)
 	//Angles (DEGREES) *NEEDS TO BE CONVERTED TO RADIANS FOR MATH*
@@ -142,7 +142,7 @@ namespace Odom {
 			//General equation is:
 				//Distance = 2 * Radius * sin(deltaTheta / 2)
 			deltaXLocal = 2 * sin(deltaTheta / 2.0) * ((deltaDistS / deltaTheta) + STrackRadius);
-			deltaYLocal = 2 * sin(deltaTheta / 2.0) * ((deltaDistR / deltaTheta) - RTrackRadius);
+			deltaYLocal = 2 * sin(deltaTheta / 2.0) * ((deltaDistR / deltaTheta) + RTrackRadius);
 
 			}
 

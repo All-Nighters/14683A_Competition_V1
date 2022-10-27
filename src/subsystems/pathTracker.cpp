@@ -17,13 +17,19 @@ namespace pathTracker {
      */
     Coordinates absoluteToLocalCoordinate() {
         Coordinates selfCoordinate = Coordinates(positionSI.xPercent, positionSI.yPercent, positionSI.theta);
-        float xDist = lookAheadPoint.get_x() - selfCoordinate.get_x();
-        float yDist = lookAheadPoint.get_y() - selfCoordinate.get_y();
+        float xDist = lookAheadPoint.get_x() - positionSI.xPercent; // shoub be -ve
+        float yDist = lookAheadPoint.get_y() - positionSI.yPercent; // should be +ve
+
+        controller.setText(0,0,std::to_string(positionSI.theta));
 
         // apply rotation matrix
-        float newX = yDist*cos(selfCoordinate.get_direction()*M_PI/180.0) - xDist*sin(selfCoordinate.get_direction()*M_PI/180.0);
-        float newY = yDist*sin(selfCoordinate.get_direction()*M_PI/180.0) + xDist*cos(selfCoordinate.get_direction()*M_PI/180.0);
+        float newX = yDist*cos(positionSI.theta*M_PI/180.0) - xDist*sin(positionSI.theta*M_PI/180.0);
+        // = 0
+        float newY = yDist*sin(positionSI.theta*M_PI/180.0) + xDist*cos(positionSI.theta*M_PI/180.0);
+        // +
 
+        Odom::debug();
+        // printf("x = %f, y = %f, facing = %f —> newX (side) = %f, newY (forward) = %f\n", positionSI.xPercent, positionSI.yPercent, positionSI.theta, newX, newY);
         return Coordinates(newX, newY, positionSI.theta);
     }
 
@@ -31,8 +37,8 @@ namespace pathTracker {
 
         std::vector<Coordinates> pathCoords;
 
-        float b = 2.5; // rouqhly the proportional term
-        float zeta = 0.6; // roughly the damping term
+        float b = 0.6; // rouqhly the proportional term
+        float zeta = 0.8; // roughly the damping term
         float smallScalar = 0.5;
 
         /**
@@ -103,6 +109,8 @@ namespace pathTracker {
 
                     int iterations = 10;
 
+                    // controller.setText(0,0,std::to_string(i));
+
                     // binary approximation
                     for (int z = 0; z < iterations; z++) {
                         float midT = (minT + maxT) / 2.0;
@@ -133,10 +141,10 @@ namespace pathTracker {
             // if reached the end of path
             if (pathCoords[pathCoords.size()-1].get_distance(selfCoordinate) < lookAheadRadius) {
                 lookAheadPoint = pathCoords[pathCoords.size()-1];
-                printf("x=%f, y=%f\n", lookAheadPoint.get_x(), lookAheadPoint.get_y());
+                // printf("x=%f, y=%f\n", lookAheadPoint.get_x(), lookAheadPoint.get_y());
                 return 1;
             }
-            printf("Failed to find lookahead point\n");
+            // printf("Failed to find lookahead point\n");
             lookAheadPoint = pathCoords[closest()];
             return -1;
         }
@@ -157,15 +165,18 @@ namespace pathTracker {
                 
                 float e_x = localLookAhead.get_x();
                 float e_y = localLookAhead.get_y();
-                float e_theta = atan2(e_y, e_x);
+                float e_theta = atan2(e_x, e_y);
+                
 
                 
-                float desired_linearVelocity = std::fmin(std::fmax(10*abs(e_x), 20), 120);
-                float desired_angularVelocity = std::fmin(std::fmax(0.1*abs(e_theta), 0), pi/2);
+                float desired_linearVelocity = 30;
+                float desired_angularVelocity = std::fmin(std::fmax(abs(e_theta), 0), pi);
+                // printf("%f %f\n", localLookAhead.get_x(), localLookAhead.get_y());
+                // printf("%f %f\n", desired_linearVelocity, desired_angularVelocity);
                 // controller.setText(0,0,std::to_string(desired_linearVelocity) + "," + std::to_string(desired_angularVelocity));
                 float k = 2 * zeta * sqrt(desired_angularVelocity * desired_angularVelocity + b * desired_linearVelocity * desired_linearVelocity);
                 
-                float targetLinearVelocity = std::fmin(std::fmax(desired_linearVelocity * cos(e_theta) + k * e_y, -400), 400);
+                float targetLinearVelocity = std::fmin(std::fmax(desired_linearVelocity * cos(e_theta) + k * e_y, -100), 100);
                 
                 float targetAngularVelocity;
 
@@ -175,14 +186,17 @@ namespace pathTracker {
                     targetAngularVelocity = 0;
                 }
 
+                // targetAngularVelocity = std::fmin(std::fmax(targetAngularVelocity, -150), 150);
+
                 float leftV;
                 float rightV;
 
-                leftV = std::fmin(std::fmax(targetLinearVelocity + targetAngularVelocity, -600), 600);
-                rightV = std::fmin(std::fmax(targetLinearVelocity - targetAngularVelocity, -600), 600);
+                leftV = std::fmin(std::fmax(targetLinearVelocity + targetAngularVelocity, -200), 200);
+                rightV = std::fmin(std::fmax(targetLinearVelocity - targetAngularVelocity, -200), 200);
+
+                // controller.setText(0,0,std::to_string(positionSI.yPercent));
+                // printf("%f %f\n", leftV, rightV);
                 
-                printf("%f\n", targetLinearVelocity);
-                controller.setText(0,0,std::to_string(pathCoords[pathCoords.size()-1].get_distance(selfCoordinate)));
                 Auto::trackVelocityPID(leftV, rightV);
             }
         }

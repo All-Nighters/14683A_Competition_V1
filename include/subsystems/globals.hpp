@@ -45,6 +45,7 @@ extern Motor FlywheelMotor1;
 extern Motor FlywheelMotor2;
 extern Motor IntakeMotor;
 extern Motor RollerMotor;
+extern Motor IndexerMotor;
 
 extern ADIEncoder leftTW; // left tracking wheel
 extern ADIEncoder rightTW; // right tracking wheel
@@ -109,7 +110,7 @@ extern OdomStateSI positionSI; // odometry state in SI units and percentage
 */
 inline QLength wheelDiameter = 4_in;
 inline QLength wheeltrackLength = 13.38_in;
-inline QLength middleEncoderDistance = 3.5_in;
+inline QLength middleEncoderDistance = 1_in;
 inline QLength trackingWheelDiameter = 2.75_in;
 inline QAngle turnRightAngle = 163.7_deg;
 inline QLength flyWheelDiameter = 4_in;

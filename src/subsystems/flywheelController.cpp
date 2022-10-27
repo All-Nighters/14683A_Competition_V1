@@ -2,7 +2,7 @@
 
 namespace Flywheel {
     
-    float Vp = 0.05;
+    float Vp = 0.4;
     float Vi = 0;
     float Vd = 0.5;
     float prevVError = 0;

@@ -18,6 +18,7 @@ Motor FlywheelMotor1(5);
 Motor FlywheelMotor2(-6);
 Motor IntakeMotor(7);
 Motor RollerMotor(8);
+Motor IndexerMotor(-11);
 
 // remember to also change the reversin in odometry.cpp
 ADIEncoder leftTW = ADIEncoder(leftEncoderPort[0], leftEncoderPort[1], false);

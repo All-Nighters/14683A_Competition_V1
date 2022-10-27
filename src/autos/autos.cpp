@@ -175,6 +175,22 @@ namespace Autos {
      */
     void blue_second_supportive() {
         Odom::set_state(1.530972222222222_m, 3.328935185185185_m, -90_deg);
+        Auto::simpleMoveToPoint(41.94444444444444, 57.59259259259259);
+        Auto::simpleMoveToPoint(9.907407407407407, 22.685185185185183);
+        Auto::faceAngle(0);
+
+        Roller::roll("blue");
+        LFMotor.moveVelocity(-400);
+        RFMotor.moveVelocity(-400);
+        LBMotor.moveVelocity(-400);
+        RBMotor.moveVelocity(-400);
+        pros::delay(touchDelay);
+        Roller::stop();
+        LFMotor.moveVelocity(0);
+        RFMotor.moveVelocity(0);
+        LBMotor.moveVelocity(0);
+        RBMotor.moveVelocity(0);
+        pros::delay(1000);
     }
 
     /**
@@ -199,11 +215,11 @@ namespace Autos {
 
         Auto::moveDistance(2);
 
-        Auto::faceCoordinate(redHighGoalPosition_percent[0], redHighGoalPosition_percent[1], false);
+        Auto::faceCoordinate(redHighGoalPosition_percent[0], redHighGoalPosition_percent[1], true);
         pros::delay(2000);
 
         Auto::simpleMoveToPoint(61.29629629629629, 45.37037037037037);
-        Auto::faceCoordinate(redHighGoalPosition_percent[0], redHighGoalPosition_percent[1], false);
+        Auto::faceCoordinate(redHighGoalPosition_percent[0], redHighGoalPosition_percent[1], true);
         pros::delay(2000);
     }
 
@@ -255,7 +271,26 @@ namespace Autos {
      * 
      */
     void red_second_scoring() {
+        Odom::set_state(2.119027777777778_m, 0.381898148148148_m, 90_deg);
+        Auto::simpleMoveToPoint(58.24074074074074, 42.87037037037037);
+        Auto::faceCoordinate(redHighGoalPosition_percent[0], redHighGoalPosition_percent[1], true);
+        pros::delay(2000);
 
+        Auto::simpleMoveToPoint(22.407407407407405, 10.462962962962962);
+        Auto::faceAngle(90);
+
+        Roller::roll("red");
+        LFMotor.moveVelocity(-400);
+        RFMotor.moveVelocity(-400);
+        LBMotor.moveVelocity(-400);
+        RBMotor.moveVelocity(-400);
+        pros::delay(1.5*touchDelay);
+        Roller::stop();
+        LFMotor.moveVelocity(0);
+        RFMotor.moveVelocity(0);
+        LBMotor.moveVelocity(0);
+        RBMotor.moveVelocity(0);
+        pros::delay(1000);
     }
 
     /**
@@ -263,6 +298,7 @@ namespace Autos {
      * 
      */
     void red_second_supportive() {
+        Odom::set_state(2.119027777777778_m, 0.381898148148148_m, 90_deg);
         
     }
 
