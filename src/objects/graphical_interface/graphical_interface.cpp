@@ -5,6 +5,8 @@
 #define WIDTH  Constants::GraphicalInterface::SCREEN_WIDTH
 #define HEIGHT Constants::GraphicalInterface::SCREEN_HEIGHT
 
+lv_res_t button_action_callback(lv_obj_t* button_object);
+
 GraphicalInterface::GraphicalInterface() {
     this->interface_menu();
 }
@@ -12,8 +14,8 @@ GraphicalInterface::GraphicalInterface() {
 void GraphicalInterface::interface_menu() {
     // header
     lv_obj_t* header_container = lv_cont_create(lv_scr_act(), NULL);
-    lv_obj_t* header_selector  = this->button_initialize(header_container, "Selector");
-    lv_obj_t* header_utilities = this->button_initialize(header_container, "Utilities");
+    lv_obj_t* header_selector  = this->button_initialize(header_container, "Selector",  GraphicalInterface::InterfaceAction::MENU_SELECTOR);
+    lv_obj_t* header_utilities = this->button_initialize(header_container, "Utilities", GraphicalInterface::InterfaceAction::MENU_UTILITIES);
     lv_obj_t* header_label     = this->label_initialize(header_container, "  14683A");
     this->object_scale(header_container, 480, 50, 0, 0);
     this->object_scale(header_selector , 100, 50, 0, 0);
@@ -21,8 +23,8 @@ void GraphicalInterface::interface_menu() {
     this->object_scale(header_label, 100, 16, (WIDTH - 100), (50 / 3));
     // footer
     lv_obj_t* footer_container = lv_cont_create(lv_scr_act(), NULL);
-    lv_obj_t* footer_return    = this->button_initialize(footer_container, "Return");
-    lv_obj_t* footer_menu      = this->button_initialize(footer_container, "Menu");
+    lv_obj_t* footer_return    = this->button_initialize(footer_container, "Return", GraphicalInterface::InterfaceAction::MENU_RETURN);
+    lv_obj_t* footer_menu      = this->button_initialize(footer_container, "Menu"  , GraphicalInterface::InterfaceAction::MENU_MENU);
     this->object_scale(footer_container, 480, 50, 0, (HEIGHT - 50));
     this->object_scale(footer_return   , 100, 50, 0, 0);
     this->object_scale(footer_menu     , 100, 50, (WIDTH - 100), 0);
@@ -100,9 +102,11 @@ void GraphicalInterface::object_style(GraphicalInterface::InterfaceStyle objects
     }
 }
 
-lv_obj_t* GraphicalInterface::button_initialize(lv_obj_t* button_parent, std::string button_text) {
+lv_obj_t* GraphicalInterface::button_initialize(lv_obj_t* button_parent, std::string button_text, GraphicalInterface::InterfaceAction button_action) {
     lv_obj_t* button_object  = lv_btn_create(button_parent, NULL);
     lv_obj_t* button_label = this->label_initialize(button_object, button_text);
+    lv_obj_set_free_num(button_object, button_action);
+    lv_btn_set_action(button_object, LV_BTN_ACTION_PR, button_action_callback);
     return button_object;
 }
 
@@ -110,4 +114,10 @@ lv_obj_t* GraphicalInterface::label_initialize(lv_obj_t* label_parent, std::stri
     lv_obj_t* label_object = lv_label_create(label_parent, NULL);
 	lv_label_set_text(label_object, label_text.c_str());
     return label_object;
+}
+
+lv_res_t button_action_callback(lv_obj_t* button_object) {
+    uint32_t button_id = lv_obj_get_free_num(button_object);
+    printf("PRESSED ID: %d\n", button_id);
+    return LV_RES_OK;
 }
