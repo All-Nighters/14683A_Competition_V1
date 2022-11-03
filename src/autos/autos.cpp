@@ -198,7 +198,10 @@ namespace Autos {
      * 
      */
     void red_first_scoring() {
-        Odom::set_state(3.261342592592593_m, 2.774675925925926_m, 180_deg);
+        Odom::set_state(86.38888888888889, 76.2037037037037, 180);
+        pros::delay(5000);
+        Odom::set_state(86.38888888888889, 76.2037037037037, 180);
+        controller.setText(0,0,std::to_string(positionSI.theta));
 
         Roller::roll("red");
         LFMotor.moveVelocity(-400);
@@ -214,12 +217,16 @@ namespace Autos {
         pros::delay(1000);
 
         Auto::moveDistance(2);
+        controller.setText(0,0,std::to_string(positionSI.xPercent) + ", " + std::to_string(positionSI.yPercent));
 
-        Auto::faceCoordinate(redHighGoalPosition_percent[0], redHighGoalPosition_percent[1], true);
+        pros::delay(1000);
+
+        controller.setText(0,0,std::to_string(positionSI.theta));
+        Auto::faceCoordinate(redHighGoalPosition_percent[0], redHighGoalPosition_percent[1], false);
         pros::delay(2000);
 
-        Auto::simpleMoveToPoint(61.29629629629629, 45.37037037037037);
-        Auto::faceCoordinate(redHighGoalPosition_percent[0], redHighGoalPosition_percent[1], true);
+        Auto::simpleMoveToPoint(56.85185185185185, 46.11111111111111);
+        Auto::faceCoordinate(redHighGoalPosition_percent[0], redHighGoalPosition_percent[1], false);
         pros::delay(2000);
     }
 

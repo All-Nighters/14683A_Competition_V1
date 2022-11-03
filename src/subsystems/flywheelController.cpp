@@ -2,9 +2,9 @@
 
 namespace Flywheel {
     
-    float Vp = 0.4;
+    float Vp = 0.08;
     float Vi = 0;
-    float Vd = 0.5;
+    float Vd = 2;
     float prevVError = 0;
     float prevCtlOutput = 0;
 
@@ -70,12 +70,23 @@ namespace Flywheel {
 
 
     /**
+     * @brief Get the current velocity of the flywheel in RPM
+     * 
+     * @return current RPM of the flywheel
+     */
+    float getCurrentVelocity() {
+        float velocity = (FlywheelMotor1.getActualVelocity() + FlywheelMotor2.getActualVelocity()) / 2.0 * 15;
+        return velocity;
+    }
+
+    /**
      * @brief PID for controlling flywheel velocity
      * 
      * @param target_velocity target RPM of the flywheel
      */
     void velocityPID(float target_velocity) {
-        float current_velocity = (FlywheelMotor1.getActualVelocity() + FlywheelMotor2.getActualVelocity()) / 2.0 * 15;
+        
+        float current_velocity = getCurrentVelocity();
 
         float v_error = std::fmax(std::fmin(target_velocity, 3000), 0) - current_velocity;
         float deriv_error = v_error - prevVError;
@@ -86,7 +97,7 @@ namespace Flywheel {
         FlywheelMotor1.moveVoltage(clamp(prevCtlOutput, -12000.0, 12000.0));
         FlywheelMotor2.moveVoltage(clamp(prevCtlOutput, -12000.0, 12000.0));
 
-        // printf("verr=%f deriv_err%f dout=%f out=%f\n", v_error, deriv_error, v_error * Vp + deriv_error * Vd, prevCtlOutput);
+        printf("verr=%f deriv_err%f dout=%f out=%f\n", v_error, deriv_error, v_error * Vp + deriv_error * Vd, prevCtlOutput);
 
         prevVError = v_error;
     }
@@ -123,20 +134,11 @@ namespace Flywheel {
      */
     void setLinearEjectVelocity(float velocity) {
         float rpm = getExpectRPMFromEjectVelocity(velocity);
+        // printf("Expected rpm: %f %f\n", velocity, rpm);
 
-        // printf("Expected rpm: %f\n", rpm);
         spinVelocityRPM(rpm);
     }
     
-    /**
-     * @brief Get the current velocity of the flywheel in RPM
-     * 
-     * @return current RPM of the flywheel
-     */
-    float getCurrentVelocity() {
-        float velocity = (FlywheelMotor1.getActualVelocity() + FlywheelMotor2.getActualVelocity()) / 2.0 * 15;
-        return velocity;
-    }
 
     /**
      * @brief Get the current eject velocity of the flywheel (meters/second)

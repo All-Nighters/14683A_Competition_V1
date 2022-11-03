@@ -89,8 +89,7 @@ namespace Odom {
 	int position_tracking() {
 		while(1) {
 			//Get encoder values (DEGREES)
-			
-			LPos = leftTW.get();
+			LPos = 0;
 			RPos = rightTW.get();
 			SPos = -midTW.get();
 
@@ -181,7 +180,6 @@ namespace Odom {
 		odometry_mode = mode;
 		imu_sensor_1.tare();
 		imu_sensor_2.tare();
-		leftTW.reset();
 		rightTW.reset();
 		midTW.reset();
 		pros::Task tracking(position_tracking);
@@ -204,6 +202,21 @@ namespace Odom {
 		X_START = x.convert(meter);
 		Y_START = y.convert(meter);
 		THETA_START = angle.convert(radian);
+
+		xPosGlobal = X_START;
+		yPosGlobal = Y_START;
+		currentAbsoluteOrientation = THETA_START;
+		save_results();
+	}
+
+	/**
+	 * @brief Set new odometry state in percentage
+	 * 
+	 */
+	void set_state(float x, float y, float angle) {
+		X_START = percentageToMeter(x);
+		Y_START = percentageToMeter(y);
+		THETA_START = angle*pi/180.0;
 
 		xPosGlobal = X_START;
 		yPosGlobal = Y_START;

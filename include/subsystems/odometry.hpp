@@ -11,4 +11,5 @@ namespace Odom {
 	void init(odomMode mode);
     void debug();
 	void set_state(QLength x, QLength y, QAngle angle);
+	void set_state(float x, float y, float angle);
 }

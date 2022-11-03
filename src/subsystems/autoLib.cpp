@@ -11,7 +11,7 @@ namespace Auto {
     float Td = 100;
 
     // rotational PID Coefficients
-    float Rp = 170;
+    float Rp = 200;
     float Ri = 0;
     float Rd = 350;
 
@@ -143,7 +143,7 @@ namespace Auto {
 
         settled = false;
 
-        while (abs(target_angle - positionSI.theta) >= 0.5 && pros::millis() - start_time <= timeout*1000) {
+        while (abs(target_angle - positionSI.theta) >= 0.1 && pros::millis() - start_time <= timeout*1000) {
             // Odom::update_odometry();
 
             
@@ -158,7 +158,7 @@ namespace Auto {
             prev_error = error;
 
             printf("%f, %f\n", positionSI.theta, target_angle);
-            controller.setText(0,0,std::to_string(positionSI.theta) + ", " + std::to_string(target_angle));
+            // controller.setText(0,0,std::to_string(positionSI.theta) + ", " + std::to_string(target_angle));
             if (target_angle - positionSI.theta > 0) {
                 LFMotor.moveVoltage(control_output);
                 LBMotor.moveVoltage(control_output);

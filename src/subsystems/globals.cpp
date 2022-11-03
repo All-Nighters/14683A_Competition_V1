@@ -27,6 +27,7 @@ ADIEncoder midTW = ADIEncoder(middleEncoderPort[0], middleEncoderPort[1], false)
 
 pros::ADIDigitalOut indexer('G');
 pros::ADIDigitalOut piston('H');
+pros::ADIDigitalIn load_sensor('A');
 
 pros::Imu imu_sensor_1(9);
 pros::Imu imu_sensor_2(10);

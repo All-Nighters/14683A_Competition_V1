@@ -34,6 +34,13 @@ enum AutoProcedure
 	IDLE
 };
 
+// disk shooting behavior
+enum shootMode
+{
+	ACCURATE_MODE, // don't shoot until the flywheel is running in desired velocity
+	FORCE_MODE // shoot immediately when command is called
+};
+
 extern teamColor team; // 0 for red, 1 for blue
 
 extern Controller controller;
@@ -115,9 +122,16 @@ inline QLength trackingWheelDiameter = 2.75_in;
 inline QAngle turnRightAngle = 163.7_deg;
 inline QLength flyWheelDiameter = 4_in;
 inline QLength diskDiameter = 14_cm;
+inline QMass diskMass = 0.06_kg;
+inline float diskHorizontalArea = 0.015393804;
+inline float diskVerticalArea = 0.0028;
+inline QLength launcher_height = 0.3_m;
+inline QAngle launch_angle = 40_deg;
 inline float fieldLength = 3.6576;
 
 extern pros::ADIDigitalOut indexer;
 extern pros::ADIDigitalOut piston;
+extern pros::ADIDigitalIn load_sensor;
+
 extern pros::Imu imu_sensor_1;
 extern pros::Imu imu_sensor_2;
