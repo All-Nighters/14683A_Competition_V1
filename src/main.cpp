@@ -240,7 +240,7 @@ void opcontrol() {
 		}
 
 		if (controller.getDigital(ControllerDigital::X)) {
-			Gun::init(ACCURATE_MODE);
+			Gun::reposition();
 		}
 
 		// expansion

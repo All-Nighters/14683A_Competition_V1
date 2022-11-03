@@ -1,8 +1,14 @@
-#include "main.h"
-
+/**
+ * @file gun.hpp
+ *
+ * @brief Shooter functions
+ *
+ */
 
 namespace Gun {
     void init(shootMode mode);
+
+    void reposition();
 
     bool readyToShoot();
 
