@@ -44,8 +44,8 @@ namespace Auto {
     void distancePID(float percentage) {
         float target_distance = fieldLength * percentage / 100;
         float revs = target_distance / (M_PI*(trackingWheelDiameter.convert(meter)));
-        float lefttargetAngle = revs * 360 + reverse*leftTW.get();
-        float righttargetAngle = revs * 360 + reverse*rightTW.get();
+        float lefttargetAngle = revs * 360 + leftTW.get();
+        float righttargetAngle = revs * 360 + rightTW.get();
         float targetFaceAngle = positionSI.theta; 
         float start_time = pros::millis();  
         float timeout = 10; // maximum runtime in seconds
@@ -58,21 +58,21 @@ namespace Auto {
             direction = 1;
         }
         
-        float prevErrorLeft = abs(lefttargetAngle - reverse*leftTW.get());
-        float prevErrorRight = abs(righttargetAngle - reverse*rightTW.get());
+        float prevErrorLeft = abs(lefttargetAngle - leftTW.get());
+        float prevErrorRight = abs(righttargetAngle - rightTW.get());
         float prevFaceAngleError = 0;
 
 
         settled = false;
 
-        while (abs(((lefttargetAngle + righttargetAngle)/2.0) - ((reverse*leftTW.get() +reverse*rightTW.get())/2.0)) >= 10 && 
+        while (abs(((lefttargetAngle + righttargetAngle)/2.0) - ((leftTW.get() +rightTW.get())/2.0)) >= 10 && 
         pros::millis() - start_time <= timeout*1000) {
 
             // Odom::update_odometry();
-            printf("%f %f %f\n", lefttargetAngle, reverse*leftTW.get(), reverse*rightTW.get());
+            printf("%f %f %f\n", lefttargetAngle, leftTW.get(), rightTW.get());
 
-            float error_Left = abs(lefttargetAngle - reverse*leftTW.get());
-            float error_Right = abs(righttargetAngle - reverse*rightTW.get());
+            float error_Left = abs(lefttargetAngle - leftTW.get());
+            float error_Right = abs(righttargetAngle - rightTW.get());
             float error_Facing = positionSI.theta - targetFaceAngle;
 
 

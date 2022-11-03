@@ -7,4 +7,6 @@
 
 namespace Intake {
     void toggle();
+    void turnOn();
+    void turnOff();
 }

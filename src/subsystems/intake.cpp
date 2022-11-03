@@ -11,4 +11,12 @@ namespace Intake {
             IntakeMotor.moveVoltage(0);
         }
     }
+    void turnOn() {
+        enabled = true;
+        IntakeMotor.moveVoltage(10000);
+    }
+    void turnOff() {
+        enabled = false;
+        IntakeMotor.moveVoltage(0);
+    }
 }
