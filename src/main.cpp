@@ -18,13 +18,18 @@ void initialize() {
 	pros::lcd::initialize();
 	pros::lcd::set_text(1, "Hello PROS User!");
 
-	// Odom::tare_odometry();
+	// tare sensors
 	imu_sensor_1.tare();
 	imu_sensor_2.tare();
+
+	// Initialize subsystems
 	Odom::init(TWOWHEELIMU);
 	Odom::set_state(50, 50, 0);
+	Flywheel::startControlLoop();
+	Flywheel::grapher::start_graphing();
 	Gun::init(ACCURATE_MODE);
 
+	// Set motor brake modes
 	LFMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
 	RFMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
 	RBMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
@@ -182,7 +187,6 @@ void opcontrol() {
 
 	while (true) {
 		// Odom::update_odometry();
-		Flywheel::grapher::graph_velocity(3000, Flywheel::getCurrentVelocity());
 		// Odom::debug();
 
 		// float xDist = HighGoalPositionPercent[0]-positionSI.xPercent;

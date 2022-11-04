@@ -44,8 +44,8 @@ namespace Auto {
     void distancePID(float percentage) {
         float target_distance = fieldLength * percentage / 100;
         float revs = target_distance / (M_PI*(trackingWheelDiameter.convert(meter)));
-        float lefttargetAngle = revs * 360 + leftTW.get();
-        float righttargetAngle = revs * 360 + rightTW.get();
+        // float lefttargetAngle = revs * 360 + leftTW.get();
+        float targetAngle = revs * 360 + rightTW.get();
         float targetFaceAngle = positionSI.theta; 
         float start_time = pros::millis();  
         float timeout = 10; // maximum runtime in seconds
@@ -58,36 +58,31 @@ namespace Auto {
             direction = 1;
         }
         
-        float prevErrorLeft = abs(lefttargetAngle - leftTW.get());
-        float prevErrorRight = abs(righttargetAngle - rightTW.get());
+        // float prevErrorLeft = abs(lefttargetAngle - leftTW.get());
+        float prevErrorPosition = abs(targetAngle - rightTW.get());
         float prevFaceAngleError = 0;
 
 
         settled = false;
 
-        while (abs(((lefttargetAngle + righttargetAngle)/2.0) - ((leftTW.get() +rightTW.get())/2.0)) >= 10 && 
+        while (abs(targetAngle - rightTW.get()) >= 10 && 
         pros::millis() - start_time <= timeout*1000) {
 
             // Odom::update_odometry();
-            printf("%f %f %f\n", lefttargetAngle, leftTW.get(), rightTW.get());
-
-            float error_Left = abs(lefttargetAngle - leftTW.get());
-            float error_Right = abs(righttargetAngle - rightTW.get());
-            float error_Facing = positionSI.theta - targetFaceAngle;
+            float error_position = abs(targetAngle - rightTW.get());
+            float error_Facing = targetFaceAngle-positionSI.theta;
 
 
-            float deriv_Left = error_Left - prevErrorLeft;
-            float deriv_Right = error_Right - prevErrorRight;
+            float deriv_position = error_position - prevErrorPosition;
             float deriv_Facing = error_Facing - prevFaceAngleError;
 
 
-            float control_output_Left = error_Left * Tp + deriv_Left * Td;
-            float control_output_Right = error_Right * Tp + deriv_Right * Td;
+            float control_output = error_position * Tp + deriv_position * Td;
             float control_output_Facing = error_Facing * Rp + deriv_Facing * Rd;
 
 
-            control_output_Left = direction * std::fmax(std::fmin(control_output_Left, 8000), -8000) - std::fmax(std::fmin(control_output_Facing, 4000), -4000);
-            control_output_Right = direction * std::fmax(std::fmin(control_output_Right, 8000), -8000) + std::fmax(std::fmin(control_output_Facing, 4000), -4000);
+            float control_output_Left = direction * std::fmax(std::fmin(control_output, 8000), -8000) + std::fmax(std::fmin(control_output_Facing, 4000), -4000);
+            float control_output_Right = direction * std::fmax(std::fmin(control_output, 8000), -8000) - std::fmax(std::fmin(control_output_Facing, 4000), -4000);
 
             if (abs(control_output_Left) < 4000 && direction < 0) {
                 control_output_Left = -4000;
@@ -99,8 +94,7 @@ namespace Auto {
             }
 
 
-            prevErrorLeft = error_Left;
-            prevErrorRight = error_Right;
+            prevErrorPosition = error_position;
 
 
             LFMotor.moveVoltage(control_output_Left);

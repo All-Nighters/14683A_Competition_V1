@@ -108,7 +108,6 @@ namespace Gun {
         if (shoot_mode == ACCURATE_MODE) {
             planVeloity();
             while (!readyToShoot()) {
-                Flywheel::grapher::graph_velocity(3000, Flywheel::getCurrentVelocity());
                 aim();
                 pros::delay(20);
             }
