@@ -76,16 +76,16 @@ namespace Gun {
         float target[3];
         if (team == REDTEAM) {
             for (int i = 0; i < 3; i++) {
-                target[i] = redHighGoalPosition_percent[i];
+                target[i] = redHighGoalPosition_m[i];
             }
         }
         else if (team == BLUETEAM) {
             for (int i = 0; i < 3; i++) {
-                target[i] = blueHighGoalPosition_percent[i];
+                target[i] = blueHighGoalPosition_m[i];
             }
         }
 
-        float xDist = sqrt(std::pow(target[0]-positionSI.xPercent, 2) + std::pow(target[1]-positionSI.yPercent, 2));
+        float xDist = sqrt(std::pow(target[0]-positionSI.x, 2) + std::pow(target[1]-positionSI.y, 2));
         
         desiredLinearEjectVelocity = projectile_trajectory::solveVelocity(100, 0, 0.01, 20, 4, launch_angle.convert(degree), 0, diskMass.convert(kg), 9.81, 1.225, diskHorizontalArea, diskVerticalArea, Cv, Ch, percentageToMeter(target[2]), launcher_height.convert(meter));
         return desiredLinearEjectVelocity;
