@@ -54,13 +54,17 @@ public:
         lv_obj_t*                         object_parent;
         GraphicalInterface::InterfaceType object_type;
     };
+    struct InterfaceWindow {
+        GraphicalInterface::InterfaceStatus window_status;
+        int                                 window_stage;
+    };
 
-    static InterfaceStatus                                                interface_status;
+    static GraphicalInterface::InterfaceStatus                            interface_status;
     static int                                                            interface_stage;
     static std::map<GraphicalInterface::InterfaceConfiguration, std::any> interface_configuration;
+    static std::vector<GraphicalInterface::InterfaceWindow>               interface_history;
 
     GraphicalInterface();
-    static void interface_hide_type(GraphicalInterface::InterfaceType object_type, bool object_hidden);
     static void interface_rerender();
 
 private:
