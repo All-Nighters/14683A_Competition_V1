@@ -23,6 +23,7 @@ public:
         SELECTOR_SKILL
     };
     enum InterfaceStatus {
+        HOME,
         SELECTOR,
         UTILITIES
     };
@@ -36,6 +37,7 @@ public:
 
     GraphicalInterface();
     static void interface_hide_type(GraphicalInterface::InterfaceType object_type, bool object_hidden);
+    static void interface_window();
 
 private:
     static std::vector<InterfaceComponent> interface_components;

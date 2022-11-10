@@ -11,7 +11,9 @@ GraphicalInterface::InterfaceStatus GraphicalInterface::interface_status;
 lv_res_t button_action_callback(lv_obj_t* button_object);
 
 GraphicalInterface::GraphicalInterface() {
+    this->interface_status = GraphicalInterface::InterfaceStatus::HOME;
     this->interface_menu();
+    this->interface_window();
 }
 
 void GraphicalInterface::interface_menu() {
@@ -224,17 +226,29 @@ void GraphicalInterface::interface_hide_type(GraphicalInterface::InterfaceType o
     }
 }
 
+void GraphicalInterface::interface_window() {
+    std::map<GraphicalInterface::InterfaceType, bool> interface_visibility = {
+        {GraphicalInterface::InterfaceType::SELECTOR_CONTAINER, GraphicalInterface::InterfaceStatus::SELECTOR}
+    };
+    for (int component_index = 0; component_index < GraphicalInterface::interface_components.size(); component_index++) {
+        GraphicalInterface::InterfaceComponent loop_component = GraphicalInterface::interface_components[component_index];
+        if (interface_visibility.find(loop_component.object_type) == interface_visibility.end()) continue;
+        lv_obj_set_hidden(loop_component.object_pointer, interface_visibility[loop_component.object_type] != GraphicalInterface::interface_status);
+    }
+}
+
 lv_res_t button_action_callback(lv_obj_t* button_object) {
     uint32_t button_id = lv_obj_get_free_num(button_object);
     switch (button_id) {
         case GraphicalInterface::InterfaceAction::MENU_SELECTOR:
-            GraphicalInterface::interface_hide_type(GraphicalInterface::InterfaceType::SELECTOR_CONTAINER, false);
+            //GraphicalInterface::interface_hide_type(GraphicalInterface::InterfaceType::SELECTOR_CONTAINER, false);
             GraphicalInterface::interface_status = GraphicalInterface::InterfaceStatus::SELECTOR;
             break;
         case GraphicalInterface::InterfaceAction::MENU_UTILITIES:
-            GraphicalInterface::interface_hide_type(GraphicalInterface::InterfaceType::SELECTOR_CONTAINER, true);
+            //GraphicalInterface::interface_hide_type(GraphicalInterface::InterfaceType::SELECTOR_CONTAINER, true);
             GraphicalInterface::interface_status = GraphicalInterface::InterfaceStatus::UTILITIES;
             break;
     }
+    GraphicalInterface::interface_window();
     return LV_RES_OK;
 }
