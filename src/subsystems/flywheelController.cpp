@@ -32,6 +32,7 @@ namespace Flywheel {
          */
         void graph_velocity()
         {
+            printf("%f\n", keepRunningGrapher);
             while (keepRunningGrapher) 
             {
                 float target = queuedLinearVelocity;
@@ -78,6 +79,7 @@ namespace Flywheel {
                 }
 
                 lv_chart_refresh(chart); /*Required after direct set*/
+                pros::delay(20);
             }
         }
 
@@ -120,8 +122,6 @@ namespace Flywheel {
 
         FlywheelMotor1.moveVoltage(clamp(prevCtlOutput, -12000.0, 12000.0));
         FlywheelMotor2.moveVoltage(clamp(prevCtlOutput, -12000.0, 12000.0));
-
-        printf("verr=%f deriv_err%f dout=%f out=%f\n", v_error, deriv_error, v_error * Vp + deriv_error * Vd, prevCtlOutput);
 
         prevVError = v_error;
     }

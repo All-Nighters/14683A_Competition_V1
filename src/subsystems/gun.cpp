@@ -7,7 +7,7 @@ namespace Gun {
 
     int diskCountForAsync = 0;
     int desiredLinearEjectVelocity = 0;
-    shootMode shoot_mode;
+    shootMode shoot_mode = ACCURATE_MODE;
 
     /**
      * @brief Initialize the shooter
@@ -37,9 +37,11 @@ namespace Gun {
      * 
      */
     void autoPosition(){
-        pros::delay(200);
-        if (load_sensor.get_value() == 0) {
+        int delay_ms = 150;
+        pros::delay(delay_ms);
+        while (load_sensor.get_value() == 0) {
             reposition();
+            pros::delay(delay_ms);
         }
     }
 
@@ -55,6 +57,7 @@ namespace Gun {
         while (load_sensor.get_value() == 0) { 
             ; // wait until the indexer is loaded
         }
+        Intake::setDiskHolding(Intake::getDiskHolding()-1);
     }
 
     /**
@@ -87,8 +90,7 @@ namespace Gun {
 
         float xDist = sqrt(std::pow(target[0]-positionSI.x, 2) + std::pow(target[1]-positionSI.y, 2));
         
-        desiredLinearEjectVelocity = projectile_trajectory::solveVelocity(100, 0, 0.01, 20, 4, launch_angle.convert(degree), 0, diskMass.convert(kg), 9.81, 1.225, diskHorizontalArea, diskVerticalArea, Cv, Ch, target[2], launcher_height.convert(meter));
-        return desiredLinearEjectVelocity;
+        return projectile_trajectory::solveVelocity(10, 2, 0.01, 20, 4, launch_angle.convert(degree), 0, diskMass.convert(kg), 9.81, 1.225, diskHorizontalArea, diskVerticalArea, Cv, Ch, target[2], launcher_height.convert(meter));
     }
 
     /**
@@ -97,6 +99,7 @@ namespace Gun {
      */
     void aim() {
         float velocity = planVeloity();
+        desiredLinearEjectVelocity = velocity;
         Flywheel::setLinearEjectVelocity(velocity);
     }
 
@@ -104,9 +107,10 @@ namespace Gun {
      * @brief Shoot 1 disk
      * 
      */
-    void shootDisk() {
-        if (shoot_mode == ACCURATE_MODE) {
-            planVeloity();
+    void shootDisk(shootMode mode_override) {
+        shootMode mode = mode_override == shoot_mode ? shoot_mode : mode_override;
+        
+        if (mode == ACCURATE_MODE) {
             while (!readyToShoot()) {
                 aim();
                 pros::delay(20);
@@ -115,7 +119,7 @@ namespace Gun {
             FlywheelMotor1.moveVoltage(0);
             FlywheelMotor2.moveVoltage(0);
         } 
-        else if (shoot_mode == FORCE_MODE) {
+        else if (mode == FORCE_MODE) {
             trigger();
         }
         IndexerMotor.moveVoltage(0);
@@ -128,17 +132,20 @@ namespace Gun {
      * 
      * @param diskCount number of disks to shoot
      */
-    void shootDisk(int diskCount) {
-        if (shoot_mode == ACCURATE_MODE) {
+    void shootDisk(int diskCount, shootMode mode_override) {
+        shootMode mode = mode_override == shoot_mode ? shoot_mode : mode_override;
+
+        if (mode == ACCURATE_MODE) {
             for (int i = 0; i < diskCount; i++) {
                 while (!readyToShoot()) {
                     aim();
+                    pros::delay(20);
                 }
                 trigger();
             }
             
         } 
-        else if (shoot_mode == FORCE_MODE) {
+        else if (mode == FORCE_MODE) {
             for (int i = 0; i < diskCount; i++) {
                 trigger();
             }

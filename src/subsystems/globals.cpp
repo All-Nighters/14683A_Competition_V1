@@ -19,6 +19,7 @@ Motor FlywheelMotor2(-6);
 Motor IntakeMotor(7);
 Motor RollerMotor(8);
 Motor IndexerMotor(-11);
+pros::Vision vision_sensor(12);
 
 // remember to also change the reversin in odometry.cpp
 // ADIEncoder leftTW = ADIEncoder(leftEncoderPort[0], leftEncoderPort[1], false);
@@ -28,6 +29,7 @@ ADIEncoder midTW = ADIEncoder(middleEncoderPort[0], middleEncoderPort[1], false)
 pros::ADIDigitalOut indexer('G');
 pros::ADIDigitalOut piston('H');
 pros::ADIDigitalIn load_sensor('A');
+pros::ADIDigitalIn intake_sensor('B');
 
 pros::Imu imu_sensor_1(9);
 pros::Imu imu_sensor_2(10);

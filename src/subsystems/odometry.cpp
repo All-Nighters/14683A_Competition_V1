@@ -89,9 +89,17 @@ namespace Odom {
 	int position_tracking() {
 		while(1) {
 			//Get encoder values (DEGREES)
-			LPos = 0;
-			RPos = rightTW.get();
-			SPos = -midTW.get();
+			
+			if (odometry_mode == BASIC) {
+				float gear_ratio = 36/60.0;
+				LPos = ((LFMotor.getPosition() + LBMotor.getPosition()) / 2.0) * gear_ratio;
+				RPos = ((RFMotor.getPosition() + RBMotor.getPosition()) / 2.0) * gear_ratio;
+				SPos = -midTW.get();
+			} else {
+				LPos = 0;
+				RPos = rightTW.get();
+				SPos = -midTW.get();
+			}
 
 			//Calculate distance traveled by tracking each wheel (meters)
 			//Converts degrees to radians
@@ -111,7 +119,7 @@ namespace Odom {
 
 			//Calculate the current absolute orientation (RADIANS)
 
-			if (odometry_mode == THREEWHEEL) {
+			if (odometry_mode == THREEWHEEL || odometry_mode == BASIC) {
 				currentAbsoluteOrientation = THETA_START + ((totalDeltaDistL - totalDeltaDistR) / (LTrackRadius + RTrackRadius));
 			} 
 			else if (odometry_mode == TWOWHEELIMU) {
@@ -183,6 +191,16 @@ namespace Odom {
 		rightTW.reset();
 		midTW.reset();
 		pros::Task tracking(position_tracking);
+	}
+
+
+	/**
+	 * @brief Get odometry mode
+	 * 
+	 * @return current odometry mode 
+	 */
+	odomMode getOdomMode() {
+		return odometry_mode;
 	}
 
 	/**

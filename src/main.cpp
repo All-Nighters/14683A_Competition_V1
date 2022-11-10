@@ -1,14 +1,6 @@
 #include "main.h"
 
 /**
- * Moves the piston to push the disks to the flywheel
- *
- */
-void trigger() {
-	IndexerMotor.moveVoltage(6000);
-}
-
-/**
  * Runs initialization code. This occurs as soon as the program is started.
  *
  * All other competition modes are blocked by initialize; it is recommended
@@ -18,16 +10,12 @@ void initialize() {
 	pros::lcd::initialize();
 	pros::lcd::set_text(1, "Hello PROS User!");
 
-	// tare sensors
-	imu_sensor_1.tare();
-	imu_sensor_2.tare();
-
-	// Initialize subsystems
-	Odom::init(TWOWHEELIMU);
-	Odom::set_state(50, 50, 0);
+	// // Initialize subsystems
+	// Odom::init(BASIC);
+	// Odom::set_state(50, 50, 0);
 	Flywheel::startControlLoop();
 	Flywheel::grapher::start_graphing();
-	Gun::init(ACCURATE_MODE);
+	Gun::init(FORCE_MODE);
 
 	// Set motor brake modes
 	LFMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
@@ -127,16 +115,6 @@ void opcontrol() {
 	// PPTest();
 	// odomChassis->turnToAngle(180_deg);
 	// Auto::faceAngle(90);
-	// controller.setText(0,0,std::to_string(positionSI.theta));
-	// Auto::faceAngle(-90);
-	// controller.setText(0,0,std::to_string(positionSI.theta));
-	// Auto::faceAngle(90);
-	// controller.setText(0,0,std::to_string(positionSI.theta));
-	// Auto::faceAngle(-90);
-	// controller.setText(0,0,std::to_string(positionSI.theta));
-	// Auto::faceAngle(0);
-	// controller.setText(0,0,std::to_string(positionSI.theta));
-
 	// autonomous();
 
 	printf("Hello Allnighters\n");
@@ -162,8 +140,8 @@ void opcontrol() {
 			)
             .build();
 		
-	auto xModel = std::dynamic_pointer_cast<XDriveModel>(drive->getModel());
 	int round_begin_milliseconds = pros::millis();
+	auto xModel = std::dynamic_pointer_cast<XDriveModel>(drive->getModel());
 
 	
 	/*
@@ -180,59 +158,23 @@ void opcontrol() {
 		HighGoalPositionPercent[2] = blueHighGoalPosition_percent[2];
 	}
 
-	bool shootEnabled = false; // enables shooting
-
-	bool prevShootButtonState = controller.getDigital(ControllerDigital::R2); // record the previous button state
-
-
+	Flywheel::setLinearEjectVelocity(8);
 	while (true) {
-		// Odom::update_odometry();
-		// Odom::debug();
 
-		// float xDist = HighGoalPositionPercent[0]-positionSI.xPercent;
-		// float yDist = HighGoalPositionPercent[1]-positionSI.yPercent;
-		// float distToGoal = sqrt(xDist*xDist + yDist*yDist);
-		// float targetEjectV = clamp(projectile_trajectory::solveVelocity(maxEjectVel, minEjectVel, 0.0001, 20, distToGoal, 45, 0, m, g, p, Av, Ah, Cv, Ch, HighGoalPositionPercent[1], 0.3), minEjectVel, maxEjectVel);
+		drive->getModel()->arcade(controller.getAnalog(ControllerAnalog::leftY), 0.5*controller.getAnalog(ControllerAnalog::rightX));
 
-		// flywheel control
-		// Flywheel::setLinearEjectVelocity(targetEjectV);
-
-		// locomotion
-		// if (Auto::settled) {
-			
+		// if (controller.getDigital(ControllerDigital::R1)) {
+		// 	RollerMotor.moveVelocity(100);
+		// } else if (controller.getDigital(ControllerDigital::R2)) {
+		// 	RollerMotor.moveVelocity(-100);
+		// } else {
+		// 	RollerMotor.moveVelocity(0);
 		// }
 
-		// printf("x=%f, y=%f, a=%f\n", positionSI.x, positionSI.y, positionSI.theta);
-
-		// if ((controller.getAnalog(ControllerAnalog::rightX) != 0 || 
-		// 	controller.getAnalog(ControllerAnalog::leftY) != 0 ||
-		// 	controller.getAnalog(ControllerAnalog::leftX) != 0 ||
-		// 	controller.getDigital(ControllerDigital::R1) ||
-		// 	controller.getDigital(ControllerDigital::Y)) && 
-		// 	round_begin_milliseconds == 0
-		// 	) 
-		// {
-		// 	round_begin_milliseconds = pros::millis();
-		// }
-
-		xModel->xArcade(controller.getAnalog(ControllerAnalog::rightX),
-						controller.getAnalog(ControllerAnalog::leftY),
-                        controller.getAnalog(ControllerAnalog::leftX)*0.7);
-
-		if (controller.getDigital(ControllerDigital::R1)) {
-			RollerMotor.moveVelocity(100);
-		} else if (controller.getDigital(ControllerDigital::R2)) {
-			RollerMotor.moveVelocity(-100);
-		} else {
-			RollerMotor.moveVelocity(0);
-		}
-
-		// intake
 		// if (controller.getDigital(ControllerDigital::B)) {
 		// 	Intake::toggle();
 		// }
 
-		// aiming
 		// if (controller.getDigital(ControllerDigital::down)) {
 		// 	if (!Auto::settled) {
 		// 		Auto::faceCoordinateAsync(HighGoalPositionPercent[0], HighGoalPositionPercent[1], true);
@@ -247,11 +189,11 @@ void opcontrol() {
 			Gun::reposition();
 		}
 
-		// expansion
-		if (controller.getDigital(ControllerDigital::Y)) {
-			piston.set_value(true); // remember to change the value in autos.cpp
+		// // expansion
+		// if (pros::millis()-round_begin_milliseconds >= 105 * 1000 && controller.getDigital(ControllerDigital::Y)) {
+		// 	piston.set_value(true); // remember to change the value in autos.cpp
 			
-		}
+		// }
 
 		pros::delay(20);
 	}

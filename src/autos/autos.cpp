@@ -73,7 +73,7 @@ namespace Autos {
      * 
      */
     void blue_first_scoring() {
-        Odom::set_state(0.368826057_m, 0.888775_m, 0_deg);
+        Odom::set_state(10.10, 24.35, 0);
 
         Roller::roll("blue");
         LFMotor.moveVelocity(-400);
@@ -91,12 +91,15 @@ namespace Autos {
         Auto::moveDistance(2);
 
         Auto::faceCoordinate(blueHighGoalPosition_percent[0], blueHighGoalPosition_percent[1], false);
-        pros::delay(2000);
+        Gun::shootDisk(2); // shoot out preloads
 
-        Auto::simpleMoveToPoint(41.57407407407407, 58.7037037037037);
+        Intake::turnOn();
+        Auto::simpleMoveToPointBackwards(41.57407407407407, 58.7037037037037);
+        Intake::turnOff();
+
         pros::delay(300);
         Auto::faceCoordinate(blueHighGoalPosition_percent[0], blueHighGoalPosition_percent[1], false);
-        pros::delay(2000);
+        Gun::shootDisk(3); // shoot out 3 disks at the middle
     }
 
     /**
@@ -104,7 +107,7 @@ namespace Autos {
      * 
      */
     void blue_first_supportive() {
-        Odom::set_state(0.368826057_m, 0.888775_m, 0_deg);
+        Odom::set_state(10.10, 24.35, 0);
 
         Roller::roll("blue");
         LFMotor.moveVelocity(-400);
@@ -122,10 +125,11 @@ namespace Autos {
         Auto::moveDistance(2);
 
         Auto::faceCoordinate(blueHighGoalPosition_percent[0], blueHighGoalPosition_percent[1], true);
-        pros::delay(2000);
+        Gun::shootDisk(2); // shoot out preloads
 
         Auto::faceAngle(50);
         Auto::moveDistance(90);
+
 
         Auto::faceAngle(-90);
         Roller::roll("blue");
@@ -147,10 +151,12 @@ namespace Autos {
      * 
      */
     void blue_second_scoring() {
-        Odom::set_state(1.530972222222222_m, 3.328935185185185_m, -90_deg);
+        Odom::set_state(41.9, 90.95, -90);
         Auto::moveDistance(34);
+
         Auto::faceCoordinate(blueHighGoalPosition_percent[0], blueHighGoalPosition_percent[1], true);
-        pros::delay(2000);
+        Gun::shootDisk(2);
+
 
         Auto::simpleMoveToPoint(76.85185185185185, 89.81481481481481);
         Auto::faceAngle(-90);
@@ -174,10 +180,13 @@ namespace Autos {
      * 
      */
     void blue_second_supportive() {
-        Odom::set_state(1.530972222222222_m, 3.328935185185185_m, -90_deg);
+        Odom::set_state(41.9, 90.95, -90);
+
         Auto::simpleMoveToPoint(41.94444444444444, 57.59259259259259);
+
         Auto::simpleMoveToPoint(9.907407407407407, 22.685185185185183);
         Auto::faceAngle(0);
+
 
         Roller::roll("blue");
         LFMotor.moveVelocity(-400);
@@ -223,11 +232,14 @@ namespace Autos {
 
         controller.setText(0,0,std::to_string(positionSI.theta));
         Auto::faceCoordinate(redHighGoalPosition_percent[0], redHighGoalPosition_percent[1], false);
-        pros::delay(2000);
+        Gun::shootDisk(2);
 
-        Auto::simpleMoveToPoint(56.85185185185185, 46.11111111111111);
+        Intake::turnOn();
+        Auto::simpleMoveToPointBackwards(56.85185185185185, 46.11111111111111);
+        Intake::turnOff();
+
         Auto::faceCoordinate(redHighGoalPosition_percent[0], redHighGoalPosition_percent[1], false);
-        pros::delay(2000);
+        Gun::shootDisk(3);
     }
 
     /**
@@ -235,7 +247,7 @@ namespace Autos {
      * 
      */
     void red_first_supportive() {
-        Odom::set_state(3.261342592592593_m, 2.774675925925926_m, 180_deg);
+        Odom::set_state(86.38888888888889, 76.2037037037037, 180);
 
         Roller::roll("red");
         LFMotor.moveVelocity(-400);
@@ -253,7 +265,7 @@ namespace Autos {
         Auto::moveDistance(2);
 
         Auto::faceCoordinate(redHighGoalPosition_percent[0], redHighGoalPosition_percent[1], true);
-        pros::delay(2000);
+        Gun::shootDisk(2);
 
         Auto::faceAngle(230);
         Auto::moveDistance(90);
@@ -278,10 +290,13 @@ namespace Autos {
      * 
      */
     void red_second_scoring() {
-        Odom::set_state(2.119027777777778_m, 0.381898148148148_m, 90_deg);
+        Odom::set_state(58.05, 10.41, 90);
+
         Auto::simpleMoveToPoint(58.24074074074074, 42.87037037037037);
+
         Auto::faceCoordinate(redHighGoalPosition_percent[0], redHighGoalPosition_percent[1], true);
-        pros::delay(2000);
+        Gun::shootDisk(3);
+
 
         Auto::simpleMoveToPoint(22.407407407407405, 10.462962962962962);
         Auto::faceAngle(90);
@@ -305,7 +320,25 @@ namespace Autos {
      * 
      */
     void red_second_supportive() {
-        Odom::set_state(2.119027777777778_m, 0.381898148148148_m, 90_deg);
+        Odom::set_state(58.05, 10.41, 90);
+        
+        Auto::simpleMoveToPoint(58.148148148148145, 42.68518518518518);
+        
+        Auto::simpleMoveToPoint(89.16666666666666, 77.5);
+        Auto::faceAngle(180);
+
+        Roller::roll("blue");
+        LFMotor.moveVelocity(-400);
+        RFMotor.moveVelocity(-400);
+        LBMotor.moveVelocity(-400);
+        RBMotor.moveVelocity(-400);
+        pros::delay(touchDelay);
+        Roller::stop();
+        LFMotor.moveVelocity(0);
+        RFMotor.moveVelocity(0);
+        LBMotor.moveVelocity(0);
+        RBMotor.moveVelocity(0);
+        pros::delay(1000);
         
     }
 

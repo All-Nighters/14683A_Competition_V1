@@ -15,8 +15,8 @@ typedef struct OdomStateSI {
 	float yPercent; // y position in percentage
 }OdomStateSI;
 
-enum odomMode {THREEWHEEL=0, TWOWHEELIMU=1}; // Odometry mode
-enum teamColor {REDTEAM=0, BLUETEAM=1}; // Allnighters team color 
+enum odomMode {THREEWHEEL, TWOWHEELIMU, BASIC}; // Odometry mode
+enum teamColor {REDTEAM, BLUETEAM}; // Allnighters team color 
 
 // 15 second autonomous procedures
 enum AutoProcedure 
@@ -53,6 +53,7 @@ extern Motor FlywheelMotor2;
 extern Motor IntakeMotor;
 extern Motor RollerMotor;
 extern Motor IndexerMotor;
+extern pros::Vision vision_sensor;
 
 extern ADIEncoder leftTW; // left tracking wheel
 extern ADIEncoder rightTW; // right tracking wheel
@@ -65,9 +66,9 @@ extern pros::Imu imu_sensor;
 /**
  * Motor ports
 */
-inline int frontLeftMotorPort = -1;
+inline int frontLeftMotorPort = 1;
 inline int frontRightMotorPort = 2;
-inline int bottomRightMotorPort = 3;
+inline int bottomRightMotorPort = -3;
 inline int bottomLeftMotorPort = -4;
 
 /**
@@ -131,6 +132,7 @@ inline float fieldLength = 3.6576;
 extern pros::ADIDigitalOut indexer;
 extern pros::ADIDigitalOut piston;
 extern pros::ADIDigitalIn load_sensor;
+extern pros::ADIDigitalIn intake_sensor;
 
 extern pros::Imu imu_sensor_1;
 extern pros::Imu imu_sensor_2;

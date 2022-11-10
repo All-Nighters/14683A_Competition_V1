@@ -36,6 +36,19 @@ namespace Auto {
         LBMotor.moveVelocity(leftV);
         RBMotor.moveVelocity(rightV);
     }
+
+    /**
+     * @brief Get the degree of rotations forward
+     * 
+     * @return degree of rotation
+     */
+    float getMotorPosition() {
+        if (Odom::getOdomMode() == BASIC) {
+            return ((RFMotor.getPosition() + RBMotor.getPosition()) / 2.0) * 36/60.0;
+        } else {
+            return rightTW.get();
+        }
+    }
     /**
      * @brief PID for controlling forward distance
      * 
@@ -45,7 +58,8 @@ namespace Auto {
         float target_distance = fieldLength * percentage / 100;
         float revs = target_distance / (M_PI*(trackingWheelDiameter.convert(meter)));
         // float lefttargetAngle = revs * 360 + leftTW.get();
-        float targetAngle = revs * 360 + rightTW.get();
+        float targetAngle = revs * 360 + getMotorPosition();
+
         float targetFaceAngle = positionSI.theta; 
         float start_time = pros::millis();  
         float timeout = 10; // maximum runtime in seconds
@@ -59,17 +73,18 @@ namespace Auto {
         }
         
         // float prevErrorLeft = abs(lefttargetAngle - leftTW.get());
-        float prevErrorPosition = abs(targetAngle - rightTW.get());
+        float prevErrorPosition = abs(targetAngle - getMotorPosition());
         float prevFaceAngleError = 0;
 
 
         settled = false;
 
-        while (abs(targetAngle - rightTW.get()) >= 10 && 
+        while (abs(targetAngle - getMotorPosition()) >= 10 && 
         pros::millis() - start_time <= timeout*1000) {
 
-            // Odom::update_odometry();
-            float error_position = abs(targetAngle - rightTW.get());
+            float error_position;
+
+            prevErrorPosition = abs(targetAngle - getMotorPosition());
             float error_Facing = targetFaceAngle-positionSI.theta;
 
 
