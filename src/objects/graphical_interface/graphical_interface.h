@@ -10,7 +10,8 @@ public:
         MENU_LABEL,
         SELECTOR_CONTAINER,
         SELECTOR_SIDEBAR_CONTAINER,
-        SELECTOR_SIDEBAR_BUTTON,
+        SELECTOR_SIDEBAR_BUTTON_1,
+        SELECTOR_SIDEBAR_BUTTON_2,
         SELECTOR_BODY_CONTAINER,
         SELECTOR_BODY_LABEL
     };
@@ -20,7 +21,10 @@ public:
         MENU_RETURN,
         MENU_MENU,
         SELECTOR_AUTONOMOUS,
-        SELECTOR_SKILL
+        SELECTOR_SKILL,
+        SELECTOR_TEAM,
+        SELECTOR_MODE,
+        SELECTOR_POSITION
     };
     enum InterfaceStatus {
         HOME,
@@ -34,6 +38,7 @@ public:
     };
 
     static InterfaceStatus interface_status;
+    static int             interface_stage;
 
     GraphicalInterface();
     static void interface_hide_type(GraphicalInterface::InterfaceType object_type, bool object_hidden);

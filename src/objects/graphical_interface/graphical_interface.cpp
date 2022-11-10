@@ -8,10 +8,12 @@
 std::vector<GraphicalInterface::InterfaceComponent> GraphicalInterface::interface_components;
 std::vector<lv_style_t> GraphicalInterface::interface_style;
 GraphicalInterface::InterfaceStatus GraphicalInterface::interface_status;
+int GraphicalInterface::interface_stage;
 lv_res_t button_action_callback(lv_obj_t* button_object);
 
 GraphicalInterface::GraphicalInterface() {
     this->interface_status = GraphicalInterface::InterfaceStatus::HOME;
+    this->interface_stage  = 0;
     this->interface_menu();
     this->interface_window();
 }
@@ -41,19 +43,26 @@ void GraphicalInterface::interface_menu() {
     // selector
     lv_obj_t* selector_container = this->container_initialize(lv_scr_act(), GraphicalInterface::InterfaceType::SELECTOR_CONTAINER);
     this->object_scale(selector_container, WIDTH, (HEIGHT - 100), 0, 50);
-    // selector sidebar
+    // selector sidebar 1
     lv_obj_t* selector_sidebar            = this->container_initialize(selector_container, GraphicalInterface::InterfaceType::SELECTOR_SIDEBAR_CONTAINER);
-    lv_obj_t* selector_sidebar_autonomous = this->button_initialize(   selector_sidebar,   "Autonomous",  GraphicalInterface::InterfaceType::SELECTOR_SIDEBAR_BUTTON, GraphicalInterface::InterfaceAction::SELECTOR_AUTONOMOUS);
-    lv_obj_t* selector_sidebar_skill      = this->button_initialize(   selector_sidebar,   "Skill",       GraphicalInterface::InterfaceType::SELECTOR_SIDEBAR_BUTTON, GraphicalInterface::InterfaceAction::SELECTOR_SKILL);
+    lv_obj_t* selector_sidebar_autonomous = this->button_initialize(   selector_sidebar,   "Autonomous",  GraphicalInterface::InterfaceType::SELECTOR_SIDEBAR_BUTTON_1, GraphicalInterface::InterfaceAction::SELECTOR_AUTONOMOUS);
+    lv_obj_t* selector_sidebar_skill      = this->button_initialize(   selector_sidebar,   "Skill",       GraphicalInterface::InterfaceType::SELECTOR_SIDEBAR_BUTTON_1, GraphicalInterface::InterfaceAction::SELECTOR_SKILL);
     this->object_scale(selector_sidebar,            150, (HEIGHT - 100), 0, 0);
     this->object_scale(selector_sidebar_autonomous, 140, 50,             5, 5);
     this->object_scale(selector_sidebar_skill,      140, 50,             5, 60);
+    // selector sidebar 2
+    lv_obj_t* selector_sidebar_team     = this->button_initialize(selector_sidebar, "Team",     GraphicalInterface::InterfaceType::SELECTOR_SIDEBAR_BUTTON_2, GraphicalInterface::InterfaceAction::SELECTOR_TEAM);
+    lv_obj_t* selector_sidebar_mode     = this->button_initialize(selector_sidebar, "Mode",     GraphicalInterface::InterfaceType::SELECTOR_SIDEBAR_BUTTON_2, GraphicalInterface::InterfaceAction::SELECTOR_MODE);
+    lv_obj_t* selector_sidebar_position = this->button_initialize(selector_sidebar, "Position", GraphicalInterface::InterfaceType::SELECTOR_SIDEBAR_BUTTON_2, GraphicalInterface::InterfaceAction::SELECTOR_POSITION);
+    this->object_scale(selector_sidebar_team,     140, 50, 5, 5);
+    this->object_scale(selector_sidebar_mode,     140, 50, 5, 60);
+    this->object_scale(selector_sidebar_position, 140, 50, 5, 115);
     // selector body
     lv_obj_t* selector_body = this->container_initialize(selector_container, GraphicalInterface::InterfaceType::SELECTOR_BODY_CONTAINER);
     lv_obj_t* selector_body_label = this->label_initialize(selector_body, "All Nighters Selector Prototype", GraphicalInterface::InterfaceType::SELECTOR_BODY_LABEL);
     this->object_scale(selector_body,       (WIDTH - 150), (HEIGHT - 100), 150, 0);
     this->object_scale(selector_body_label, (WIDTH - 150), 16,             5,   5);
-    GraphicalInterface::InterfaceComponent selector_renderer[14] = {
+    GraphicalInterface::InterfaceComponent selector_renderer[17] = {
         {root_container,              NULL, GraphicalInterface::InterfaceType::MENU_CONTAINER},
         {root_button,                 NULL, GraphicalInterface::InterfaceType::MENU_BUTTON},
         {header_container,            NULL, GraphicalInterface::InterfaceType::MENU_CONTAINER},
@@ -64,8 +73,11 @@ void GraphicalInterface::interface_menu() {
         {footer_return,               NULL, GraphicalInterface::InterfaceType::MENU_BUTTON},
         {footer_menu,                 NULL, GraphicalInterface::InterfaceType::MENU_BUTTON},
         {selector_sidebar,            NULL, GraphicalInterface::InterfaceType::SELECTOR_SIDEBAR_CONTAINER},
-        {selector_sidebar_autonomous, NULL, GraphicalInterface::InterfaceType::SELECTOR_SIDEBAR_BUTTON},
-        {selector_sidebar_skill,      NULL, GraphicalInterface::InterfaceType::SELECTOR_SIDEBAR_BUTTON},
+        {selector_sidebar_autonomous, NULL, GraphicalInterface::InterfaceType::SELECTOR_SIDEBAR_BUTTON_1},
+        {selector_sidebar_skill,      NULL, GraphicalInterface::InterfaceType::SELECTOR_SIDEBAR_BUTTON_1},
+        {selector_sidebar_team,       NULL, GraphicalInterface::InterfaceType::SELECTOR_SIDEBAR_BUTTON_2},
+        {selector_sidebar_mode,       NULL, GraphicalInterface::InterfaceType::SELECTOR_SIDEBAR_BUTTON_2},
+        {selector_sidebar_position,   NULL, GraphicalInterface::InterfaceType::SELECTOR_SIDEBAR_BUTTON_2},
         {selector_body,               NULL, GraphicalInterface::InterfaceType::SELECTOR_BODY_CONTAINER},
         {selector_body_label,         NULL, GraphicalInterface::InterfaceType::SELECTOR_BODY_LABEL}
     };
@@ -96,7 +108,10 @@ void GraphicalInterface::object_style(GraphicalInterface::InterfaceComponent obj
             case GraphicalInterface::InterfaceType::SELECTOR_SIDEBAR_CONTAINER:
                 object_style_size = 1;
                 break;
-            case GraphicalInterface::InterfaceType::SELECTOR_SIDEBAR_BUTTON:
+            case GraphicalInterface::InterfaceType::SELECTOR_SIDEBAR_BUTTON_1:
+                object_style_size = 2;
+                break;
+            case GraphicalInterface::InterfaceType::SELECTOR_SIDEBAR_BUTTON_2:
                 object_style_size = 2;
                 break;
             case GraphicalInterface::InterfaceType::SELECTOR_BODY_CONTAINER:
@@ -145,7 +160,22 @@ void GraphicalInterface::object_style(GraphicalInterface::InterfaceComponent obj
                 this->interface_style[object_style_offset + 0].body.radius       = 0;
                 lv_obj_set_style(object_loop.object_pointer, &this->interface_style[object_style_offset + 0]);
                 break;
-            case GraphicalInterface::InterfaceType::SELECTOR_SIDEBAR_BUTTON:
+            case GraphicalInterface::InterfaceType::SELECTOR_SIDEBAR_BUTTON_1:
+                // 0=RELEASE 1=PRESS
+                this->interface_style[object_style_offset + 0].body.main_color   = Constants::GraphicalInterface::SELECTOR_SIDEBAR_BUTTON_BACKGROUND_RELEASED;
+                this->interface_style[object_style_offset + 0].body.grad_color   = Constants::GraphicalInterface::SELECTOR_SIDEBAR_BUTTON_BACKGROUND_RELEASED;
+                this->interface_style[object_style_offset + 0].text.color        = Constants::GraphicalInterface::BUTTON_FOREGROUND_RELEASED;
+                this->interface_style[object_style_offset + 0].body.border.width = 1; // border line width
+                this->interface_style[object_style_offset + 0].body.radius       = 2;
+                this->interface_style[object_style_offset + 1].body.main_color   = Constants::GraphicalInterface::SELECTOR_SIDEBAR_BUTTON_BACKGROUND_PRESSED;
+                this->interface_style[object_style_offset + 1].body.grad_color   = Constants::GraphicalInterface::SELECTOR_SIDEBAR_BUTTON_BACKGROUND_PRESSED;
+                this->interface_style[object_style_offset + 1].text.color        = Constants::GraphicalInterface::BUTTON_FOREGROUND_PRESSED;
+                this->interface_style[object_style_offset + 1].body.border.width = 1; // border line width
+                this->interface_style[object_style_offset + 1].body.radius       = 2;
+                lv_btn_set_style(object_loop.object_pointer, LV_BTN_STYLE_REL, &this->interface_style[object_style_offset + 0]);
+                lv_btn_set_style(object_loop.object_pointer, LV_BTN_STYLE_PR,  &this->interface_style[object_style_offset + 1]);
+                break;
+            case GraphicalInterface::InterfaceType::SELECTOR_SIDEBAR_BUTTON_2:
                 // 0=RELEASE 1=PRESS
                 this->interface_style[object_style_offset + 0].body.main_color   = Constants::GraphicalInterface::SELECTOR_SIDEBAR_BUTTON_BACKGROUND_RELEASED;
                 this->interface_style[object_style_offset + 0].body.grad_color   = Constants::GraphicalInterface::SELECTOR_SIDEBAR_BUTTON_BACKGROUND_RELEASED;
@@ -207,7 +237,7 @@ lv_obj_t* GraphicalInterface::button_initialize(lv_obj_t* button_parent, std::st
     lv_obj_t* button_object  = lv_btn_create(button_parent, NULL);
     lv_obj_t* button_label = this->label_initialize(button_object, button_text, GraphicalInterface::InterfaceType::MENU_LABEL);
     lv_obj_set_free_num(button_object, button_action);
-    lv_btn_set_action(button_object, LV_BTN_ACTION_PR, button_action_callback);
+    lv_btn_set_action(button_object, LV_BTN_ACTION_CLICK, button_action_callback);
     this->interface_components.push_back({button_object, button_parent, button_type});
     return button_object;
 }
@@ -228,12 +258,14 @@ void GraphicalInterface::interface_hide_type(GraphicalInterface::InterfaceType o
 
 void GraphicalInterface::interface_window() {
     std::map<GraphicalInterface::InterfaceType, bool> interface_visibility = {
-        {GraphicalInterface::InterfaceType::SELECTOR_CONTAINER, GraphicalInterface::InterfaceStatus::SELECTOR}
+        {GraphicalInterface::InterfaceType::SELECTOR_CONTAINER, (GraphicalInterface::interface_status == GraphicalInterface::InterfaceStatus::SELECTOR)},
+        {GraphicalInterface::InterfaceType::SELECTOR_SIDEBAR_BUTTON_1, (GraphicalInterface::interface_status == GraphicalInterface::InterfaceStatus::SELECTOR && GraphicalInterface::interface_stage == 0)},
+        {GraphicalInterface::InterfaceType::SELECTOR_SIDEBAR_BUTTON_2, (GraphicalInterface::interface_status == GraphicalInterface::InterfaceStatus::SELECTOR && GraphicalInterface::interface_stage == 1)}
     };
     for (int component_index = 0; component_index < GraphicalInterface::interface_components.size(); component_index++) {
         GraphicalInterface::InterfaceComponent loop_component = GraphicalInterface::interface_components[component_index];
         if (interface_visibility.find(loop_component.object_type) == interface_visibility.end()) continue;
-        lv_obj_set_hidden(loop_component.object_pointer, interface_visibility[loop_component.object_type] != GraphicalInterface::interface_status);
+        lv_obj_set_hidden(loop_component.object_pointer, !interface_visibility[loop_component.object_type]);
     }
 }
 
@@ -241,12 +273,20 @@ lv_res_t button_action_callback(lv_obj_t* button_object) {
     uint32_t button_id = lv_obj_get_free_num(button_object);
     switch (button_id) {
         case GraphicalInterface::InterfaceAction::MENU_SELECTOR:
-            //GraphicalInterface::interface_hide_type(GraphicalInterface::InterfaceType::SELECTOR_CONTAINER, false);
             GraphicalInterface::interface_status = GraphicalInterface::InterfaceStatus::SELECTOR;
+            GraphicalInterface::interface_stage  = 0;
+            break;
+        case GraphicalInterface::InterfaceAction::SELECTOR_AUTONOMOUS:
+            GraphicalInterface::interface_status = GraphicalInterface::InterfaceStatus::SELECTOR;
+            GraphicalInterface::interface_stage  = 1;
+            break;
+        case GraphicalInterface::InterfaceAction::SELECTOR_SKILL:
+            GraphicalInterface::interface_status = GraphicalInterface::InterfaceStatus::SELECTOR;
+            GraphicalInterface::interface_stage  = 1;
             break;
         case GraphicalInterface::InterfaceAction::MENU_UTILITIES:
-            //GraphicalInterface::interface_hide_type(GraphicalInterface::InterfaceType::SELECTOR_CONTAINER, true);
             GraphicalInterface::interface_status = GraphicalInterface::InterfaceStatus::UTILITIES;
+            GraphicalInterface::interface_stage  = 0;
             break;
     }
     GraphicalInterface::interface_window();
