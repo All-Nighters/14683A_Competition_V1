@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <any>
 #include "main.h"
 
 class GraphicalInterface {
@@ -31,18 +32,36 @@ public:
         SELECTOR,
         UTILITIES
     };
+    enum InterfaceConfiguration {
+        GAME_ROUND,
+        GAME_TEAM,
+        GAME_MODE,
+        GAME_POSITION
+    };
+    enum InterfaceSelector {
+        SELECTOR_ROUND_AUTONOMOUS,
+        SELECTOR_ROUND_SKILL,
+        SELECTOR_TEAM_RED,
+        SELECTOR_TEAM_BLUE,
+        SELECTOR_MODE_SCORE,
+        SELECTOR_MODE_SUPPORT,
+        SELECTOR_MODE_IDLE,
+        SELECTOR_POSITION_1,
+        SELECTOR_POSITION_2
+    };
     struct InterfaceComponent {
         lv_obj_t*                         object_pointer;
         lv_obj_t*                         object_parent;
         GraphicalInterface::InterfaceType object_type;
     };
 
-    static InterfaceStatus interface_status;
-    static int             interface_stage;
+    static InterfaceStatus                                                interface_status;
+    static int                                                            interface_stage;
+    static std::map<GraphicalInterface::InterfaceConfiguration, std::any> interface_configuration;
 
     GraphicalInterface();
     static void interface_hide_type(GraphicalInterface::InterfaceType object_type, bool object_hidden);
-    static void interface_window();
+    static void interface_rerender();
 
 private:
     static std::vector<InterfaceComponent> interface_components;

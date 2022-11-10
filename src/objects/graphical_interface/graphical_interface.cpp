@@ -9,13 +9,22 @@ std::vector<GraphicalInterface::InterfaceComponent> GraphicalInterface::interfac
 std::vector<lv_style_t> GraphicalInterface::interface_style;
 GraphicalInterface::InterfaceStatus GraphicalInterface::interface_status;
 int GraphicalInterface::interface_stage;
+std::map<GraphicalInterface::InterfaceConfiguration, std::any> GraphicalInterface::interface_configuration;
 lv_res_t button_action_callback(lv_obj_t* button_object);
 
 GraphicalInterface::GraphicalInterface() {
+    // default values
     this->interface_status = GraphicalInterface::InterfaceStatus::HOME;
     this->interface_stage  = 0;
+    this->interface_configuration = {
+        {GraphicalInterface::InterfaceConfiguration::GAME_ROUND, GraphicalInterface::InterfaceSelector::SELECTOR_ROUND_AUTONOMOUS},
+        {GraphicalInterface::InterfaceConfiguration::GAME_TEAM, GraphicalInterface::InterfaceSelector::SELECTOR_TEAM_RED},
+        {GraphicalInterface::InterfaceConfiguration::GAME_MODE, GraphicalInterface::InterfaceSelector::SELECTOR_MODE_IDLE},
+        {GraphicalInterface::InterfaceConfiguration::GAME_POSITION, GraphicalInterface::InterfaceSelector::SELECTOR_POSITION_1}
+    };
+    // render
     this->interface_menu();
-    this->interface_window();
+    this->interface_rerender();
 }
 
 void GraphicalInterface::interface_menu() {
@@ -36,7 +45,7 @@ void GraphicalInterface::interface_menu() {
     // footer
     lv_obj_t* footer_container = this->container_initialize(lv_scr_act(), GraphicalInterface::InterfaceType::MENU_CONTAINER);
     lv_obj_t* footer_return    = this->button_initialize(footer_container, "Return", GraphicalInterface::InterfaceType::MENU_BUTTON, GraphicalInterface::InterfaceAction::MENU_RETURN);
-    lv_obj_t* footer_menu      = this->button_initialize(footer_container, "Menu"  , GraphicalInterface::InterfaceType::MENU_BUTTON, GraphicalInterface::InterfaceAction::MENU_SELECTOR);
+    lv_obj_t* footer_menu      = this->button_initialize(footer_container, "Menu"  , GraphicalInterface::InterfaceType::MENU_BUTTON, GraphicalInterface::InterfaceAction::MENU_MENU);
     this->object_scale(footer_container, 480, 50, 0, (HEIGHT - 50));
     this->object_scale(footer_return   , 100, 50, 0, 0);
     this->object_scale(footer_menu     , 100, 50, (WIDTH - 100), 0);
@@ -54,12 +63,12 @@ void GraphicalInterface::interface_menu() {
     lv_obj_t* selector_sidebar_team     = this->button_initialize(selector_sidebar, "Team",     GraphicalInterface::InterfaceType::SELECTOR_SIDEBAR_BUTTON_2, GraphicalInterface::InterfaceAction::SELECTOR_TEAM);
     lv_obj_t* selector_sidebar_mode     = this->button_initialize(selector_sidebar, "Mode",     GraphicalInterface::InterfaceType::SELECTOR_SIDEBAR_BUTTON_2, GraphicalInterface::InterfaceAction::SELECTOR_MODE);
     lv_obj_t* selector_sidebar_position = this->button_initialize(selector_sidebar, "Position", GraphicalInterface::InterfaceType::SELECTOR_SIDEBAR_BUTTON_2, GraphicalInterface::InterfaceAction::SELECTOR_POSITION);
-    this->object_scale(selector_sidebar_team,     140, 50, 5, 5);
-    this->object_scale(selector_sidebar_mode,     140, 50, 5, 60);
-    this->object_scale(selector_sidebar_position, 140, 50, 5, 115);
+    this->object_scale(selector_sidebar_team,     140, (HEIGHT - 120) / 3, 5, 5);
+    this->object_scale(selector_sidebar_mode,     140, (HEIGHT - 120) / 3, 5, 10 + (HEIGHT - 120) * (1.0f / 3.0f));
+    this->object_scale(selector_sidebar_position, 140, (HEIGHT - 120) / 3, 5, 15 + (HEIGHT - 120) * (2.0f / 3.0f));
     // selector body
     lv_obj_t* selector_body = this->container_initialize(selector_container, GraphicalInterface::InterfaceType::SELECTOR_BODY_CONTAINER);
-    lv_obj_t* selector_body_label = this->label_initialize(selector_body, "All Nighters Selector Prototype", GraphicalInterface::InterfaceType::SELECTOR_BODY_LABEL);
+    lv_obj_t* selector_body_label = this->label_initialize(selector_body, "Loading...", GraphicalInterface::InterfaceType::SELECTOR_BODY_LABEL);
     this->object_scale(selector_body,       (WIDTH - 150), (HEIGHT - 100), 150, 0);
     this->object_scale(selector_body_label, (WIDTH - 150), 16,             5,   5);
     GraphicalInterface::InterfaceComponent selector_renderer[17] = {
@@ -256,7 +265,7 @@ void GraphicalInterface::interface_hide_type(GraphicalInterface::InterfaceType o
     }
 }
 
-void GraphicalInterface::interface_window() {
+void GraphicalInterface::interface_rerender() {
     std::map<GraphicalInterface::InterfaceType, bool> interface_visibility = {
         {GraphicalInterface::InterfaceType::SELECTOR_CONTAINER, (GraphicalInterface::interface_status == GraphicalInterface::InterfaceStatus::SELECTOR)},
         {GraphicalInterface::InterfaceType::SELECTOR_SIDEBAR_BUTTON_1, (GraphicalInterface::interface_status == GraphicalInterface::InterfaceStatus::SELECTOR && GraphicalInterface::interface_stage == 0)},
@@ -265,12 +274,46 @@ void GraphicalInterface::interface_window() {
     for (int component_index = 0; component_index < GraphicalInterface::interface_components.size(); component_index++) {
         GraphicalInterface::InterfaceComponent loop_component = GraphicalInterface::interface_components[component_index];
         if (interface_visibility.find(loop_component.object_type) == interface_visibility.end()) continue;
+        //if (lv_obj_get_hidden(loop_component.object_pointer) == !interface_visibility[loop_component.object_type]) continue;
         lv_obj_set_hidden(loop_component.object_pointer, !interface_visibility[loop_component.object_type]);
+    }
+    if (GraphicalInterface::interface_status == GraphicalInterface::InterfaceStatus::SELECTOR) {
+        std::vector<GraphicalInterface::InterfaceComponent> selector_description_objects = GraphicalInterface::get_children_by_type(GraphicalInterface::InterfaceType::SELECTOR_BODY_LABEL);
+        static std::map<GraphicalInterface::InterfaceSelector, std::string> configuration_display = {
+            {GraphicalInterface::InterfaceSelector::SELECTOR_ROUND_AUTONOMOUS, "Autonomous"},
+            {GraphicalInterface::InterfaceSelector::SELECTOR_ROUND_SKILL, "Skill"},
+            {GraphicalInterface::InterfaceSelector::SELECTOR_MODE_SCORE, "Score"},
+            {GraphicalInterface::InterfaceSelector::SELECTOR_MODE_SUPPORT, "Support"},
+            {GraphicalInterface::InterfaceSelector::SELECTOR_MODE_IDLE, "Idle"},
+            {GraphicalInterface::InterfaceSelector::SELECTOR_TEAM_RED, "Red"},
+            {GraphicalInterface::InterfaceSelector::SELECTOR_TEAM_BLUE, "Blue"},
+            {GraphicalInterface::InterfaceSelector::SELECTOR_POSITION_1, "Position #1"},
+            {GraphicalInterface::InterfaceSelector::SELECTOR_POSITION_2, "Position #2"}
+        };
+        GraphicalInterface::GraphicalInterface::InterfaceSelector selector_description_round    = std::any_cast<GraphicalInterface::GraphicalInterface::InterfaceSelector>(GraphicalInterface::interface_configuration[GraphicalInterface::InterfaceConfiguration::GAME_ROUND]);
+        GraphicalInterface::GraphicalInterface::InterfaceSelector selector_description_team     = std::any_cast<GraphicalInterface::GraphicalInterface::InterfaceSelector>(GraphicalInterface::interface_configuration[GraphicalInterface::InterfaceConfiguration::GAME_TEAM]);
+        GraphicalInterface::GraphicalInterface::InterfaceSelector selector_description_mode     = std::any_cast<GraphicalInterface::GraphicalInterface::InterfaceSelector>(GraphicalInterface::interface_configuration[GraphicalInterface::InterfaceConfiguration::GAME_MODE]);
+        GraphicalInterface::GraphicalInterface::InterfaceSelector selector_description_position = std::any_cast<GraphicalInterface::GraphicalInterface::InterfaceSelector>(GraphicalInterface::interface_configuration[GraphicalInterface::InterfaceConfiguration::GAME_POSITION]);
+        std::string selector_description_text =
+            "Round: " + configuration_display[selector_description_round] + "\n" +
+            "Team: " + configuration_display[selector_description_team] + "\n" +
+            "Mode: " + configuration_display[selector_description_mode] + "\n" +
+            "Position: " + configuration_display[selector_description_position];
+        lv_label_set_text(selector_description_objects[0].object_pointer, selector_description_text.c_str());
     }
 }
 
 lv_res_t button_action_callback(lv_obj_t* button_object) {
     uint32_t button_id = lv_obj_get_free_num(button_object);
+    static std::map<GraphicalInterface::InterfaceSelector, GraphicalInterface::InterfaceSelector> selector_configuration_toggle = {
+        {GraphicalInterface::InterfaceSelector::SELECTOR_TEAM_RED, GraphicalInterface::InterfaceSelector::SELECTOR_TEAM_BLUE},
+        {GraphicalInterface::InterfaceSelector::SELECTOR_TEAM_BLUE, GraphicalInterface::InterfaceSelector::SELECTOR_TEAM_RED},
+        {GraphicalInterface::InterfaceSelector::SELECTOR_MODE_SCORE, GraphicalInterface::InterfaceSelector::SELECTOR_MODE_SUPPORT},
+        {GraphicalInterface::InterfaceSelector::SELECTOR_MODE_SUPPORT, GraphicalInterface::InterfaceSelector::SELECTOR_MODE_IDLE},
+        {GraphicalInterface::InterfaceSelector::SELECTOR_MODE_IDLE, GraphicalInterface::InterfaceSelector::SELECTOR_MODE_SCORE},
+        {GraphicalInterface::InterfaceSelector::SELECTOR_POSITION_1, GraphicalInterface::InterfaceSelector::SELECTOR_POSITION_2},
+        {GraphicalInterface::InterfaceSelector::SELECTOR_POSITION_2, GraphicalInterface::InterfaceSelector::SELECTOR_POSITION_1}
+    };
     switch (button_id) {
         case GraphicalInterface::InterfaceAction::MENU_SELECTOR:
             GraphicalInterface::interface_status = GraphicalInterface::InterfaceStatus::SELECTOR;
@@ -279,16 +322,40 @@ lv_res_t button_action_callback(lv_obj_t* button_object) {
         case GraphicalInterface::InterfaceAction::SELECTOR_AUTONOMOUS:
             GraphicalInterface::interface_status = GraphicalInterface::InterfaceStatus::SELECTOR;
             GraphicalInterface::interface_stage  = 1;
+            GraphicalInterface::interface_configuration[GraphicalInterface::InterfaceConfiguration::GAME_ROUND] = GraphicalInterface::InterfaceSelector::SELECTOR_ROUND_AUTONOMOUS;
             break;
         case GraphicalInterface::InterfaceAction::SELECTOR_SKILL:
             GraphicalInterface::interface_status = GraphicalInterface::InterfaceStatus::SELECTOR;
             GraphicalInterface::interface_stage  = 1;
+            GraphicalInterface::interface_configuration[GraphicalInterface::InterfaceConfiguration::GAME_ROUND] = GraphicalInterface::InterfaceSelector::SELECTOR_ROUND_SKILL;
             break;
+        case GraphicalInterface::InterfaceAction::SELECTOR_TEAM: {
+            GraphicalInterface::interface_status = GraphicalInterface::InterfaceStatus::SELECTOR;
+            GraphicalInterface::interface_stage  = 1;
+            GraphicalInterface::InterfaceSelector previous_team = std::any_cast<GraphicalInterface::InterfaceSelector>(GraphicalInterface::interface_configuration[GraphicalInterface::InterfaceConfiguration::GAME_TEAM]);
+            GraphicalInterface::interface_configuration[GraphicalInterface::InterfaceConfiguration::GAME_TEAM] = selector_configuration_toggle[previous_team];
+            break; }
+        case GraphicalInterface::InterfaceAction::SELECTOR_MODE: {
+            GraphicalInterface::interface_status = GraphicalInterface::InterfaceStatus::SELECTOR;
+            GraphicalInterface::interface_stage  = 1;
+            GraphicalInterface::InterfaceSelector previous_mode = std::any_cast<GraphicalInterface::InterfaceSelector>(GraphicalInterface::interface_configuration[GraphicalInterface::InterfaceConfiguration::GAME_MODE]);
+            GraphicalInterface::interface_configuration[GraphicalInterface::InterfaceConfiguration::GAME_MODE] = selector_configuration_toggle[previous_mode];
+            break; }
+        case GraphicalInterface::InterfaceAction::SELECTOR_POSITION: {
+            GraphicalInterface::interface_status = GraphicalInterface::InterfaceStatus::SELECTOR;
+            GraphicalInterface::interface_stage  = 1;
+            GraphicalInterface::InterfaceSelector previous_position = std::any_cast<GraphicalInterface::InterfaceSelector>(GraphicalInterface::interface_configuration[GraphicalInterface::InterfaceConfiguration::GAME_POSITION]);
+            GraphicalInterface::interface_configuration[GraphicalInterface::InterfaceConfiguration::GAME_POSITION] = selector_configuration_toggle[previous_position];
+            break; }
         case GraphicalInterface::InterfaceAction::MENU_UTILITIES:
             GraphicalInterface::interface_status = GraphicalInterface::InterfaceStatus::UTILITIES;
             GraphicalInterface::interface_stage  = 0;
             break;
+        case GraphicalInterface::InterfaceAction::MENU_MENU:
+            GraphicalInterface::interface_status = GraphicalInterface::InterfaceStatus::HOME;
+            GraphicalInterface::interface_stage  = 0;
+            break;
     }
-    GraphicalInterface::interface_window();
+    GraphicalInterface::interface_rerender();
     return LV_RES_OK;
 }
