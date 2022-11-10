@@ -12,14 +12,18 @@ lv_res_t button_action_callback(lv_obj_t* button_object);
 
 GraphicalInterface::GraphicalInterface() {
     this->interface_menu();
-    this->interface_selector();
 }
 
 void GraphicalInterface::interface_menu() {
+    // root (hidden)
+    lv_obj_t* root_container = this->container_initialize(lv_scr_act(), GraphicalInterface::InterfaceType::MENU_CONTAINER);
+    lv_obj_t* root_button  = this->button_initialize(root_container, "",  GraphicalInterface::InterfaceType::MENU_BUTTON, GraphicalInterface::InterfaceAction::MENU_SELECTOR);
+    this->object_scale(root_container, 0, 0, 0, 0);
+    this->object_scale(root_button, 0, 0, 0, 0);
     // header
     lv_obj_t* header_container = this->container_initialize(lv_scr_act(), GraphicalInterface::InterfaceType::MENU_CONTAINER);
-    lv_obj_t* header_selector  = this->button_initialize(header_container, "Selector",  GraphicalInterface::InterfaceType::MENU_CONTAINER, GraphicalInterface::InterfaceAction::MENU_SELECTOR);
-    lv_obj_t* header_utilities = this->button_initialize(header_container, "Utilities", GraphicalInterface::InterfaceType::MENU_CONTAINER, GraphicalInterface::InterfaceAction::MENU_UTILITIES);
+    lv_obj_t* header_selector  = this->button_initialize(header_container, "Selector",  GraphicalInterface::InterfaceType::MENU_BUTTON, GraphicalInterface::InterfaceAction::MENU_SELECTOR);
+    lv_obj_t* header_utilities = this->button_initialize(header_container, "Utilities", GraphicalInterface::InterfaceType::MENU_BUTTON, GraphicalInterface::InterfaceAction::MENU_UTILITIES);
     lv_obj_t* header_label     = this->label_initialize(header_container,  "  14683A",  GraphicalInterface::InterfaceType::MENU_LABEL);
     this->object_scale(header_container, 480, 50, 0, 0);
     this->object_scale(header_selector , 100, 50, 0, 0);
@@ -27,25 +31,11 @@ void GraphicalInterface::interface_menu() {
     this->object_scale(header_label, 100, 16, (WIDTH - 100), (50 / 3));
     // footer
     lv_obj_t* footer_container = this->container_initialize(lv_scr_act(), GraphicalInterface::InterfaceType::MENU_CONTAINER);
-    lv_obj_t* footer_return    = this->button_initialize(footer_container, "Return", GraphicalInterface::InterfaceType::MENU_CONTAINER, GraphicalInterface::InterfaceAction::MENU_RETURN);
-    lv_obj_t* footer_menu      = this->button_initialize(footer_container, "Menu"  , GraphicalInterface::InterfaceType::MENU_CONTAINER, GraphicalInterface::InterfaceAction::MENU_MENU);
+    lv_obj_t* footer_return    = this->button_initialize(footer_container, "Return", GraphicalInterface::InterfaceType::MENU_BUTTON, GraphicalInterface::InterfaceAction::MENU_RETURN);
+    lv_obj_t* footer_menu      = this->button_initialize(footer_container, "Menu"  , GraphicalInterface::InterfaceType::MENU_BUTTON, GraphicalInterface::InterfaceAction::MENU_SELECTOR);
     this->object_scale(footer_container, 480, 50, 0, (HEIGHT - 50));
     this->object_scale(footer_return   , 100, 50, 0, 0);
     this->object_scale(footer_menu     , 100, 50, (WIDTH - 100), 0);
-    // style
-    GraphicalInterface::InterfaceComponent header_renderer[7] = {
-        {header_container, NULL, GraphicalInterface::InterfaceType::MENU_CONTAINER},
-        {header_selector,  NULL, GraphicalInterface::InterfaceType::MENU_BUTTON},
-        {header_utilities, NULL, GraphicalInterface::InterfaceType::MENU_BUTTON},
-        {header_label,     NULL, GraphicalInterface::InterfaceType::MENU_LABEL},
-        {footer_container, NULL, GraphicalInterface::InterfaceType::MENU_CONTAINER},
-        {footer_return,    NULL, GraphicalInterface::InterfaceType::MENU_BUTTON},
-        {footer_menu,      NULL, GraphicalInterface::InterfaceType::MENU_BUTTON},
-    };
-    this->object_style(header_renderer, sizeof(header_renderer) / sizeof(header_renderer[0]));
-}
-
-void GraphicalInterface::interface_selector() {
     // selector
     lv_obj_t* selector_container = this->container_initialize(lv_scr_act(), GraphicalInterface::InterfaceType::SELECTOR_CONTAINER);
     this->object_scale(selector_container, WIDTH, (HEIGHT - 100), 0, 50);
@@ -61,7 +51,16 @@ void GraphicalInterface::interface_selector() {
     lv_obj_t* selector_body_label = this->label_initialize(selector_body, "All Nighters Selector Prototype", GraphicalInterface::InterfaceType::SELECTOR_BODY_LABEL);
     this->object_scale(selector_body,       (WIDTH - 150), (HEIGHT - 100), 150, 0);
     this->object_scale(selector_body_label, (WIDTH - 150), 16,             5,   5);
-    GraphicalInterface::InterfaceComponent selector_renderer[5] = {
+    GraphicalInterface::InterfaceComponent selector_renderer[14] = {
+        {root_container,              NULL, GraphicalInterface::InterfaceType::MENU_CONTAINER},
+        {root_button,                 NULL, GraphicalInterface::InterfaceType::MENU_BUTTON},
+        {header_container,            NULL, GraphicalInterface::InterfaceType::MENU_CONTAINER},
+        {header_selector,             NULL, GraphicalInterface::InterfaceType::MENU_BUTTON},
+        {header_utilities,            NULL, GraphicalInterface::InterfaceType::MENU_BUTTON},
+        {header_label,                NULL, GraphicalInterface::InterfaceType::MENU_LABEL},
+        {footer_container,            NULL, GraphicalInterface::InterfaceType::MENU_CONTAINER},
+        {footer_return,               NULL, GraphicalInterface::InterfaceType::MENU_BUTTON},
+        {footer_menu,                 NULL, GraphicalInterface::InterfaceType::MENU_BUTTON},
         {selector_sidebar,            NULL, GraphicalInterface::InterfaceType::SELECTOR_SIDEBAR_CONTAINER},
         {selector_sidebar_autonomous, NULL, GraphicalInterface::InterfaceType::SELECTOR_SIDEBAR_BUTTON},
         {selector_sidebar_skill,      NULL, GraphicalInterface::InterfaceType::SELECTOR_SIDEBAR_BUTTON},
@@ -213,7 +212,7 @@ lv_obj_t* GraphicalInterface::button_initialize(lv_obj_t* button_parent, std::st
 
 lv_obj_t* GraphicalInterface::label_initialize(lv_obj_t* label_parent, std::string label_text, GraphicalInterface::InterfaceType label_type) {
     lv_obj_t* label_object = lv_label_create(label_parent, NULL);
-	lv_label_set_text(label_object, label_text.c_str());
+    lv_label_set_text(label_object, label_text.c_str());
     this->interface_components.push_back({label_object, label_parent, label_type});
     return label_object;
 }

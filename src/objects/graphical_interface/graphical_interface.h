@@ -42,7 +42,6 @@ private:
     static std::vector<lv_style_t>         interface_style;
 
     void interface_menu();
-    void interface_selector();
     void object_scale(lv_obj_t* object, lv_coord_t width, lv_coord_t height, lv_coord_t x_coordinates, lv_coord_t y_coordinates);
     void object_style(GraphicalInterface::InterfaceComponent objects[], int objects_size);
 
