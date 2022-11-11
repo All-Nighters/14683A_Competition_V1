@@ -83,6 +83,9 @@ namespace Roller {
         RFMotor.moveVelocity(0);
         LBMotor.moveVelocity(0);
         RBMotor.moveVelocity(0);
+
+        velocity = 0;
+        RollerMotor.moveVelocity(velocity);
     }
     void stop() {
         RollerMotor.moveVelocity(0);

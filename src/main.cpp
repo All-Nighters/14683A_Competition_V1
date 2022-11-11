@@ -159,41 +159,44 @@ void opcontrol() {
 	}
 
 	Flywheel::setLinearEjectVelocity(8);
+
+	/*
+	For controls, see globals.hpp
+	*/
 	while (true) {
 
-		drive->getModel()->arcade(controller.getAnalog(ControllerAnalog::leftY), 0.5*controller.getAnalog(ControllerAnalog::rightX));
+		drive->getModel()->arcade(controller.getAnalog(ForwardAxis), 0.5*controller.getAnalog(TurnAxis));
 
-		// if (controller.getDigital(ControllerDigital::R1)) {
-		// 	RollerMotor.moveVelocity(100);
-		// } else if (controller.getDigital(ControllerDigital::R2)) {
-		// 	RollerMotor.moveVelocity(-100);
-		// } else {
-		// 	RollerMotor.moveVelocity(0);
-		// }
+		if (controller.getDigital(RollerDownButton)) {
+			RollerMotor.moveVelocity(100);
+		} else if (controller.getDigital(RollerUpButton)) {
+			RollerMotor.moveVelocity(-100);
+		} else {
+			RollerMotor.moveVelocity(0);
+		}
 
-		// if (controller.getDigital(ControllerDigital::B)) {
-		// 	Intake::toggle();
-		// }
+		if (controller.getDigital(IntakeButton)) {
+			Intake::turnOn();
+		} else {
+			Intake::turnOff();
+		}
 
-		// if (controller.getDigital(ControllerDigital::down)) {
-		// 	if (!Auto::settled) {
-		// 		Auto::faceCoordinateAsync(HighGoalPositionPercent[0], HighGoalPositionPercent[1], true);
-		// 	}
-		// }
+		if (controller.getDigital(AimButton)) {
+			if (!Auto::settled) {
+				Auto::faceCoordinateAsync(HighGoalPositionPercent[0], HighGoalPositionPercent[1], true);
+			}
+		}
 
-		if (controller.getDigital(ControllerDigital::R2)) {
+		if (controller.getDigital(ShootButton)) {
 			Gun::shootDisk();
 		}
 
-		if (controller.getDigital(ControllerDigital::X)) {
-			Gun::reposition();
-		}
 
-		// // expansion
-		// if (pros::millis()-round_begin_milliseconds >= 105 * 1000 && controller.getDigital(ControllerDigital::Y)) {
-		// 	piston.set_value(true); // remember to change the value in autos.cpp
+		// expansion
+		if (pros::millis()-round_begin_milliseconds >= 105 * 1000 && controller.getDigital(ExpansionButton)) {
+			piston.set_value(true); // remember to change the value in autos.cpp
 			
-		// }
+		}
 
 		pros::delay(20);
 	}

@@ -32,9 +32,9 @@ namespace Flywheel {
          */
         void graph_velocity()
         {
-            printf("%f\n", keepRunningGrapher);
             while (keepRunningGrapher) 
             {
+                printf("%f\n", queuedLinearVelocity);
                 float target = queuedLinearVelocity;
                 float current = Flywheel::getCurrentEjectVelocity();
 

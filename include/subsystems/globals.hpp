@@ -71,6 +71,22 @@ inline int frontRightMotorPort = 2;
 inline int bottomRightMotorPort = -3;
 inline int bottomLeftMotorPort = -4;
 
+inline int flywheelMotorPort1 = 5;
+inline int flywheelMotorPort2 = -6;
+inline int intakeMotorPort = 7;
+inline int rollerMotorPort = 8;
+inline int indexerMotorPort = -11;
+
+/**
+ * Sensor ports
+*/
+
+inline int visionPort = 12;
+inline int imuSensorPort1 = 9;
+inline int imuSensorPort2 = 10;
+inline char loadSensorPort = 'A';
+inline char intakeSensorPort = 'B';
+
 /**
  * Encoder ports
 */
@@ -79,10 +95,23 @@ inline char rightEncoderPort[] = {'C', 'D'};
 inline char middleEncoderPort[] = {'E', 'F'};
 
 /**
- * Driver settings
+ * ADI out ports
 */
-inline bool fullAuto = false; // allow full auto shooting
-inline bool useXDrive = false; // allow strafe movement
+
+inline char pistonPort = 'H';
+
+/**
+ * Driver Controls
+*/
+inline ControllerAnalog ForwardAxis = ControllerAnalog::leftY;
+inline ControllerAnalog TurnAxis = ControllerAnalog::rightX;
+
+inline ControllerDigital IntakeButton = ControllerDigital::B;
+inline ControllerDigital RollerUpButton = ControllerDigital::L1;
+inline ControllerDigital RollerDownButton = ControllerDigital::L2;
+inline ControllerDigital AimButton = ControllerDigital::down;
+inline ControllerDigital ShootButton = ControllerDigital::R2;
+inline ControllerDigital ExpansionButton = ControllerDigital::X;
 
 /**
  * Goal position corordinates

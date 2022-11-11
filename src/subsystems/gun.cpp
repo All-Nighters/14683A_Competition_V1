@@ -2,8 +2,6 @@
 
 
 namespace Gun {
-    double Cv = 0.47; // y direction drag coefficient
-    double Ch = 0.47; // x direction drag coefficient
 
     int diskCountForAsync = 0;
     int desiredLinearEjectVelocity = 0;
@@ -26,7 +24,6 @@ namespace Gun {
     void reposition() {
         IndexerMotor.moveVoltage(8000); // move the indexer
         while (load_sensor.get_value() == 0) { 
-            printf("%d\n", load_sensor.get_value());
             ; // wait until the indexer is loaded
         }
         IndexerMotor.moveVoltage(0);
@@ -65,7 +62,6 @@ namespace Gun {
      * 
      */
     bool readyToShoot() {
-        printf("%f %f\n", desiredLinearEjectVelocity, Flywheel::getCurrentEjectVelocity());
         return abs(desiredLinearEjectVelocity - Flywheel::getCurrentEjectVelocity()) <= 0.1;
         
     }

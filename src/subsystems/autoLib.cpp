@@ -166,7 +166,6 @@ namespace Auto {
 
             prev_error = error;
 
-            printf("%f, %f\n", positionSI.theta, target_angle);
             // controller.setText(0,0,std::to_string(positionSI.theta) + ", " + std::to_string(target_angle));
             if (target_angle - positionSI.theta > 0) {
                 LFMotor.moveVoltage(control_output);
@@ -183,7 +182,6 @@ namespace Auto {
             // Odom::debug();
             pros::delay(20);
         }
-        printf("Angle reached\n");
 
         LFMotor.moveVoltage(0);
         RFMotor.moveVoltage(0);
@@ -234,7 +232,6 @@ namespace Auto {
 
             pros::delay(20);
         }
-        printf("Angle reached\n");
 
         LFMotor.moveVoltage(0);
         RFMotor.moveVoltage(0);
@@ -316,8 +313,7 @@ namespace Auto {
         } else {
             faceAngle = formatAngle(relativeAngle - positionSI.theta);
         }
-        printf("%f %f %f %f %f\n", xPercent, yPercent, positionSI.xPercent, positionSI.yPercent, faceAngle);
-
+\
         turnAngle(faceAngle);
         settled = true;
     }
@@ -360,9 +356,7 @@ namespace Auto {
         float yDist = yPercent - positionSI.yPercent;
         float dist = sqrt(xDist*xDist + yDist*yDist);
 
-        printf("face\n");
         faceCoordinate(xPercent, yPercent, false);
-        printf("move\n");
         moveDistance(dist);
 
     }
