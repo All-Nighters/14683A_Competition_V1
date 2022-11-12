@@ -27,6 +27,10 @@ GraphicalInterface::GraphicalInterface() {
     // render
     this->interface_menu();
     this->interface_rerender();
+    /*while (true) {
+        printf("SIZE: %d\n", GraphicalInterface::interface_history.size());
+        pros::delay(1000);
+    }*/
 }
 
 void GraphicalInterface::interface_menu() {
@@ -51,6 +55,9 @@ void GraphicalInterface::interface_menu() {
     this->object_scale(footer_container, 480, 50, 0, (HEIGHT - 50));
     this->object_scale(footer_return   , 100, 50, 0, 0);
     this->object_scale(footer_menu     , 100, 50, (WIDTH - 100), 0);
+    // home screen
+    lv_obj_t* home_container = this->container_initialize(lv_scr_act(), GraphicalInterface::InterfaceType::HOME_CONTAINER);
+    this->object_scale(home_container, WIDTH, (HEIGHT - 100), 0, 50);
     // selector
     lv_obj_t* selector_container = this->container_initialize(lv_scr_act(), GraphicalInterface::InterfaceType::SELECTOR_CONTAINER);
     this->object_scale(selector_container, WIDTH, (HEIGHT - 100), 0, 50);
@@ -69,11 +76,13 @@ void GraphicalInterface::interface_menu() {
     this->object_scale(selector_sidebar_mode,     140, (HEIGHT - 120) / 3, 5, 10 + (HEIGHT - 120) * (1.0f / 3.0f));
     this->object_scale(selector_sidebar_position, 140, (HEIGHT - 120) / 3, 5, 15 + (HEIGHT - 120) * (2.0f / 3.0f));
     // selector body
-    lv_obj_t* selector_body = this->container_initialize(selector_container, GraphicalInterface::InterfaceType::SELECTOR_BODY_CONTAINER);
-    lv_obj_t* selector_body_label = this->label_initialize(selector_body, "Loading...", GraphicalInterface::InterfaceType::SELECTOR_BODY_LABEL);
-    this->object_scale(selector_body,       (WIDTH - 150), (HEIGHT - 100), 150, 0);
-    this->object_scale(selector_body_label, (WIDTH - 150), 16,             5,   5);
-    GraphicalInterface::InterfaceComponent selector_renderer[17] = {
+    lv_obj_t* selector_body          = this->container_initialize(selector_container, GraphicalInterface::InterfaceType::SELECTOR_BODY_CONTAINER);
+    lv_obj_t* selector_body_label    = this->label_initialize(selector_body,  "Loading...", GraphicalInterface::InterfaceType::SELECTOR_BODY_LABEL);
+    lv_obj_t* selector_body_execute  = this->button_initialize(selector_body, "Execute",    GraphicalInterface::InterfaceType::SELECTOR_BODY_BUTTON_2, GraphicalInterface::InterfaceAction::SELECTOR_EXECUTE);
+    this->object_scale(selector_body,         (WIDTH - 150), (HEIGHT - 100),     150,           0);
+    this->object_scale(selector_body_label,   (WIDTH - 150), 16,                 5,             5);
+    this->object_scale(selector_body_execute, 140,           (HEIGHT - 120) / 3, (WIDTH - 295), 15 + (HEIGHT - 120) * (2.0f / 3.0f));
+    GraphicalInterface::InterfaceComponent selector_renderer[19] = {
         {root_container,              NULL, GraphicalInterface::InterfaceType::MENU_CONTAINER},
         {root_button,                 NULL, GraphicalInterface::InterfaceType::MENU_BUTTON},
         {header_container,            NULL, GraphicalInterface::InterfaceType::MENU_CONTAINER},
@@ -83,6 +92,7 @@ void GraphicalInterface::interface_menu() {
         {footer_container,            NULL, GraphicalInterface::InterfaceType::MENU_CONTAINER},
         {footer_return,               NULL, GraphicalInterface::InterfaceType::MENU_BUTTON},
         {footer_menu,                 NULL, GraphicalInterface::InterfaceType::MENU_BUTTON},
+        {home_container,              NULL, GraphicalInterface::InterfaceType::HOME_CONTAINER},
         {selector_sidebar,            NULL, GraphicalInterface::InterfaceType::SELECTOR_SIDEBAR_CONTAINER},
         {selector_sidebar_autonomous, NULL, GraphicalInterface::InterfaceType::SELECTOR_SIDEBAR_BUTTON_1},
         {selector_sidebar_skill,      NULL, GraphicalInterface::InterfaceType::SELECTOR_SIDEBAR_BUTTON_1},
@@ -90,7 +100,8 @@ void GraphicalInterface::interface_menu() {
         {selector_sidebar_mode,       NULL, GraphicalInterface::InterfaceType::SELECTOR_SIDEBAR_BUTTON_2},
         {selector_sidebar_position,   NULL, GraphicalInterface::InterfaceType::SELECTOR_SIDEBAR_BUTTON_2},
         {selector_body,               NULL, GraphicalInterface::InterfaceType::SELECTOR_BODY_CONTAINER},
-        {selector_body_label,         NULL, GraphicalInterface::InterfaceType::SELECTOR_BODY_LABEL}
+        {selector_body_label,         NULL, GraphicalInterface::InterfaceType::SELECTOR_BODY_LABEL},
+        {selector_body_execute,       NULL, GraphicalInterface::InterfaceType::SELECTOR_BODY_BUTTON_2}
     };
     this->object_style(selector_renderer, sizeof(selector_renderer) / sizeof(selector_renderer[0]));
 }
@@ -116,6 +127,9 @@ void GraphicalInterface::object_style(GraphicalInterface::InterfaceComponent obj
             case GraphicalInterface::InterfaceType::MENU_LABEL:
                 object_style_size = 1;
                 break;
+            case GraphicalInterface::InterfaceType::HOME_CONTAINER:
+                object_style_size = 1;
+                break;
             case GraphicalInterface::InterfaceType::SELECTOR_SIDEBAR_CONTAINER:
                 object_style_size = 1;
                 break;
@@ -130,6 +144,9 @@ void GraphicalInterface::object_style(GraphicalInterface::InterfaceComponent obj
                 break;
             case GraphicalInterface::InterfaceType::SELECTOR_BODY_LABEL:
                 object_style_size = 1;
+                break;
+            case GraphicalInterface::InterfaceType::SELECTOR_BODY_BUTTON_2:
+                object_style_size = 2;
                 break;
         }
         for (int style_index = 0; style_index < object_style_size; style_index++) {
@@ -162,6 +179,13 @@ void GraphicalInterface::object_style(GraphicalInterface::InterfaceComponent obj
                 break;
             case GraphicalInterface::InterfaceType::MENU_LABEL:
                 this->interface_style[object_style_offset + 0].text.color        = Constants::GraphicalInterface::LABEL_FOREGROUND;
+                lv_obj_set_style(object_loop.object_pointer, &this->interface_style[object_style_offset + 0]);
+                break;
+            case GraphicalInterface::InterfaceType::HOME_CONTAINER:
+                this->interface_style[object_style_offset + 0].body.main_color   = Constants::GraphicalInterface::HOME_BACKGROUND;
+                this->interface_style[object_style_offset + 0].body.grad_color   = Constants::GraphicalInterface::HOME_BACKGROUND;
+                this->interface_style[object_style_offset + 0].body.border.width = 1; // border line width
+                this->interface_style[object_style_offset + 0].body.radius       = 0;
                 lv_obj_set_style(object_loop.object_pointer, &this->interface_style[object_style_offset + 0]);
                 break;
             case GraphicalInterface::InterfaceType::SELECTOR_SIDEBAR_CONTAINER:
@@ -211,6 +235,21 @@ void GraphicalInterface::object_style(GraphicalInterface::InterfaceComponent obj
             case GraphicalInterface::InterfaceType::SELECTOR_BODY_LABEL:
                 this->interface_style[object_style_offset + 0].text.color = Constants::GraphicalInterface::SELECTOR_BODY_LABEL_FOREGROUND;
                 lv_obj_set_style(object_loop.object_pointer, &this->interface_style[object_style_offset + 0]);
+                break;
+            case GraphicalInterface::InterfaceType::SELECTOR_BODY_BUTTON_2:
+                // 0=RELEASE 1=PRESS
+                this->interface_style[object_style_offset + 0].body.main_color   = Constants::GraphicalInterface::SELECTOR_BODY_BUTTON_BACKGROUND_RELEASED;
+                this->interface_style[object_style_offset + 0].body.grad_color   = Constants::GraphicalInterface::SELECTOR_BODY_BUTTON_BACKGROUND_RELEASED;
+                this->interface_style[object_style_offset + 0].text.color        = Constants::GraphicalInterface::BUTTON_FOREGROUND_RELEASED;
+                this->interface_style[object_style_offset + 0].body.border.width = 1; // border line width
+                this->interface_style[object_style_offset + 0].body.radius       = 2;
+                this->interface_style[object_style_offset + 1].body.main_color   = Constants::GraphicalInterface::SELECTOR_BODY_BUTTON_BACKGROUND_PRESSED;
+                this->interface_style[object_style_offset + 1].body.grad_color   = Constants::GraphicalInterface::SELECTOR_BODY_BUTTON_BACKGROUND_PRESSED;
+                this->interface_style[object_style_offset + 1].text.color        = Constants::GraphicalInterface::BUTTON_FOREGROUND_PRESSED;
+                this->interface_style[object_style_offset + 1].body.border.width = 1; // border line width
+                this->interface_style[object_style_offset + 1].body.radius       = 2;
+                lv_btn_set_style(object_loop.object_pointer, LV_BTN_STYLE_REL, &this->interface_style[object_style_offset + 0]);
+                lv_btn_set_style(object_loop.object_pointer, LV_BTN_STYLE_PR,  &this->interface_style[object_style_offset + 1]);
                 break;
         }
         // shift styles offset
@@ -262,19 +301,21 @@ lv_obj_t* GraphicalInterface::label_initialize(lv_obj_t* label_parent, std::stri
 
 void GraphicalInterface::interface_rerender() {
     std::map<GraphicalInterface::InterfaceType, bool> interface_visibility = {
+        {GraphicalInterface::InterfaceType::HOME_CONTAINER,            (GraphicalInterface::interface_status == GraphicalInterface::InterfaceStatus::HOME)},
         {GraphicalInterface::InterfaceType::SELECTOR_CONTAINER,        (GraphicalInterface::interface_status == GraphicalInterface::InterfaceStatus::SELECTOR)},
         {GraphicalInterface::InterfaceType::SELECTOR_SIDEBAR_BUTTON_1, (GraphicalInterface::interface_status == GraphicalInterface::InterfaceStatus::SELECTOR && GraphicalInterface::interface_stage == 0)},
-        {GraphicalInterface::InterfaceType::SELECTOR_SIDEBAR_BUTTON_2, (GraphicalInterface::interface_status == GraphicalInterface::InterfaceStatus::SELECTOR && GraphicalInterface::interface_stage == 1)}
+        {GraphicalInterface::InterfaceType::SELECTOR_SIDEBAR_BUTTON_2, (GraphicalInterface::interface_status == GraphicalInterface::InterfaceStatus::SELECTOR && GraphicalInterface::interface_stage == 1)},
+        {GraphicalInterface::InterfaceType::SELECTOR_BODY_BUTTON_2,    (GraphicalInterface::interface_status == GraphicalInterface::InterfaceStatus::SELECTOR && GraphicalInterface::interface_stage == 1)}
     };
     for (int component_index = 0; component_index < GraphicalInterface::interface_components.size(); component_index++) {
         GraphicalInterface::InterfaceComponent loop_component = GraphicalInterface::interface_components[component_index];
         if (interface_visibility.find(loop_component.object_type) == interface_visibility.end()) continue;
-        //if (lv_obj_get_hidden(loop_component.object_pointer) == !interface_visibility[loop_component.object_type]) continue;
+        if (lv_obj_get_hidden(loop_component.object_pointer) == !interface_visibility[loop_component.object_type]) continue;
         lv_obj_set_hidden(loop_component.object_pointer, !interface_visibility[loop_component.object_type]);
     }
     if (GraphicalInterface::interface_status == GraphicalInterface::InterfaceStatus::SELECTOR) {
         std::vector<GraphicalInterface::InterfaceComponent> selector_description_objects = GraphicalInterface::get_children_by_type(GraphicalInterface::InterfaceType::SELECTOR_BODY_LABEL);
-        static std::map<GraphicalInterface::InterfaceSelector, std::string> configuration_display = {
+        static std::map<GraphicalInterface::InterfaceSelector, char*> configuration_display = {
             {GraphicalInterface::InterfaceSelector::SELECTOR_ROUND_AUTONOMOUS, "Autonomous"},
             {GraphicalInterface::InterfaceSelector::SELECTOR_ROUND_SKILL,      "Skill"},
             {GraphicalInterface::InterfaceSelector::SELECTOR_MODE_SCORE,       "Score"},
@@ -290,10 +331,11 @@ void GraphicalInterface::interface_rerender() {
         GraphicalInterface::GraphicalInterface::InterfaceSelector selector_description_mode     = std::any_cast<GraphicalInterface::GraphicalInterface::InterfaceSelector>(GraphicalInterface::interface_configuration[GraphicalInterface::InterfaceConfiguration::GAME_MODE]);
         GraphicalInterface::GraphicalInterface::InterfaceSelector selector_description_position = std::any_cast<GraphicalInterface::GraphicalInterface::InterfaceSelector>(GraphicalInterface::interface_configuration[GraphicalInterface::InterfaceConfiguration::GAME_POSITION]);
         std::string selector_description_text =
-            "Round: "    + configuration_display[selector_description_round] + "\n" +
-            "Team: "     + configuration_display[selector_description_team]  + "\n" +
-            "Mode: "     + configuration_display[selector_description_mode]  + "\n" +
-            "Position: " + configuration_display[selector_description_position];
+            "Round: "    + std::string(configuration_display[selector_description_round]) + "\n" +
+            "Team: "     + std::string(configuration_display[selector_description_team])  + "\n" +
+            "Mode: "     + std::string(configuration_display[selector_description_mode])  + "\n" +
+            "Position: " + std::string(configuration_display[selector_description_position]);
+        selector_description_text = "0123456789\n0123456789\n";
         lv_label_set_text(selector_description_objects[0].object_pointer, selector_description_text.c_str());
     }
 }
@@ -353,26 +395,24 @@ lv_res_t button_action_callback(lv_obj_t* button_object) {
             GraphicalInterface::InterfaceWindow previous_window = GraphicalInterface::interface_history[GraphicalInterface::interface_history.size() - 1];
             interface_status_new = previous_window.window_status;
             interface_stage_new  = previous_window.window_stage;
-            //interface_status_new = GraphicalInterface::InterfaceStatus::HOME;
-            //GraphicalInterface::interface_history.pop_back();
             break; }
         case GraphicalInterface::InterfaceAction::MENU_MENU:
             interface_status_new = GraphicalInterface::InterfaceStatus::HOME;
             interface_stage_new  = 0;
             break;
     }
-    if (GraphicalInterface::interface_status != interface_status_new || GraphicalInterface::interface_stage != interface_stage_new) {
+    GraphicalInterface::interface_status = interface_status_new;
+    GraphicalInterface::interface_stage  = interface_stage_new;
+    /*if (GraphicalInterface::interface_status != interface_status_new || GraphicalInterface::interface_stage != interface_stage_new) {
         if (button_id != GraphicalInterface::InterfaceAction::MENU_RETURN) {
             // STILL ERROR HERE
             GraphicalInterface::interface_history.push_back({GraphicalInterface::interface_status, GraphicalInterface::interface_stage});
         }
         GraphicalInterface::interface_status = interface_status_new;
         GraphicalInterface::interface_stage  = interface_stage_new;
-        if (button_id == GraphicalInterface::InterfaceAction::MENU_RETURN) {
-            GraphicalInterface::interface_history.pop_back();
-        }
-        //if (interface_status_new == GraphicalInterface::InterfaceStatus::HOME) GraphicalInterface::interface_history.clear();
-    }
+        if (button_id == GraphicalInterface::InterfaceAction::MENU_RETURN) GraphicalInterface::interface_history.pop_back();
+        if (interface_status_new == GraphicalInterface::InterfaceStatus::HOME) GraphicalInterface::interface_history.clear();
+    }*/
     GraphicalInterface::interface_rerender();
     return LV_RES_OK;
 }

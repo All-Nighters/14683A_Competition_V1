@@ -9,12 +9,14 @@ public:
         MENU_CONTAINER,
         MENU_BUTTON,
         MENU_LABEL,
+        HOME_CONTAINER,
         SELECTOR_CONTAINER,
         SELECTOR_SIDEBAR_CONTAINER,
         SELECTOR_SIDEBAR_BUTTON_1,
         SELECTOR_SIDEBAR_BUTTON_2,
         SELECTOR_BODY_CONTAINER,
-        SELECTOR_BODY_LABEL
+        SELECTOR_BODY_LABEL,
+        SELECTOR_BODY_BUTTON_2
     };
     enum InterfaceAction {
         MENU_SELECTOR,
@@ -25,7 +27,8 @@ public:
         SELECTOR_SKILL,
         SELECTOR_TEAM,
         SELECTOR_MODE,
-        SELECTOR_POSITION
+        SELECTOR_POSITION,
+        SELECTOR_EXECUTE
     };
     enum InterfaceStatus {
         HOME,
