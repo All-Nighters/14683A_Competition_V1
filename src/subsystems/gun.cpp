@@ -3,8 +3,6 @@
 
 namespace Gun {
 
-    const int velocityLossConstant = 0.7;
-
     int diskCountForAsync = 0;
     int desiredLinearEjectVelocity = 0;
     shootMode shoot_mode = ACCURATE_MODE;
