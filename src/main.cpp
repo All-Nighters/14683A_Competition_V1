@@ -15,7 +15,7 @@ void initialize() {
 	// Odom::set_state(50, 50, 0);
 	Flywheel::startControlLoop();
 	Flywheel::grapher::start_graphing();
-	Gun::init(FORCE_MODE);
+	// Gun::init(FORCE_MODE);
 
 	// Set motor brake modes
 	LFMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
@@ -158,7 +158,7 @@ void opcontrol() {
 		HighGoalPositionPercent[2] = blueHighGoalPosition_percent[2];
 	}
 
-	Flywheel::setLinearEjectVelocity(8);
+	Flywheel::setLinearEjectVelocity(4);
 
 	/*
 	For controls, see globals.hpp

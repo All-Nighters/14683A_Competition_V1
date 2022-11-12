@@ -17,10 +17,6 @@ namespace Flywheel {
     bool keepRunning = true; // to stop the control loop, set this to false
 
     namespace grapher {
-        const int graph_length = 1000;
-        float current_vel[graph_length];
-        float target_vel[graph_length];
-        bool written[graph_length];
 
         bool keepRunningGrapher = true;
 
@@ -32,11 +28,15 @@ namespace Flywheel {
          */
         void graph_velocity()
         {
+            const int graph_length = 1000;
+            float current_vel[graph_length];
+            float target_vel[graph_length];
+            bool written[graph_length] = {false};
             while (keepRunningGrapher) 
             {
-                printf("%f\n", queuedLinearVelocity);
-                float target = queuedLinearVelocity;
-                float current = Flywheel::getCurrentEjectVelocity();
+                float target = Flywheel::getExpectRPMFromEjectVelocity(queuedLinearVelocity);
+                float current = Flywheel::getCurrentVelocity();
+                // printf("%f\n", current);
 
                 lv_obj_clean(lv_scr_act());
                 /*Create a chart*/
@@ -52,7 +52,7 @@ namespace Flywheel {
                 lv_chart_series_t * targetVelocityPlot = lv_chart_add_series(chart, LV_COLOR_GREEN);
 
                 bool writtenData = false;
-                for (int i = 0; i < graph_length; i++) {
+                for (int i = 0; i < graph_length; i++) {                
                     if (!written[i]) {
                         written[i] = true;
                         writtenData = true;
@@ -61,6 +61,9 @@ namespace Flywheel {
                         break;
                     }
                 }
+
+                // printf("%f\n", target_vel[0]);
+
 
                 if (!writtenData) {
                     // shift the graph to the left
@@ -81,6 +84,8 @@ namespace Flywheel {
                 lv_chart_refresh(chart); /*Required after direct set*/
                 pros::delay(20);
             }
+
+            
         }
 
         void start_graphing() {
