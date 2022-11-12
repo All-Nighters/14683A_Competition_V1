@@ -10,6 +10,7 @@ public:
         MENU_BUTTON,
         MENU_LABEL,
         HOME_CONTAINER,
+        HOME_IMAGE,
         SELECTOR_CONTAINER,
         SELECTOR_SIDEBAR_CONTAINER,
         SELECTOR_SIDEBAR_BUTTON_1,
@@ -84,4 +85,5 @@ private:
     lv_obj_t* container_initialize(lv_obj_t* container_parent, GraphicalInterface::InterfaceType container_type);
     lv_obj_t* button_initialize(lv_obj_t* button_parent, std::string button_text, GraphicalInterface::InterfaceType button_type, GraphicalInterface::InterfaceAction button_action);
     lv_obj_t* label_initialize(lv_obj_t* label_parent, std::string label_text, GraphicalInterface::InterfaceType label_type);
+    lv_obj_t* image_initialize(lv_obj_t* image_parent, GraphicalInterface::InterfaceType image_type);
 };

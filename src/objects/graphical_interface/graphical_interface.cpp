@@ -5,6 +5,8 @@
 #define WIDTH  Constants::GraphicalInterface::SCREEN_WIDTH
 #define HEIGHT Constants::GraphicalInterface::SCREEN_HEIGHT
 
+LV_IMG_DECLARE(allnighters_logo);
+
 std::vector<GraphicalInterface::InterfaceComponent>            GraphicalInterface::interface_components;
 std::vector<lv_style_t>                                        GraphicalInterface::interface_style;
 GraphicalInterface::InterfaceStatus                            GraphicalInterface::interface_status;
@@ -53,7 +55,10 @@ void GraphicalInterface::interface_menu() {
     this->object_scale(footer_menu     , 100, 50, (WIDTH - 100), 0);
     // home screen
     lv_obj_t* home_container = this->container_initialize(lv_scr_act(), GraphicalInterface::InterfaceType::HOME_CONTAINER);
+    lv_obj_t* home_icon = this->image_initialize(home_container, GraphicalInterface::InterfaceType::HOME_IMAGE);
     this->object_scale(home_container, WIDTH, (HEIGHT - 100), 0, 50);
+    this->object_scale(home_icon, 200, 200, (WIDTH / 2) - 100, ((HEIGHT - 100) / 2) - 100);
+    lv_img_set_src(home_icon, &allnighters_logo);
     // selector
     lv_obj_t* selector_container = this->container_initialize(lv_scr_act(), GraphicalInterface::InterfaceType::SELECTOR_CONTAINER);
     this->object_scale(selector_container, WIDTH, (HEIGHT - 100), 0, 50);
@@ -293,6 +298,12 @@ lv_obj_t* GraphicalInterface::label_initialize(lv_obj_t* label_parent, std::stri
     lv_label_set_text(label_object, label_text.c_str());
     this->interface_components.push_back({label_object, label_parent, label_type});
     return label_object;
+}
+
+lv_obj_t* GraphicalInterface::image_initialize(lv_obj_t* image_parent, GraphicalInterface::InterfaceType image_type) {
+    lv_obj_t* image_object = lv_img_create(image_parent, NULL);
+    this->interface_components.push_back({image_object, image_parent, image_type});
+    return image_object;
 }
 
 void GraphicalInterface::interface_rerender() {
