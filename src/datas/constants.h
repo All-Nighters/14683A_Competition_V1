@@ -24,12 +24,17 @@ namespace Constants {
 		inline lv_color_t BUTTON_FOREGROUND_PRESSED  = LV_COLOR_HEX(0xFFFFFF);
 		inline lv_color_t LABEL_FOREGROUND           = LV_COLOR_HEX(0xFFFFFF);
 
+		// home
+		inline lv_color_t HOME_BACKGROUND            = LV_COLOR_HEX(0xF3F4F8);
+
 		// selector styling
 		inline lv_color_t SELECTOR_SIDEBAR_BACKGROUND                 = LV_COLOR_HEX(0x455770);
 		inline lv_color_t SELECTOR_SIDEBAR_BUTTON_BACKGROUND_RELEASED = LV_COLOR_HEX(0x5A6B83);
-		inline lv_color_t SELECTOR_SIDEBAR_BUTTON_BACKGROUND_PRESSED  = LV_COLOR_HEX(0x000000);
+		inline lv_color_t SELECTOR_SIDEBAR_BUTTON_BACKGROUND_PRESSED  = LV_COLOR_HEX(0x434F60);
 		inline lv_color_t SELECTOR_BODY_BACKGROUND                    = LV_COLOR_HEX(0xF3F4F8);
 		inline lv_color_t SELECTOR_BODY_LABEL_FOREGROUND              = LV_COLOR_HEX(0x000000);
+		inline lv_color_t SELECTOR_BODY_BUTTON_BACKGROUND_RELEASED    = LV_COLOR_HEX(0x16A34A);
+		inline lv_color_t SELECTOR_BODY_BUTTON_BACKGROUND_PRESSED     = LV_COLOR_HEX(0x15803D);
 	}
 
 }
