@@ -22,11 +22,13 @@ namespace Gun {
      * 
      */
     void reposition() {
-        IndexerMotor.moveVoltage(8000); // move the indexer
-        while (load_sensor.get_value() == 0) { 
-            ; // wait until the indexer is loaded
+        if (load_sensor.get_value() == 0) {
+            IndexerMotor.moveVoltage(7000); // move the indexer
+            while (load_sensor.get_value() == 0) { 
+                ; // wait until the indexer is loaded
+            }
+            IndexerMotor.moveVoltage(0);
         }
-        IndexerMotor.moveVoltage(0);
     }
 
     /**
@@ -96,6 +98,7 @@ namespace Gun {
     void aim() {
         float velocity = planVeloity();
         desiredLinearEjectVelocity = velocity;
+        printf("setting desired linear velocity to %f\n", desiredLinearEjectVelocity);
         Flywheel::setLinearEjectVelocity(velocity);
     }
 

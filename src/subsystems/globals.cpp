@@ -26,7 +26,8 @@ pros::Vision vision_sensor(visionPort);
 ADIEncoder rightTW = ADIEncoder(rightEncoderPort[0], rightEncoderPort[1], true);
 ADIEncoder midTW = ADIEncoder(middleEncoderPort[0], middleEncoderPort[1], false);
 
-pros::ADIDigitalOut piston(pistonPort);
+pros::ADIDigitalOut piston1(pistonPort1);
+pros::ADIDigitalOut piston2(pistonPort2);
 pros::ADIDigitalIn load_sensor(loadSensorPort);
 pros::ADIDigitalIn intake_sensor(intakeSensorPort);
 

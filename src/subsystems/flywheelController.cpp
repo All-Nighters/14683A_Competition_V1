@@ -62,9 +62,6 @@ namespace Flywheel {
                     }
                 }
 
-                // printf("%f\n", target_vel[0]);
-
-
                 if (!writtenData) {
                     // shift the graph to the left
                     for (int i = 1; i < graph_length; i++) {
@@ -157,7 +154,10 @@ namespace Flywheel {
     }
 
     /**
-     * @brief Set the linear eject velocity (meters/second) of the flywheel
+     * @brief Set the linear eject velocity (meters/second) of the flywheel.
+     * 
+     * Note that the actual flywheel velocity would be lower due to the loss in kinetic energy.
+     * Use velocityLossConstant in globals.hpp to take account to the problem.
      * 
      * @param velocity target eject velocity in meters/second
      */

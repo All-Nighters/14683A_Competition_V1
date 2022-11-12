@@ -240,5 +240,6 @@ namespace Odom {
 		yPosGlobal = Y_START;
 		currentAbsoluteOrientation = THETA_START;
 		save_results();
+		printf("Set odom state to (%f, %f, %f)\n", positionSI.xPercent, positionSI.yPercent, positionSI.theta);
 	}
 }

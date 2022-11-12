@@ -74,7 +74,7 @@ inline int bottomLeftMotorPort = -4;
 inline int flywheelMotorPort1 = 5;
 inline int flywheelMotorPort2 = -6;
 inline int intakeMotorPort = 7;
-inline int rollerMotorPort = 8;
+inline int rollerMotorPort = 7;
 inline int indexerMotorPort = -11;
 
 /**
@@ -98,7 +98,8 @@ inline char middleEncoderPort[] = {'E', 'F'};
  * ADI out ports
 */
 
-inline char pistonPort = 'H';
+inline char pistonPort1 = 'G';
+inline char pistonPort2 = 'H';
 
 /**
  * Driver Controls
@@ -130,7 +131,7 @@ inline float maxEjectVel = 8; // maximum eject velocity in m/s
 inline float minEjectVel = 1; // minimum eject velocity in m/s
 inline float Cv = 2; // vertical drag coefficient
 inline float Ch = 2; // horizontal drag coefficient
-inline float velocityLossConstant = 0.7; // velocity gain to calculate velocity loss due to the disk 
+inline float velocityLossConstant = 1.2; // velocity gain to calculate velocity loss due to the disk 
 inline float Av = 0.015393804; // vertical cross section area
 inline float Ah = 0.0028; // horizontal cross section area
 inline float m = 0.06; // mass of the disk
@@ -160,7 +161,8 @@ inline QAngle launch_angle = 40_deg;
 inline float fieldLength = 3.6576;
 
 extern pros::ADIDigitalOut indexer;
-extern pros::ADIDigitalOut piston;
+extern pros::ADIDigitalOut piston1;
+extern pros::ADIDigitalOut piston2;
 extern pros::ADIDigitalIn load_sensor;
 extern pros::ADIDigitalIn intake_sensor;
 

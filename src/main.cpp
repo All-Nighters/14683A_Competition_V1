@@ -7,22 +7,34 @@
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
+	printf("\nINITIALIZATION STARTED\n");
+	printf("======================\n");
 	pros::lcd::initialize();
 	pros::lcd::set_text(1, "Hello PROS User!");
 
 	// // Initialize subsystems
 	// Odom::init(BASIC);
 	// Odom::set_state(50, 50, 0);
+	printf("1. Starting flywheel control loop...");
 	Flywheel::startControlLoop();
+	printf("OK\n");
+	printf("2. Starting flywheel grapher...");
 	Flywheel::grapher::start_graphing();
+	printf("OK\n");
+	// printf("3. Initializing gun...");
 	// Gun::init(FORCE_MODE);
+	// printf("OK\n");
 
 	// Set motor brake modes
+	printf("4. Setting motor breakmode...");
 	LFMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
 	RFMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
 	RBMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
 	LBMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
 	IndexerMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::hold);
+	printf("OK\n");
+	printf("\nReady to go!\n");
+	printf("======================\n\n");
 	
 }
 
@@ -31,7 +43,10 @@ void initialize() {
  * the VEX Competition Switch, following either autonomous or opcontrol. When
  * the robot is enabled, this task will exit.
  */
-void disabled() {}
+void disabled() {
+	printf("\nDISABLED\n");
+	printf("======================\n");
+}
 
 /**
  * Runs after initialize(), and before autonomous when connected to the Field
@@ -42,7 +57,10 @@ void disabled() {}
  * This task will exit when the robot is enabled and autonomous or opcontrol
  * starts.
  */
-void competition_initialize() {}
+void competition_initialize() {
+	printf("\nCOMPETITION INITIALIZE\n");
+	printf("======================\n");
+}
 
 /**
  * Runs the user autonomous code. This function will be started in its own task
@@ -56,6 +74,8 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
+	printf("\nAUTONOMOUS\n");
+	printf("======================\n");
 	// Auto::moveDistance(2);
 	// Odom::debug();
 	// Auto::faceCoordinate(redHighGoalPosition_percent[0], redHighGoalPosition_percent[1], false);
@@ -117,7 +137,9 @@ void opcontrol() {
 	// Auto::faceAngle(90);
 	// autonomous();
 
-	printf("Hello Allnighters\n");
+	printf("\nDRIVER CONTROL\n");
+	printf("======================\n");
+
 
 	/*
 	 set up drive model
@@ -158,8 +180,9 @@ void opcontrol() {
 		HighGoalPositionPercent[2] = blueHighGoalPosition_percent[2];
 	}
 
-	Flywheel::setLinearEjectVelocity(4);
+	Flywheel::setLinearEjectVelocity(8);
 
+	printf("Driver configuration finished\n");
 	/*
 	For controls, see globals.hpp
 	*/
@@ -168,34 +191,42 @@ void opcontrol() {
 		drive->getModel()->arcade(controller.getAnalog(ForwardAxis), 0.5*controller.getAnalog(TurnAxis));
 
 		if (controller.getDigital(RollerDownButton)) {
-			RollerMotor.moveVelocity(100);
+			printf("Rolling down\n");
+			RollerMotor.moveVoltage(6000);
 		} else if (controller.getDigital(RollerUpButton)) {
-			RollerMotor.moveVelocity(-100);
+			printf("Rolling up\n");
+			RollerMotor.moveVoltage(-6000);
 		} else {
-			RollerMotor.moveVelocity(0);
+
+			if (controller.getDigital(IntakeButton)) {
+				printf("Running Intake\n");
+				Intake::turnOn();
+			} else {
+				Intake::turnOff();
+			}
 		}
 
-		if (controller.getDigital(IntakeButton)) {
-			Intake::turnOn();
-		} else {
-			Intake::turnOff();
-		}
 
 		if (controller.getDigital(AimButton)) {
 			if (!Auto::settled) {
+				printf("Facing high goal\n");
 				Auto::faceCoordinateAsync(HighGoalPositionPercent[0], HighGoalPositionPercent[1], true);
 			}
 		}
 
 		if (controller.getDigital(ShootButton)) {
+			printf("Shooting disk\n");
 			Gun::shootDisk();
 		}
 
 
 		// expansion
 		if (pros::millis()-round_begin_milliseconds >= 105 * 1000 && controller.getDigital(ExpansionButton)) {
-			piston.set_value(true); // remember to change the value in autos.cpp
-			
+			printf("Trigger expansion\n");
+
+			// remember to change the value in autos.cpp
+			piston1.set_value(true); 
+			piston2.set_value(true);
 		}
 
 		pros::delay(20);
