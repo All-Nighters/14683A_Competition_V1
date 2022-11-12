@@ -19,41 +19,37 @@ GraphicalInterface::GraphicalInterface() {
     this->interface_status = GraphicalInterface::InterfaceStatus::HOME;
     this->interface_stage  = 0;
     this->interface_configuration = {
-        {GraphicalInterface::InterfaceConfiguration::GAME_ROUND, GraphicalInterface::InterfaceSelector::SELECTOR_ROUND_AUTONOMOUS},
-        {GraphicalInterface::InterfaceConfiguration::GAME_TEAM, GraphicalInterface::InterfaceSelector::SELECTOR_TEAM_RED},
-        {GraphicalInterface::InterfaceConfiguration::GAME_MODE, GraphicalInterface::InterfaceSelector::SELECTOR_MODE_IDLE},
+        {GraphicalInterface::InterfaceConfiguration::GAME_ROUND,    GraphicalInterface::InterfaceSelector::SELECTOR_ROUND_AUTONOMOUS},
+        {GraphicalInterface::InterfaceConfiguration::GAME_TEAM,     GraphicalInterface::InterfaceSelector::SELECTOR_TEAM_RED},
+        {GraphicalInterface::InterfaceConfiguration::GAME_MODE,     GraphicalInterface::InterfaceSelector::SELECTOR_MODE_IDLE},
         {GraphicalInterface::InterfaceConfiguration::GAME_POSITION, GraphicalInterface::InterfaceSelector::SELECTOR_POSITION_1}
     };
     // render
     this->interface_menu();
     this->interface_rerender();
-    /*while (true) {
-        printf("SIZE: %d\n", GraphicalInterface::interface_history.size());
-        pros::delay(1000);
-    }*/
 }
 
 void GraphicalInterface::interface_menu() {
     // root (hidden)
     lv_obj_t* root_container = this->container_initialize(lv_scr_act(), GraphicalInterface::InterfaceType::MENU_CONTAINER);
-    lv_obj_t* root_button  = this->button_initialize(root_container, "",  GraphicalInterface::InterfaceType::MENU_BUTTON, GraphicalInterface::InterfaceAction::MENU_SELECTOR);
+    lv_obj_t* root_button    = this->button_initialize(root_container, "",  GraphicalInterface::InterfaceType::MENU_BUTTON, GraphicalInterface::InterfaceAction::MENU_MENU);
     this->object_scale(root_container, 0, 0, 0, 0);
-    this->object_scale(root_button, 0, 0, 0, 0);
+    this->object_scale(root_button,    0, 0, 0, 0);
     // header
     lv_obj_t* header_container = this->container_initialize(lv_scr_act(), GraphicalInterface::InterfaceType::MENU_CONTAINER);
     lv_obj_t* header_selector  = this->button_initialize(header_container, "Selector",  GraphicalInterface::InterfaceType::MENU_BUTTON, GraphicalInterface::InterfaceAction::MENU_SELECTOR);
     lv_obj_t* header_utilities = this->button_initialize(header_container, "Utilities", GraphicalInterface::InterfaceType::MENU_BUTTON, GraphicalInterface::InterfaceAction::MENU_UTILITIES);
     lv_obj_t* header_label     = this->label_initialize(header_container,  "  14683A",  GraphicalInterface::InterfaceType::MENU_LABEL);
-    this->object_scale(header_container, 480, 50, 0, 0);
-    this->object_scale(header_selector , 100, 50, 0, 0);
-    this->object_scale(header_utilities, 100, 50, 100, 0);
-    this->object_scale(header_label, 100, 16, (WIDTH - 100), (50 / 3));
+    this->object_scale(header_container, 480, 50, 0,             0);
+    this->object_scale(header_selector , 100, 50, 0,             0);
+    this->object_scale(header_utilities, 100, 50, 100,           0);
+    this->object_scale(header_label,     100, 16, (WIDTH - 100), (50 / 3));
     // footer
     lv_obj_t* footer_container = this->container_initialize(lv_scr_act(), GraphicalInterface::InterfaceType::MENU_CONTAINER);
     lv_obj_t* footer_return    = this->button_initialize(footer_container, "Return", GraphicalInterface::InterfaceType::MENU_BUTTON, GraphicalInterface::InterfaceAction::MENU_RETURN);
     lv_obj_t* footer_menu      = this->button_initialize(footer_container, "Menu"  , GraphicalInterface::InterfaceType::MENU_BUTTON, GraphicalInterface::InterfaceAction::MENU_MENU);
-    this->object_scale(footer_container, 480, 50, 0, (HEIGHT - 50));
-    this->object_scale(footer_return   , 100, 50, 0, 0);
+    this->object_scale(footer_container, 480, 50, 0,             (HEIGHT - 50));
+    this->object_scale(footer_return   , 100, 50, 0,             0);
     this->object_scale(footer_menu     , 100, 50, (WIDTH - 100), 0);
     // home screen
     lv_obj_t* home_container = this->container_initialize(lv_scr_act(), GraphicalInterface::InterfaceType::HOME_CONTAINER);
@@ -323,8 +319,8 @@ void GraphicalInterface::interface_rerender() {
             {GraphicalInterface::InterfaceSelector::SELECTOR_MODE_IDLE,        "Idle"},
             {GraphicalInterface::InterfaceSelector::SELECTOR_TEAM_RED,         "Red"},
             {GraphicalInterface::InterfaceSelector::SELECTOR_TEAM_BLUE,        "Blue"},
-            {GraphicalInterface::InterfaceSelector::SELECTOR_POSITION_1,       "Position #1"},
-            {GraphicalInterface::InterfaceSelector::SELECTOR_POSITION_2,       "Position #2"}
+            {GraphicalInterface::InterfaceSelector::SELECTOR_POSITION_1,       "#1"},
+            {GraphicalInterface::InterfaceSelector::SELECTOR_POSITION_2,       "#2"}
         };
         GraphicalInterface::GraphicalInterface::InterfaceSelector selector_description_round    = std::any_cast<GraphicalInterface::GraphicalInterface::InterfaceSelector>(GraphicalInterface::interface_configuration[GraphicalInterface::InterfaceConfiguration::GAME_ROUND]);
         GraphicalInterface::GraphicalInterface::InterfaceSelector selector_description_team     = std::any_cast<GraphicalInterface::GraphicalInterface::InterfaceSelector>(GraphicalInterface::interface_configuration[GraphicalInterface::InterfaceConfiguration::GAME_TEAM]);
@@ -335,7 +331,7 @@ void GraphicalInterface::interface_rerender() {
             "Team: "     + std::string(configuration_display[selector_description_team])  + "\n" +
             "Mode: "     + std::string(configuration_display[selector_description_mode])  + "\n" +
             "Position: " + std::string(configuration_display[selector_description_position]);
-        selector_description_text = "0123456789\n0123456789\n";
+            printf(selector_description_text.c_str());
         lv_label_set_text(selector_description_objects[0].object_pointer, selector_description_text.c_str());
     }
 }
@@ -401,18 +397,13 @@ lv_res_t button_action_callback(lv_obj_t* button_object) {
             interface_stage_new  = 0;
             break;
     }
-    GraphicalInterface::interface_status = interface_status_new;
-    GraphicalInterface::interface_stage  = interface_stage_new;
-    /*if (GraphicalInterface::interface_status != interface_status_new || GraphicalInterface::interface_stage != interface_stage_new) {
-        if (button_id != GraphicalInterface::InterfaceAction::MENU_RETURN) {
-            // STILL ERROR HERE
-            GraphicalInterface::interface_history.push_back({GraphicalInterface::interface_status, GraphicalInterface::interface_stage});
-        }
+    if (GraphicalInterface::interface_status != interface_status_new || GraphicalInterface::interface_stage != interface_stage_new) {
+        if (button_id != GraphicalInterface::InterfaceAction::MENU_RETURN) GraphicalInterface::interface_history.push_back({GraphicalInterface::interface_status, GraphicalInterface::interface_stage});
         GraphicalInterface::interface_status = interface_status_new;
         GraphicalInterface::interface_stage  = interface_stage_new;
-        if (button_id == GraphicalInterface::InterfaceAction::MENU_RETURN) GraphicalInterface::interface_history.pop_back();
+        if (button_id == GraphicalInterface::InterfaceAction::MENU_RETURN && GraphicalInterface::interface_history.size() > 0) GraphicalInterface::interface_history.pop_back();
         if (interface_status_new == GraphicalInterface::InterfaceStatus::HOME) GraphicalInterface::interface_history.clear();
-    }*/
+    }
     GraphicalInterface::interface_rerender();
     return LV_RES_OK;
 }
