@@ -130,6 +130,7 @@ inline float maxEjectVel = 8; // maximum eject velocity in m/s
 inline float minEjectVel = 1; // minimum eject velocity in m/s
 inline float Cv = 2; // vertical drag coefficient
 inline float Ch = 2; // horizontal drag coefficient
+inline float velocityLossConstant = 0.7; // velocity gain to calculate velocity loss due to the disk 
 inline float Av = 0.015393804; // vertical cross section area
 inline float Ah = 0.0028; // horizontal cross section area
 inline float m = 0.06; // mass of the disk
