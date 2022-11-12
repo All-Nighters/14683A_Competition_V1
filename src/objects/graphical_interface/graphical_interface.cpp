@@ -23,7 +23,7 @@ GraphicalInterface::GraphicalInterface() {
     this->interface_configuration = {
         {GraphicalInterface::InterfaceConfiguration::GAME_ROUND,    GraphicalInterface::InterfaceSelector::SELECTOR_ROUND_AUTONOMOUS},
         {GraphicalInterface::InterfaceConfiguration::GAME_TEAM,     GraphicalInterface::InterfaceSelector::SELECTOR_TEAM_RED},
-        {GraphicalInterface::InterfaceConfiguration::GAME_MODE,     GraphicalInterface::InterfaceSelector::SELECTOR_MODE_IDLE},
+        {GraphicalInterface::InterfaceConfiguration::GAME_MODE,     GraphicalInterface::InterfaceSelector::SELECTOR_MODE_SCORE},
         {GraphicalInterface::InterfaceConfiguration::GAME_POSITION, GraphicalInterface::InterfaceSelector::SELECTOR_POSITION_1}
     };
     // render
