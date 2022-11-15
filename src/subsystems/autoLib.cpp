@@ -302,7 +302,7 @@ namespace Auto {
         } else {
             faceAngle = formatAngle(relativeAngle - positionSI.theta);
         }
-\
+
         turnAngle(faceAngle);
         settled = true;
     }
