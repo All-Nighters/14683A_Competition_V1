@@ -1,8 +1,13 @@
 #include "main.h"
 
 namespace Roller {
-    bool basic_mode = true;
+    bool basic_mode = true; // enables time based mode
 
+    /**
+     * @brief Roll the roller to score points. It would turn the roller and move the robot backwards.
+     * 
+     * @param rollerTeam The team location of the roller (red or blue)
+     */
     void roll(std::string rollerTeam) {
         printf("Rolling in basic mode?: %d", basic_mode);
         int velocity = 0;
@@ -127,6 +132,11 @@ namespace Roller {
         RollerMotor.moveVelocity(velocity);
         printf("Finished rolling\n");
     }
+
+    /**
+     * @brief Stop the roller motor
+     * 
+     */
     void stop() {
         RollerMotor.moveVelocity(0);
     }

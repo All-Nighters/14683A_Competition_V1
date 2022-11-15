@@ -31,7 +31,9 @@ enum AutoProcedure
 	BLUE_SECOND_SCORING,
 	BLUE_SECOND_SUPPORTIVE,
 
-	IDLE
+	IDLE,
+
+	DQ
 };
 
 // disk shooting behavior
@@ -40,27 +42,6 @@ enum shootMode
 	ACCURATE_MODE, // don't shoot until the flywheel is running in desired velocity
 	FORCE_MODE // shoot immediately when command is called
 };
-
-extern teamColor team; // 0 for red, 1 for blue
-
-extern Controller controller;
-extern Motor LFMotor;
-extern Motor RFMotor;
-extern Motor RBMotor;
-extern Motor LBMotor;
-extern Motor FlywheelMotor1;
-extern Motor FlywheelMotor2;
-extern Motor IntakeMotor;
-extern Motor RollerMotor;
-extern Motor IndexerMotor;
-extern pros::Vision vision_sensor;
-
-extern ADIEncoder leftTW; // left tracking wheel
-extern ADIEncoder rightTW; // right tracking wheel
-extern ADIEncoder midTW; // middle tracking wheel
-
-extern pros::ADIDigitalOut indexer; // indexer piston
-extern pros::Imu imu_sensor;
 
 
 /**
@@ -131,7 +112,7 @@ inline float maxEjectVel = 8; // maximum eject velocity in m/s
 inline float minEjectVel = 1; // minimum eject velocity in m/s
 inline float Cv = 2; // vertical drag coefficient
 inline float Ch = 2; // horizontal drag coefficient
-inline float velocityLossConstant = 1.2; // velocity gain to calculate velocity loss due to the disk 
+inline float velocityLossConstant = 0.7; // velocity gain to calculate velocity loss due to the disk 
 inline float Av = 0.015393804; // vertical cross section area
 inline float Ah = 0.0028; // horizontal cross section area
 inline float m = 0.06; // mass of the disk
@@ -160,7 +141,34 @@ inline QLength launcher_height = 0.3_m;
 inline QAngle launch_angle = 40_deg;
 inline float fieldLength = 3.6576;
 
-extern pros::ADIDigitalOut indexer;
+
+
+extern teamColor team; // the team color of the robot
+
+extern Controller controller; // main controller
+extern Controller partner; // partner controller
+
+// chassis motors
+extern Motor LFMotor;
+extern Motor RFMotor;
+extern Motor RBMotor;
+extern Motor LBMotor;
+
+// flywheel motors
+extern Motor FlywheelMotor1;
+extern Motor FlywheelMotor2;
+
+// intake-roller motor
+extern Motor IntakeMotor;
+extern Motor RollerMotor;
+
+extern Motor IndexerMotor;
+extern pros::Vision vision_sensor;
+
+extern ADIEncoder leftTW; // left tracking wheel
+extern ADIEncoder rightTW; // right tracking wheel
+extern ADIEncoder midTW; // middle tracking wheel
+
 extern pros::ADIDigitalOut piston1;
 extern pros::ADIDigitalOut piston2;
 extern pros::ADIDigitalIn load_sensor;

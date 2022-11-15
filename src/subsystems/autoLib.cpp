@@ -120,7 +120,6 @@ namespace Auto {
             
             pros::delay(20);
         }
-        // printf("Angle reached\n");
         LFMotor.moveVoltage(0);
         RFMotor.moveVoltage(0);
         LBMotor.moveVoltage(0);
@@ -148,17 +147,13 @@ namespace Auto {
         float target_angle = positionSI.theta + angle;
         float prev_error = abs(angle);
         float start_time = pros::millis();  
-        float timeout = 1000; // maximum runtime in seconds
+        float timeout = 10; // maximum runtime in seconds
 
         settled = false;
 
         while (abs(target_angle - positionSI.theta) >= 0.1 && pros::millis() - start_time <= timeout*1000) {
-            // Odom::update_odometry();
-
             
             float error = abs(target_angle - positionSI.theta);
-            // printf("%f\n", positionSI.theta + angle);
-
             float deriv_error = error - prev_error;
 
             float control_output = std::fmax(error * Rp + deriv_error * Rd, 2000);
@@ -166,7 +161,6 @@ namespace Auto {
 
             prev_error = error;
 
-            // controller.setText(0,0,std::to_string(positionSI.theta) + ", " + std::to_string(target_angle));
             if (target_angle - positionSI.theta > 0) {
                 LFMotor.moveVoltage(control_output);
                 LBMotor.moveVoltage(control_output);
@@ -179,7 +173,6 @@ namespace Auto {
                 RBMotor.moveVoltage(control_output);
             }
 
-            // Odom::debug();
             pros::delay(20);
         }
 
@@ -206,7 +199,6 @@ namespace Auto {
         settled = false;
 
         while (abs(target_angle - positionSI.theta) >= 0.5 && pros::millis() - start_time <= timeout*1000) {
-            // Odom::update_odometry();
 
             float error = abs(target_angle - positionSI.theta);
 
@@ -240,8 +232,6 @@ namespace Auto {
         pros::delay(200);
         
         settled = true;
-
-        Odom::set_state(position.x, position.y, position.theta);
     }
 
     /**
@@ -272,7 +262,6 @@ namespace Auto {
      */
     void faceCoordinate(float xPercent, float yPercent, bool aimMode) {
         settled = false;
-        // Odom::update_odometry();
         float xDist = xPercent - positionSI.xPercent;
         float yDist = yPercent - positionSI.yPercent;
 

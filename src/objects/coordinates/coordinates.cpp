@@ -88,3 +88,38 @@ float Coordinates::get_distance_sum(std::vector<Coordinates> chained_coordinates
 	}
 	return distance_sum;
 }
+
+
+/**
+ * Initialize a waypoint object, with given x-coordinate, y-coordinate, direction, linear velocity, and angular velocity
+ * 
+ * @param x_coordinates the x-coordinate of the location
+ * @param y_coordinates the y-coordinate of the location
+ * @param direction the direction (in degrees) of the location
+ * @param lin_vel the desired linear velocity at the waypoint
+ * @param ang_vel the desired linear velocity at the waypoint
+ */
+Waypoint::Waypoint(float x_coordinates, float y_coordinates, float direction, float lin_vel, float ang_vel) : Coordinates(x_coordinates, y_coordinates, direction) {
+	this->lin_vel = lin_vel;
+	this->ang_vel = ang_vel;
+}
+
+/**
+ * @brief Get desired linear velocity at the waypoint
+ * 
+ * @return desired linear velocity at the waypoint
+ */
+float Waypoint::get_linear_vel() {
+	return this->lin_vel;
+}
+
+/**
+ * @brief Get desired angular velocity at the waypoint
+ * 
+ * @return desired angular velocity at the waypoint
+ */
+float Waypoint::get_ang_vel() {
+	return this->ang_vel;
+}
+
+

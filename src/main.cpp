@@ -32,6 +32,9 @@ void initialize() {
 	RBMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
 	LBMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
 	IndexerMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::hold);
+	IntakeMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::hold);
+	RollerMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::hold);
+
 	printf("OK\n");
 	printf("\nReady to go!\n");
 	printf("======================\n\n");
@@ -76,36 +79,20 @@ void competition_initialize() {
 void autonomous() {
 	printf("\nAUTONOMOUS\n");
 	printf("======================\n");
-	// Auto::moveDistance(2);
-	// Odom::debug();
-	// Auto::faceCoordinate(redHighGoalPosition_percent[0], redHighGoalPosition_percent[1], false);
-
-	// Auto::turnAngle(90);
-	// Odom::set_state(0.368826057_m, 0.888775_m, 0_deg);
-
-
-	// Odom::set_state(86.38888888888889, 76.2037037037037, 180);
-	// Auto::faceCoordinate(redHighGoalPosition_percent[0], redHighGoalPosition_percent[1], false);
-
-	// Odom::set_state(1.8288_m, 1.8288_m, 0_deg);
-	// Auto::faceCoordinate(blueHighGoalPosition_percent[0], blueHighGoalPosition_percent[1], false);
-	// Odom::set_state(89.72222222222221, 76.1111111111111, 180);
-	// Auto::faceCoordinate(redHighGoalPosition_percent[0], redHighGoalPosition_percent[1], false);
-	Autos::run(RED_FIRST_SCORING);
 }
 
 void PPTest() {
 	Odom::set_state(0_m, 0_m, 0_deg);
-	std::vector<Coordinates> pathway;
+	std::vector<Waypoint> pathway;
 	
 	// insert evenly distributed waypoints from (0, 0) to (40, 0)
 	for (int i = 0; i < 11; i++) {
-		pathway.push_back(Coordinates(4*i, 0, 0));
+		pathway.push_back(Waypoint(4*i, 0, 150));
 	}
 
 	// insert evenly distributed waypoints from (40, 0) to (40, 40)
 	for (int i = 0; i < 11; i++) {
-		pathway.push_back(Coordinates(40, 4*i, 0));
+		pathway.push_back(Waypoint(40, 4*i, 150));
 	}
 
 	// // insert evenly distributed waypoints from (40, 40) to (0, 40)
@@ -132,10 +119,6 @@ void PPTest() {
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-	// PPTest();
-	// odomChassis->turnToAngle(180_deg);
-	// Auto::faceAngle(90);
-	// autonomous();
 
 	printf("\nDRIVER CONTROL\n");
 	printf("======================\n");
@@ -183,13 +166,17 @@ void opcontrol() {
 	Flywheel::setLinearEjectVelocity(8);
 
 	printf("Driver configuration finished\n");
+
+
 	/*
 	For controls, see globals.hpp
 	*/
 	while (true) {
 
+		// locomotion
 		drive->getModel()->arcade(controller.getAnalog(ForwardAxis), 0.5*controller.getAnalog(TurnAxis));
 
+		// spin roller
 		if (controller.getDigital(RollerDownButton)) {
 			printf("Rolling down\n");
 			RollerMotor.moveVoltage(6000);
@@ -198,6 +185,7 @@ void opcontrol() {
 			RollerMotor.moveVoltage(-6000);
 		} else {
 
+			// spin intake
 			if (controller.getDigital(IntakeButton)) {
 				printf("Running Intake\n");
 				Intake::turnOn();
@@ -206,7 +194,7 @@ void opcontrol() {
 			}
 		}
 
-
+		// high goal facing
 		if (controller.getDigital(AimButton)) {
 			if (!Auto::settled) {
 				printf("Facing high goal\n");
@@ -214,6 +202,7 @@ void opcontrol() {
 			}
 		}
 
+		// shoot disk
 		if (controller.getDigital(ShootButton)) {
 			printf("Shooting disk\n");
 			Gun::shootDisk();

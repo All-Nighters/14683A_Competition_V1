@@ -88,7 +88,8 @@ namespace Gun {
 
         float xDist = sqrt(std::pow(target[0]-positionSI.x, 2) + std::pow(target[1]-positionSI.y, 2));
         
-        return velocityLossConstant * (projectile_trajectory::solveVelocity(10, 2, 0.01, 20, 4, launch_angle.convert(degree), 0, diskMass.convert(kg), 9.81, 1.225, diskHorizontalArea, diskVerticalArea, Cv, Ch, target[2], launcher_height.convert(meter)));
+        // constants could be modified in globals.hpp
+        return (projectile_trajectory::solveVelocity(maxEjectVel, minEjectVel, 0.01, 20, xDist, launch_angle.convert(degree), 0, diskMass.convert(kg), g, p, diskHorizontalArea, diskVerticalArea, Cv, Ch, target[2], launcher_height.convert(meter))) / velocityLossConstant;
     }
 
     /**

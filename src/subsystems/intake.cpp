@@ -12,10 +12,15 @@ namespace Intake {
             diskHolding = disks;
         }
     }
+
+    /**
+     * @brief Toggle intake motor
+     * 
+     */
     void toggle() {
         enabled = !enabled;
         if (enabled) {
-            IntakeMotor.moveVoltage(-10000);
+            IntakeMotor.moveVoltage(-12000);
         } else {
             IntakeMotor.moveVoltage(0);
         }
@@ -43,10 +48,19 @@ namespace Intake {
         pros::Task take(takeDiskHelper);
     }
 
+    /**
+     * @brief Turn on intake motor
+     * 
+     */
     void turnOn() {
         enabled = true;
-        IntakeMotor.moveVoltage(-10000);
+        IntakeMotor.moveVoltage(-12000);
     }
+
+    /**
+     * @brief Turn off intake motor
+     * 
+     */
     void turnOff() {
         enabled = false;
         IntakeMotor.moveVoltage(0);

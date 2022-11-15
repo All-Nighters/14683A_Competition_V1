@@ -370,6 +370,11 @@ namespace Autos {
         }
         else if (mode == RED_FIRST_SUPPORTIVE) {
             red_first_supportive();
+        } 
+        else if (mode == DQ) {
+            Auto::trackVelocityPID(200, 200);
+            pros::delay(5000);
+            Auto::trackVelocityPID(0, 0);
         }
     }
 }
