@@ -46,7 +46,12 @@ namespace pathTracker {
                 } else if (i+1 < pathCoords.size()) {
                     float next_angle = atan2(pathCoords[i+1].get_y() - pathCoords[i].get_y(), pathCoords[i+1].get_x() - pathCoords[i].get_x()) * pi / 180;
                     float prev_angle = atan2(pathCoords[i].get_y() - pathCoords[i-1].get_y(), pathCoords[i].get_x() - pathCoords[i-1].get_x()) * pi / 180;
-                    angle = ((next_angle + prev_angle) / 2.0);
+
+                    if ((next_angle / abs(next_angle)) != (prev_angle / abs(prev_angle)) and ((abs(next_angle) + abs(prev_angle)) > 180)) {
+                        angle = ((next_angle + prev_angle) / 2.0) + 180;
+                    } else {
+                        angle = ((next_angle + prev_angle) / 2.0);
+                    }
                     angle_difference = next_angle - angle;
                 } else {
                     angle = atan2(pathCoords[i].get_y() - pathCoords[i-1].get_y(), pathCoords[i].get_x() - pathCoords[i-1].get_x()) * 180 / pi;
