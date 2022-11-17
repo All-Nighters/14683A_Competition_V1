@@ -34,6 +34,8 @@ enum AutoProcedure
 	IDLE_FIRST,
 	IDLE_SECOND,
 
+	SKILL,
+
 	DQ
 };
 
