@@ -1,5 +1,7 @@
 #include "main.h"
 
+GraphicalInterface selector;
+
 /**
  * Runs initialization code. This occurs as soon as the program is started.
  *
@@ -7,37 +9,35 @@
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
-	printf("\nINITIALIZATION STARTED\n");
-	printf("======================\n");
-	pros::lcd::initialize();
-	pros::lcd::set_text(1, "Hello PROS User!");
+	// printf("\nINITIALIZATION STARTED\n");
+	// printf("======================\n");
+	// pros::lcd::initialize();
+	// pros::lcd::set_text(1, "Hello PROS User!");
 
-	// // Initialize subsystems
-	// Odom::init(BASIC);
-	// Odom::set_state(50, 50, 0);
-	printf("1. Starting flywheel control loop...");
-	Flywheel::startControlLoop();
-	printf("OK\n");
-	printf("2. Starting flywheel grapher...");
-	Flywheel::grapher::start_graphing();
-	printf("OK\n");
-	printf("3. Initializing gun...");
-	Gun::init(FORCE_MODE);
-	printf("OK\n");
+	// // // Initialize subsystems
+	// // Odom::init(BASIC);
+	// // Odom::set_state(50, 50, 0);
+	// printf("1. Starting flywheel control loop...");
+	// Flywheel::startControlLoop();
+	// printf("OK\n");
+	// printf("2. Starting flywheel grapher...");
+	// Flywheel::grapher::start_graphing();
+	// printf("OK\n");
+	// printf("3. Initializing gun...");
+	// Gun::init(FORCE_MODE);
+	// printf("OK\n");
 
-	// Set motor brake modes
-	printf("4. Setting motor breakmode...");
-	LFMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
-	RFMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
-	RBMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
-	LBMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
-	IndexerMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::hold);
-	IntakeMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::hold);
-	RollerMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::hold);
+	// // Set motor brake modes
+	// printf("4. Setting motor breakmode...");
+	// LFMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
+	// RFMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
+	// RBMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
+	// LBMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
+	// IndexerMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::hold);
+	// IntakeMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::hold);
+	// RollerMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::hold);
 
 	printf("5. Setting up selector screen...");
-	// GraphicalInterface gui = GraphicalInterface();
-
 	printf("OK\n");
 	printf("\nReady to go!\n");
 	printf("======================\n\n");
@@ -50,61 +50,67 @@ void initialize() {
  */
 void readSelectorConfiguration() {
 	printf("Match Configuration:\n");
-	printf("Team Color: %s\n", team==REDTEAM ? "RED" : "BLUE");
-
 	std::string autoName = "";
-	int position = -1;
-	switch (auto_procedure_running) {
-		case (RED_FIRST_SCORING):
-			autoName = "RED_FIRST_SCORING";
-			position = 1;
-			break;
-		case (RED_FIRST_SUPPORTIVE):
-			autoName = "RED_FIRST_SUPPORTIVE";
-			position = 1;
-			break;	
-		case (RED_SECOND_SCORING):
-			autoName = "RED_SECOND_SCORING";
-			position = 2;
-			break;
-		case (RED_SECOND_SUPPORTIVE):
-			autoName = "RED_SECOND_SUPPORTIVE";
-			position = 2;
-			break;		
+	
+	GraphicalInterface::InterfaceSelector position = GraphicalInterface::get_selector(GraphicalInterface::InterfaceConfiguration::GAME_POSITION);
+	GraphicalInterface::InterfaceSelector game_team = GraphicalInterface::get_selector(GraphicalInterface::InterfaceConfiguration::GAME_TEAM);
+	GraphicalInterface::InterfaceSelector mode = GraphicalInterface::get_selector(GraphicalInterface::InterfaceConfiguration::GAME_MODE);
+	GraphicalInterface::InterfaceSelector game_round = GraphicalInterface::get_selector(GraphicalInterface::InterfaceConfiguration::GAME_ROUND);
+
+	GraphicalInterface::InterfaceSelector select_combinations[13][4] = {
+		{GraphicalInterface::SELECTOR_ROUND_AUTONOMOUS, GraphicalInterface::SELECTOR_TEAM_RED, GraphicalInterface::SELECTOR_POSITION_1, GraphicalInterface::SELECTOR_MODE_SCORE}, // red first scoring
+		{GraphicalInterface::SELECTOR_ROUND_AUTONOMOUS, GraphicalInterface::SELECTOR_TEAM_RED, GraphicalInterface::SELECTOR_POSITION_1, GraphicalInterface::SELECTOR_MODE_SUPPORT}, // red first supportive
+		{GraphicalInterface::SELECTOR_ROUND_AUTONOMOUS, GraphicalInterface::SELECTOR_TEAM_RED, GraphicalInterface::SELECTOR_POSITION_1, GraphicalInterface::SELECTOR_MODE_IDLE}, // red second idle
+		{GraphicalInterface::SELECTOR_ROUND_AUTONOMOUS, GraphicalInterface::SELECTOR_TEAM_RED, GraphicalInterface::SELECTOR_POSITION_2, GraphicalInterface::SELECTOR_MODE_SCORE}, // red second scoring
+		{GraphicalInterface::SELECTOR_ROUND_AUTONOMOUS, GraphicalInterface::SELECTOR_TEAM_RED, GraphicalInterface::SELECTOR_POSITION_2, GraphicalInterface::SELECTOR_MODE_SUPPORT}, // red second supportive
+		{GraphicalInterface::SELECTOR_ROUND_AUTONOMOUS, GraphicalInterface::SELECTOR_TEAM_RED, GraphicalInterface::SELECTOR_POSITION_2, GraphicalInterface::SELECTOR_MODE_IDLE}, // red second idle
+
+		{GraphicalInterface::SELECTOR_ROUND_AUTONOMOUS, GraphicalInterface::SELECTOR_TEAM_BLUE, GraphicalInterface::SELECTOR_POSITION_1, GraphicalInterface::SELECTOR_MODE_SCORE}, // red first scoring
+		{GraphicalInterface::SELECTOR_ROUND_AUTONOMOUS, GraphicalInterface::SELECTOR_TEAM_BLUE, GraphicalInterface::SELECTOR_POSITION_1, GraphicalInterface::SELECTOR_MODE_SUPPORT}, // red first supportive
+		{GraphicalInterface::SELECTOR_ROUND_AUTONOMOUS, GraphicalInterface::SELECTOR_TEAM_BLUE, GraphicalInterface::SELECTOR_POSITION_1, GraphicalInterface::SELECTOR_MODE_IDLE}, // red second idle
+		{GraphicalInterface::SELECTOR_ROUND_AUTONOMOUS, GraphicalInterface::SELECTOR_TEAM_BLUE, GraphicalInterface::SELECTOR_POSITION_2, GraphicalInterface::SELECTOR_MODE_SCORE}, // red second scoring
+		{GraphicalInterface::SELECTOR_ROUND_AUTONOMOUS, GraphicalInterface::SELECTOR_TEAM_BLUE, GraphicalInterface::SELECTOR_POSITION_2, GraphicalInterface::SELECTOR_MODE_SUPPORT}, // red second supportive
 		
-		case (BLUE_FIRST_SCORING):
-			autoName = "BLUE_FIRST_SCORING";
-			position = 1;
-			break;
-		case (BLUE_FIRST_SUPPORTIVE):
-			autoName = "BLUE_FIRST_SUPPORTIVE";
-			position = 1;
-			break;	
-		case (BLUE_SECOND_SCORING):
-			autoName = "BLUE_SECOND_SCORING";
-			position = 2;
-			break;
-		case (BLUE_SECOND_SUPPORTIVE):
-			autoName = "BLUE_SECOND_SUPPORTIVE";
-			position = 2;
-			break;	
+		{GraphicalInterface::SELECTOR_ROUND_SKILL, GraphicalInterface::SELECTOR_TEAM_BLUE, GraphicalInterface::SELECTOR_POSITION_2, GraphicalInterface::SELECTOR_MODE_IDLE}, // skill
+	};
 
-		case (IDLE_FIRST):
-			autoName = "IDLE_FIRST";
-			position = 1;
-			break;	
-		case (IDLE_SECOND):
-			autoName = "IDLE_FIRST";
-			position = 2;
-			break;	
+	AutoProcedure procedure_combinations[13] = {
+		RED_FIRST_SCORING,
+		RED_FIRST_SUPPORTIVE,
+		RED_FIRST_IDLE,
+		RED_SECOND_SCORING,
+		RED_SECOND_SUPPORTIVE,
+		RED_SECOND_IDLE,
 
+		BLUE_FIRST_SCORING,
+		BLUE_FIRST_SUPPORTIVE,
+		BLUE_FIRST_IDLE,
+		BLUE_SECOND_SCORING,
+		BLUE_SECOND_SUPPORTIVE,
+		BLUE_SECOND_IDLE,
 
-		case (DQ):
-			autoName = "DQ";
-			break;	
+		SKILL
+	};
+
+	GraphicalInterface::InterfaceSelector current_config[] = {game_round, game_team, position, mode};
+
+	int procedure_idx = -1;
+	if (current_config[0] == GraphicalInterface::SELECTOR_ROUND_SKILL) {
+		auto_procedure_running = SKILL;
+	} else {
+		for (int i = 0; i < sizeof(select_combinations) / sizeof(select_combinations[0]); i++) {
+			if (select_combinations[i][0] == current_config[0] &&
+				select_combinations[i][1] == current_config[1] &&
+				select_combinations[i][2] == current_config[2] &&
+				select_combinations[i][3] == current_config[3]
+			) {
+				procedure_idx = i;
+				break;
+			}
+		}
 	}
-	printf("Auto procedure: %s\n", autoName);
-	printf("Start position: %d\n", position);
+	auto_procedure_running = procedure_combinations[procedure_idx];
+
 }
 
 /**
@@ -145,6 +151,12 @@ void competition_initialize() {
 void autonomous() {
 	printf("\nAUTONOMOUS\n");
 	printf("======================\n");
+	while (true) {
+		readSelectorConfiguration();
+		printf("AutoProcedure: %d\n", auto_procedure_running);
+		pros::delay(500);
+	}
+	
 }
 
 void PPTest() {
@@ -185,6 +197,7 @@ void PPTest() {
  * task, not resume it from where it left off.
  */
 void opcontrol() {
+	autonomous();
 
 	printf("\nDRIVER CONTROL\n");
 	printf("======================\n");

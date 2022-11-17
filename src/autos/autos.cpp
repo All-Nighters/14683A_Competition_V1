@@ -348,10 +348,16 @@ namespace Autos {
         // while (pros::millis() - round_begin_milliseconds < 45*1000) {
         //     printf("%f\n", pros::millis() - round_begin_milliseconds);
         // }
-        if (mode == IDLE_FIRST) {
+        if (mode == RED_FIRST_IDLE) {
             ; // set odom position
         }
-        else if (mode == IDLE_SECOND) {
+        else if (mode == RED_SECOND_IDLE) {
+            ; // set odom position
+        }
+        if (mode == BLUE_FIRST_IDLE) {
+            ; // set odom position
+        }
+        else if (mode == BLUE_SECOND_IDLE) {
             ; // set odom position
         }
 
