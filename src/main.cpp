@@ -1,7 +1,5 @@
 #include "main.h"
 
-GraphicalInterface selector;
-
 /**
  * Runs initialization code. This occurs as soon as the program is started.
  *
@@ -9,6 +7,7 @@ GraphicalInterface selector;
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
+	GraphicalInterface selector;
 	// printf("\nINITIALIZATION STARTED\n");
 	// printf("======================\n");
 	// pros::lcd::initialize();
@@ -108,8 +107,8 @@ void readSelectorConfiguration() {
 				break;
 			}
 		}
-	}
-	auto_procedure_running = procedure_combinations[procedure_idx];
+		auto_procedure_running = procedure_combinations[procedure_idx];
+	}	
 
 }
 
@@ -151,11 +150,7 @@ void competition_initialize() {
 void autonomous() {
 	printf("\nAUTONOMOUS\n");
 	printf("======================\n");
-	while (true) {
-		readSelectorConfiguration();
-		printf("AutoProcedure: %d\n", auto_procedure_running);
-		pros::delay(500);
-	}
+	readSelectorConfiguration();
 	
 }
 
