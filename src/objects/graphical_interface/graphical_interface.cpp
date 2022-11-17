@@ -333,18 +333,21 @@ void GraphicalInterface::interface_rerender() {
             {GraphicalInterface::InterfaceSelector::SELECTOR_POSITION_1,       "#1"},
             {GraphicalInterface::InterfaceSelector::SELECTOR_POSITION_2,       "#2"}
         };
-        GraphicalInterface::GraphicalInterface::InterfaceSelector selector_description_round    = std::any_cast<GraphicalInterface::GraphicalInterface::InterfaceSelector>(GraphicalInterface::interface_configuration[GraphicalInterface::InterfaceConfiguration::GAME_ROUND]);
-        GraphicalInterface::GraphicalInterface::InterfaceSelector selector_description_team     = std::any_cast<GraphicalInterface::GraphicalInterface::InterfaceSelector>(GraphicalInterface::interface_configuration[GraphicalInterface::InterfaceConfiguration::GAME_TEAM]);
-        GraphicalInterface::GraphicalInterface::InterfaceSelector selector_description_mode     = std::any_cast<GraphicalInterface::GraphicalInterface::InterfaceSelector>(GraphicalInterface::interface_configuration[GraphicalInterface::InterfaceConfiguration::GAME_MODE]);
-        GraphicalInterface::GraphicalInterface::InterfaceSelector selector_description_position = std::any_cast<GraphicalInterface::GraphicalInterface::InterfaceSelector>(GraphicalInterface::interface_configuration[GraphicalInterface::InterfaceConfiguration::GAME_POSITION]);
+        GraphicalInterface::InterfaceSelector selector_description_round    = std::any_cast<GraphicalInterface::InterfaceSelector>(GraphicalInterface::interface_configuration[GraphicalInterface::InterfaceConfiguration::GAME_ROUND]);
+        GraphicalInterface::InterfaceSelector selector_description_team     = std::any_cast<GraphicalInterface::InterfaceSelector>(GraphicalInterface::interface_configuration[GraphicalInterface::InterfaceConfiguration::GAME_TEAM]);
+        GraphicalInterface::InterfaceSelector selector_description_mode     = std::any_cast<GraphicalInterface::InterfaceSelector>(GraphicalInterface::interface_configuration[GraphicalInterface::InterfaceConfiguration::GAME_MODE]);
+        GraphicalInterface::InterfaceSelector selector_description_position = std::any_cast<GraphicalInterface::InterfaceSelector>(GraphicalInterface::interface_configuration[GraphicalInterface::InterfaceConfiguration::GAME_POSITION]);
         std::string selector_description_text =
             "Round: "    + std::string(configuration_display[selector_description_round]) + "\n" +
             "Team: "     + std::string(configuration_display[selector_description_team])  + "\n" +
             "Mode: "     + std::string(configuration_display[selector_description_mode])  + "\n" +
             "Position: " + std::string(configuration_display[selector_description_position]);
-            printf(selector_description_text.c_str());
         lv_label_set_text(selector_description_objects[0].object_pointer, selector_description_text.c_str());
     }
+}
+
+void GraphicalInterface::interface_shutdown() {
+    lv_obj_del(lv_scr_act());
 }
 
 lv_res_t button_action_callback(lv_obj_t* button_object) {
@@ -417,4 +420,9 @@ lv_res_t button_action_callback(lv_obj_t* button_object) {
     }
     GraphicalInterface::interface_rerender();
     return LV_RES_OK;
+}
+
+GraphicalInterface::InterfaceSelector GraphicalInterface::get_selector(GraphicalInterface::InterfaceConfiguration configuration_key) {
+    if (GraphicalInterface::interface_configuration.find(configuration_key) == GraphicalInterface::interface_configuration.end()) return GraphicalInterface::SELECTOR_MODE_SCORE;
+    return std::any_cast<GraphicalInterface::InterfaceSelector>(GraphicalInterface::interface_configuration[configuration_key]);
 }

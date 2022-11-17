@@ -70,6 +70,9 @@ public:
 
     GraphicalInterface();
     static void interface_rerender();
+    static void interface_shutdown();
+
+    static GraphicalInterface::InterfaceSelector get_selector(GraphicalInterface::InterfaceConfiguration configuration_key);
 
 private:
     static std::vector<InterfaceComponent> interface_components;
