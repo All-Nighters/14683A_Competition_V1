@@ -44,6 +44,7 @@
 #include "utils/utils.hpp"
 
 #include "../src/objects/coordinates/coordinates.h"
+#include "../src/objects/graphical_interface/graphical_interface.h"
 
 #include "subsystems/globals.hpp"
 #include "subsystems/odometry.hpp"

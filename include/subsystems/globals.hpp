@@ -97,6 +97,7 @@ inline ControllerDigital RollerDownButton = ControllerDigital::L2;
 inline ControllerDigital AimButton = ControllerDigital::down;
 inline ControllerDigital ShootButton = ControllerDigital::R1;
 inline ControllerDigital TripleShootButton = ControllerDigital::R2;
+inline ControllerDigital FlywheelStopMotor = ControllerDigital::A;
 inline ControllerDigital ExpansionButton = ControllerDigital::X;
 
 /**

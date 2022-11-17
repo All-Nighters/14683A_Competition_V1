@@ -35,6 +35,9 @@ void initialize() {
 	IntakeMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::hold);
 	RollerMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::hold);
 
+	printf("5. Setting up selector screen...");
+	// GraphicalInterface gui = GraphicalInterface();
+
 	printf("OK\n");
 	printf("\nReady to go!\n");
 	printf("======================\n\n");
@@ -229,7 +232,6 @@ void opcontrol() {
 	float prev_error = 0;
 
 	Flywheel::setLinearEjectVelocity(6);
-
 	printf("Driver configuration finished\n");
 
 
@@ -315,13 +317,18 @@ void opcontrol() {
 			Gun::shootDisk();
 		}
 
+
 		// triple shoot disk
 		if (controller.getDigital(TripleShootButton)) {
 			printf("Shooting 3 disks\n");
 			Gun::shootDisk(3, FORCE_MODE);
 		}
 
-
+		if (controller.getDigital(FlywheelStopMotor)) {
+			Flywheel::setLinearEjectVelocity(0);
+		} else {
+			Flywheel::setLinearEjectVelocity(6);
+		}
 
 		// expansion
 		if (pros::millis()-round_begin_milliseconds >= 105 * 1000 && controller.getDigital(ExpansionButton)) {
