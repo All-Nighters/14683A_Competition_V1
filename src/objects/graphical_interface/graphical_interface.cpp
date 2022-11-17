@@ -423,6 +423,6 @@ lv_res_t button_action_callback(lv_obj_t* button_object) {
 }
 
 GraphicalInterface::InterfaceSelector GraphicalInterface::get_selector(GraphicalInterface::InterfaceConfiguration configuration_key) {
-    if (GraphicalInterface::interface_configuration.find(configuration_key) == GraphicalInterface::interface_configuration.end()) return GraphicalInterface::SELECTOR_MODE_SCORE;
+    if (GraphicalInterface::interface_configuration.find(configuration_key) == GraphicalInterface::interface_configuration.end()) return GraphicalInterface::SELECTOR_NULL;
     return std::any_cast<GraphicalInterface::InterfaceSelector>(GraphicalInterface::interface_configuration[configuration_key]);
 }

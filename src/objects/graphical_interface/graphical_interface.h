@@ -43,6 +43,7 @@ public:
         GAME_POSITION
     };
     enum InterfaceSelector {
+        SELECTOR_NULL,
         SELECTOR_ROUND_AUTONOMOUS,
         SELECTOR_ROUND_SKILL,
         SELECTOR_TEAM_RED,
