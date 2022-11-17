@@ -3,6 +3,7 @@
 using namespace okapi;
 
 teamColor team = REDTEAM;
+AutoProcedure auto_procedure_running;
 
 OdomState position;
 OdomStateSI positionSI;

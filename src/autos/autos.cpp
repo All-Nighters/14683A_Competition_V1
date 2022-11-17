@@ -348,8 +348,11 @@ namespace Autos {
         // while (pros::millis() - round_begin_milliseconds < 45*1000) {
         //     printf("%f\n", pros::millis() - round_begin_milliseconds);
         // }
-        if (mode == IDLE) {
-            ;
+        if (mode == IDLE_FIRST) {
+            ; // set odom position
+        }
+        else if (mode == IDLE_SECOND) {
+            ; // set odom position
         }
 
 

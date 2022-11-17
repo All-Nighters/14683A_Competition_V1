@@ -21,9 +21,9 @@ void initialize() {
 	printf("2. Starting flywheel grapher...");
 	Flywheel::grapher::start_graphing();
 	printf("OK\n");
-	// printf("3. Initializing gun...");
-	// Gun::init(FORCE_MODE);
-	// printf("OK\n");
+	printf("3. Initializing gun...");
+	Gun::init(FORCE_MODE);
+	printf("OK\n");
 
 	// Set motor brake modes
 	printf("4. Setting motor breakmode...");
@@ -39,6 +39,69 @@ void initialize() {
 	printf("\nReady to go!\n");
 	printf("======================\n\n");
 	
+}
+
+/**
+ * Read user configuration of the match. Reads start position, auton strategy, 
+ * and team color.
+ */
+void readSelectorConfiguration() {
+	printf("Match Configuration:\n");
+	printf("Team Color: %s\n", team==REDTEAM ? "RED" : "BLUE");
+
+	std::string autoName = "";
+	int position = -1;
+	switch (auto_procedure_running) {
+		case (RED_FIRST_SCORING):
+			autoName = "RED_FIRST_SCORING";
+			position = 1;
+			break;
+		case (RED_FIRST_SUPPORTIVE):
+			autoName = "RED_FIRST_SUPPORTIVE";
+			position = 1;
+			break;	
+		case (RED_SECOND_SCORING):
+			autoName = "RED_SECOND_SCORING";
+			position = 2;
+			break;
+		case (RED_SECOND_SUPPORTIVE):
+			autoName = "RED_SECOND_SUPPORTIVE";
+			position = 2;
+			break;		
+		
+		case (BLUE_FIRST_SCORING):
+			autoName = "BLUE_FIRST_SCORING";
+			position = 1;
+			break;
+		case (BLUE_FIRST_SUPPORTIVE):
+			autoName = "BLUE_FIRST_SUPPORTIVE";
+			position = 1;
+			break;	
+		case (BLUE_SECOND_SCORING):
+			autoName = "BLUE_SECOND_SCORING";
+			position = 2;
+			break;
+		case (BLUE_SECOND_SUPPORTIVE):
+			autoName = "BLUE_SECOND_SUPPORTIVE";
+			position = 2;
+			break;	
+
+		case (IDLE_FIRST):
+			autoName = "IDLE_FIRST";
+			position = 1;
+			break;	
+		case (IDLE_SECOND):
+			autoName = "IDLE_FIRST";
+			position = 2;
+			break;	
+
+
+		case (DQ):
+			autoName = "DQ";
+			break;	
+	}
+	printf("Auto procedure: %s\n", autoName);
+	printf("Start position: %d\n", position);
 }
 
 /**
@@ -163,7 +226,9 @@ void opcontrol() {
 		HighGoalPositionPercent[2] = blueHighGoalPosition_percent[2];
 	}
 
-	Flywheel::setLinearEjectVelocity(8);
+	float prev_error = 0;
+
+	Flywheel::setLinearEjectVelocity(6);
 
 	printf("Driver configuration finished\n");
 
@@ -173,8 +238,58 @@ void opcontrol() {
 	*/
 	while (true) {
 
-		// locomotion
-		drive->getModel()->arcade(controller.getAnalog(ForwardAxis), 0.5*controller.getAnalog(TurnAxis));
+		// Align to the high goal when pressing the button
+		if (controller.getDigital(AimButton)) {
+			printf("Facing high goal\n");
+			
+			/*
+			Converting x and y distance to angle to face
+			*/
+			float xDist = HighGoalPositionPercent[0] - positionSI.xPercent;
+			float yDist = HighGoalPositionPercent[1] - positionSI.yPercent;
+
+			if (abs(xDist) < 0.1 && abs(yDist) < 0.1) {
+				return;
+			}
+
+			float relativeAngle;
+
+			if (xDist > 0 && yDist > 0) { // first quadrant
+				relativeAngle = atan(abs(yDist/xDist)) * 180 / M_PI;
+			}
+			else if (xDist > 0 && yDist < 0) { // second quadrant
+				relativeAngle = -atan(abs(yDist/xDist)) * 180 / M_PI;
+			}
+			else if (xDist < 0 && yDist < 0) { // third quadrant
+				relativeAngle = -180 + (atan(abs(yDist/xDist)) * 180 / M_PI);
+			}
+			else if (xDist < 0 && yDist > 0) { // fourth quadrant
+				relativeAngle = 180 - (atan(abs(yDist/xDist)) * 180 / M_PI);
+			}
+			else if (xDist == 0 && yDist != 0) {
+				relativeAngle = (yDist / abs(yDist))*90;
+			}
+			else if (xDist != 0 && yDist == 0) {
+				relativeAngle = 0;
+			} else {
+				return;
+			}
+
+			// angle to face to aim the goal
+			float faceAngle = formatAngle((relativeAngle - positionSI.theta) + aimAngleDeviation);
+
+			/*
+			Rotate to angle
+			*/
+			float target_angle = positionSI.theta + faceAngle;
+			prev_error = Auto::directionPIDStep(target_angle, prev_error);
+		} 
+		
+		else {
+			prev_error = 0;
+			// locomotion
+			drive->getModel()->arcade(controller.getAnalog(ForwardAxis), 0.5*controller.getAnalog(TurnAxis));
+		}
 
 		// spin roller
 		if (controller.getDigital(RollerDownButton)) {
@@ -194,19 +309,18 @@ void opcontrol() {
 			}
 		}
 
-		// high goal facing
-		if (controller.getDigital(AimButton)) {
-			if (!Auto::settled) {
-				printf("Facing high goal\n");
-				Auto::faceCoordinateAsync(HighGoalPositionPercent[0], HighGoalPositionPercent[1], true);
-			}
-		}
-
 		// shoot disk
 		if (controller.getDigital(ShootButton)) {
 			printf("Shooting disk\n");
 			Gun::shootDisk();
 		}
+
+		// triple shoot disk
+		if (controller.getDigital(TripleShootButton)) {
+			printf("Shooting 3 disks\n");
+			Gun::shootDisk(3, FORCE_MODE);
+		}
+
 
 
 		// expansion

@@ -31,7 +31,8 @@ enum AutoProcedure
 	BLUE_SECOND_SCORING,
 	BLUE_SECOND_SUPPORTIVE,
 
-	IDLE,
+	IDLE_FIRST,
+	IDLE_SECOND,
 
 	DQ
 };
@@ -92,7 +93,8 @@ inline ControllerDigital IntakeButton = ControllerDigital::B;
 inline ControllerDigital RollerUpButton = ControllerDigital::L1;
 inline ControllerDigital RollerDownButton = ControllerDigital::L2;
 inline ControllerDigital AimButton = ControllerDigital::down;
-inline ControllerDigital ShootButton = ControllerDigital::R2;
+inline ControllerDigital ShootButton = ControllerDigital::R1;
+inline ControllerDigital TripleShootButton = ControllerDigital::R2;
 inline ControllerDigital ExpansionButton = ControllerDigital::X;
 
 /**
@@ -106,7 +108,7 @@ inline float blueHighGoalPosition_percent[] = {86, 14.54, 20.99};
 /**
  * Flywheel constants
 */
-inline float aimAngleDeviation = 5; // deviation of angle when aiming a point
+inline float aimAngleDeviation = 20; // deviation of angle when aiming a point
 inline float g = 9.81; // gravitational constant
 inline float maxEjectVel = 8; // maximum eject velocity in m/s
 inline float minEjectVel = 1; // minimum eject velocity in m/s
@@ -137,13 +139,14 @@ inline QLength diskDiameter = 14_cm;
 inline QMass diskMass = 0.06_kg;
 inline float diskHorizontalArea = 0.015393804;
 inline float diskVerticalArea = 0.0028;
-inline QLength launcher_height = 0.3_m;
-inline QAngle launch_angle = 40_deg;
+inline QLength launcher_height = 0.31_m;
+inline QAngle launch_angle = 45_deg;
 inline float fieldLength = 3.6576;
 
 
 
 extern teamColor team; // the team color of the robot
+extern AutoProcedure auto_procedure_running;
 
 extern Controller controller; // main controller
 extern Controller partner; // partner controller

@@ -185,6 +185,36 @@ namespace Auto {
     }
 
     /**
+     * @brief PID controlling robot's rotation (a step only)
+     * 
+     * @param target_angle targeted angle
+     * @param prev_error previous angle error
+     * 
+     * @returns previous direction error
+     */
+    float directionPIDStep(float target_angle, float prev_error) {
+        float error = abs(target_angle - positionSI.theta);
+        float deriv_error = error - prev_error;
+
+        float control_output = std::fmax(error * Rp + deriv_error * Rd, 2000);
+
+
+        prev_error = error;
+
+        if (target_angle - positionSI.theta > 0) {
+            LFMotor.moveVoltage(control_output);
+            LBMotor.moveVoltage(control_output);
+            RFMotor.moveVoltage(-control_output);
+            RBMotor.moveVoltage(-control_output);
+        } else {
+            LFMotor.moveVoltage(-control_output);
+            LBMotor.moveVoltage(-control_output);
+            RFMotor.moveVoltage(control_output);
+            RBMotor.moveVoltage(control_output);
+        }
+        return prev_error;
+    }
+    /**
      * @brief PID controlling robot's absolute direction
      * 
      * @param ang disired absolute angle facing
@@ -192,7 +222,7 @@ namespace Auto {
     
     void directionPIDAbs(float angle) {
         float target_angle = angle;
-        float prev_error = abs(angle);
+        float prev_error = abs(target_angle - positionSI.theta);
         float start_time = pros::millis();  
         float timeout = 10; // maximum runtime in seconds
 

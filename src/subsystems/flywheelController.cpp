@@ -9,8 +9,11 @@ namespace Flywheel {
     float idleLinearVelocity = 2;
 
 
-    float prevVError = 0;
-    float prevCtlOutput = 0;
+    float prevVError1 = 0;
+    float prevVError2 = 0;
+
+    float prevCtlOutput1 = 0;
+    float prevCtlOutput2 = 0;
 
     float queuedLinearVelocity = 0;
 
@@ -114,18 +117,23 @@ namespace Flywheel {
      */
     void velocityPID(float target_velocity) {
         
-        float current_velocity = getCurrentVelocity();
+        float current_velocity_1 = FlywheelMotor1.getActualVelocity() / 2.0 * 15;
+        float current_velocity_2 = FlywheelMotor2.getActualVelocity() / 2.0 * 15;
 
-        float v_error = std::fmax(std::fmin(target_velocity, 3000), 0) - current_velocity;
-        float deriv_error = v_error - prevVError;
+        float v_error_1 = std::fmax(std::fmin(target_velocity, 3000), 0) - current_velocity_1;
+        float v_error_2 = std::fmax(std::fmin(target_velocity, 3000), 0) - current_velocity_2;
         
+        float deriv_error_1 = v_error_1 - prevVError1;
+        float deriv_error_2 = v_error_1 - prevVError2;
 
-        prevCtlOutput += v_error * Vp + deriv_error * Vd;
+        prevCtlOutput1 = clamp(prevCtlOutput1 + (v_error_1 * Vp + deriv_error_1 * Vd), -12000.0, 12000.0);
+        prevCtlOutput2 = clamp(prevCtlOutput2 + (v_error_2 * Vp + deriv_error_2 * Vd),  -12000.0, 12000.0);
 
-        FlywheelMotor1.moveVoltage(clamp(prevCtlOutput, -12000.0, 12000.0));
-        FlywheelMotor2.moveVoltage(clamp(prevCtlOutput, -12000.0, 12000.0));
+        FlywheelMotor1.moveVoltage(prevCtlOutput1);
+        FlywheelMotor2.moveVoltage(prevCtlOutput1);
 
-        prevVError = v_error;
+        prevVError1 = v_error_1;
+        prevVError2 = v_error_2;
     }
     
     /**

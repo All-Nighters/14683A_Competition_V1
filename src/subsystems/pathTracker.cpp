@@ -58,7 +58,7 @@ namespace pathTracker {
                     angle_difference = 0;
                 }
 
-                pathCoords[i] = Waypoint(pathCoords[i].get_x(), pathCoords[i].get_y(), angle, pathCoords[i].get_linear_vel(), angle_difference);
+                pathCoords[i] = Waypoint(pathCoords[i].get_x(), pathCoords[i].get_y(), angle, pathCoords[i].get_linear_vel(), 0.01 * angle_difference * pathCoords[i].get_linear_vel());
             }
         }
         /**
