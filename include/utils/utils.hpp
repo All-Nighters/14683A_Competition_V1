@@ -1,5 +1,5 @@
 /**
- * @file utils.cpp
+ * @file utils.hpp
  *
  * @brief utility functions
  *

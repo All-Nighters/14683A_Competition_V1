@@ -1,3 +1,3 @@
 namespace Autos {
-    void run(std::string mode);
+    void run(AutoProcedure mode);
 }

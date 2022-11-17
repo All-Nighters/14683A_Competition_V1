@@ -12,8 +12,12 @@ namespace Flywheel {
     float getCurrentVelocity();
     float getExpectRPMFromEjectVelocity(float velocity);
     float getCurrentEjectVelocity();
+    void idle();
+    void stop();
+    void startControlLoop();
+    void stopControlLoop();
     namespace grapher {
-        void graph_velocity(float target, float current);
-        
+        void start_graphing();
+        void stop_graphing();
     }
 }

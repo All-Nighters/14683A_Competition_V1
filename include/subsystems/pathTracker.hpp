@@ -11,14 +11,7 @@
 namespace pathTracker {
     inline float lookAheadRadius = 10;
     namespace ramsete {
-        void setPath(std::vector<Coordinates> coords);
-
-        int findLookAheadPoint();
-
-        void followPath();
-    }
-    namespace pure_pursuit {
-        void setPath(std::vector<Coordinates> coords);
+        void setPath(std::vector<Waypoint> coords);
 
         int findLookAheadPoint();
 
