@@ -346,6 +346,10 @@ void GraphicalInterface::interface_rerender() {
     }
 }
 
+void GraphicalInterface::interface_shutdown() {
+    lv_obj_del(lv_scr_act());
+}
+
 lv_res_t button_action_callback(lv_obj_t* button_object) {
     uint32_t button_id = lv_obj_get_free_num(button_object);
     static std::map<GraphicalInterface::InterfaceSelector, GraphicalInterface::InterfaceSelector> selector_configuration_toggle = {
