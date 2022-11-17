@@ -51,6 +51,7 @@
 #include "subsystems/autoLib.hpp"
 #include "subsystems/flywheelController.hpp"
 #include "subsystems/roller.hpp"
+#include "subsystems/gun.hpp"
 #include "utils/projectile_trajectory.hpp"
 
 #include "autos/autos.hpp"

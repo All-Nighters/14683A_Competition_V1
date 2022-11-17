@@ -7,16 +7,10 @@
 
 #include "main.h"
 
-typedef struct base_angle_position {
-    float LF;
-    float RF;
-    float RB;
-    float LB;
-}base_angle_position;
-
 namespace Auto {
     extern bool settled;
     void moveDistance(float target_percentage);
+    float directionPIDStep(float target_angle, float prev_error);
     void turnAngle(float ang);
     void faceAngle(float ang);
     void moveDistanceAsync(float target_percentage);

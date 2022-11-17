@@ -22,14 +22,14 @@ namespace projectile_trajectory {
     */
 
     float trajectory(float a, float x, float v, float Vh, float m, float g, float p, float Av_temp, float Ah_temp, float Cv, float Ch, float launcher_height) {
-        // equations reference: https://www.desmos.com/calculator/67gt9txnba
+        // equations reference: https://www.desmos.com/calculator/b6t1x1uxeu
         float n = a;
         float e = exp(1.0);
         float Av = Av_temp * cos(n) + Ah_temp * sin(n);
         float Ah = Ah_temp * cos(n) + Av_temp * sin(n);
 
-        float Kv = 0.5 * p * Av * Cv;
-        float Kh = 0.5 * p * Ah * Ch;
+        float Kv = 0.5 * p * Av * (Cv * sin(n));
+        float Kh = 0.5 * p * Ah * (Ch * cos(n));
 
         float t = (m*(pow(e, (Kh*x/m))-1)) / (Kh*(v*cos(n)+Vh));
         float b1 = sqrt(m/(g*Kv)) * atan(v*sin(n)*sqrt(Kv/(m*g)));

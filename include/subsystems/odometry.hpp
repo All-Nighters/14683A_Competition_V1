@@ -1,16 +1,16 @@
 /**
  * @file odometry.hpp
- *
- * @brief Basic odometry
- *
+ * @brief Odometry code
  */
 
-extern std::shared_ptr<OdomChassisController> odomChassis;
+#include "main.h"
 
 namespace Odom {
-    void tare_odometry();
-    void set_state(QLength x, QLength y, QAngle deg);
-    void update_odometry();
-    void test_odometry();
-    void setState(QLength x, QLength y, QAngle ang);
+	void save_results();
+	int position_tracking();
+	void init(odomMode mode);
+	odomMode getOdomMode();
+    void debug();
+	void set_state(QLength x, QLength y, QAngle angle);
+	void set_state(float x, float y, float angle);
 }

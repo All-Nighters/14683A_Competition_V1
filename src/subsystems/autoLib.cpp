@@ -11,7 +11,7 @@ namespace Auto {
     float Td = 100;
 
     // rotational PID Coefficients
-    float Rp = 170;
+    float Rp = 200;
     float Ri = 0;
     float Rd = 350;
 
@@ -36,6 +36,19 @@ namespace Auto {
         LBMotor.moveVelocity(leftV);
         RBMotor.moveVelocity(rightV);
     }
+
+    /**
+     * @brief Get the degree of rotations forward
+     * 
+     * @return degree of rotation
+     */
+    float getMotorPosition() {
+        if (Odom::getOdomMode() == BASIC) {
+            return ((RFMotor.getPosition() + RBMotor.getPosition()) / 2.0) * 36/60.0;
+        } else {
+            return rightTW.get();
+        }
+    }
     /**
      * @brief PID for controlling forward distance
      * 
@@ -44,8 +57,9 @@ namespace Auto {
     void distancePID(float percentage) {
         float target_distance = fieldLength * percentage / 100;
         float revs = target_distance / (M_PI*(trackingWheelDiameter.convert(meter)));
-        float lefttargetAngle = revs * 360 + reverse*leftTW.get();
-        float righttargetAngle = revs * 360 + reverse*rightTW.get();
+        // float lefttargetAngle = revs * 360 + leftTW.get();
+        float targetAngle = revs * 360 + getMotorPosition();
+
         float targetFaceAngle = positionSI.theta; 
         float start_time = pros::millis();  
         float timeout = 10; // maximum runtime in seconds
@@ -58,36 +72,32 @@ namespace Auto {
             direction = 1;
         }
         
-        float prevErrorLeft = abs(lefttargetAngle - reverse*leftTW.get());
-        float prevErrorRight = abs(righttargetAngle - reverse*rightTW.get());
+        // float prevErrorLeft = abs(lefttargetAngle - leftTW.get());
+        float prevErrorPosition = abs(targetAngle - getMotorPosition());
         float prevFaceAngleError = 0;
 
 
         settled = false;
 
-        while (abs(((lefttargetAngle + righttargetAngle)/2.0) - ((reverse*leftTW.get() +reverse*rightTW.get())/2.0)) >= 10 && 
+        while (abs(targetAngle - getMotorPosition()) >= 10 && 
         pros::millis() - start_time <= timeout*1000) {
 
-            Odom::update_odometry();
-            printf("%f %f %f\n", lefttargetAngle, reverse*leftTW.get(), reverse*rightTW.get());
+            float error_position;
 
-            float error_Left = abs(lefttargetAngle - reverse*leftTW.get());
-            float error_Right = abs(righttargetAngle - reverse*rightTW.get());
-            float error_Facing = positionSI.theta - targetFaceAngle;
+            prevErrorPosition = abs(targetAngle - getMotorPosition());
+            float error_Facing = targetFaceAngle-positionSI.theta;
 
 
-            float deriv_Left = error_Left - prevErrorLeft;
-            float deriv_Right = error_Right - prevErrorRight;
+            float deriv_position = error_position - prevErrorPosition;
             float deriv_Facing = error_Facing - prevFaceAngleError;
 
 
-            float control_output_Left = error_Left * Tp + deriv_Left * Td;
-            float control_output_Right = error_Right * Tp + deriv_Right * Td;
+            float control_output = error_position * Tp + deriv_position * Td;
             float control_output_Facing = error_Facing * Rp + deriv_Facing * Rd;
 
 
-            control_output_Left = direction * std::fmax(std::fmin(control_output_Left, 8000), -8000) - std::fmax(std::fmin(control_output_Facing, 4000), -4000);
-            control_output_Right = direction * std::fmax(std::fmin(control_output_Right, 8000), -8000) + std::fmax(std::fmin(control_output_Facing, 4000), -4000);
+            float control_output_Left = direction * std::fmax(std::fmin(control_output, 8000), -8000) + std::fmax(std::fmin(control_output_Facing, 4000), -4000);
+            float control_output_Right = direction * std::fmax(std::fmin(control_output, 8000), -8000) - std::fmax(std::fmin(control_output_Facing, 4000), -4000);
 
             if (abs(control_output_Left) < 4000 && direction < 0) {
                 control_output_Left = -4000;
@@ -99,8 +109,7 @@ namespace Auto {
             }
 
 
-            prevErrorLeft = error_Left;
-            prevErrorRight = error_Right;
+            prevErrorPosition = error_position;
 
 
             LFMotor.moveVoltage(control_output_Left);
@@ -111,7 +120,6 @@ namespace Auto {
             
             pros::delay(20);
         }
-        // printf("Angle reached\n");
         LFMotor.moveVoltage(0);
         RFMotor.moveVoltage(0);
         LBMotor.moveVoltage(0);
@@ -143,14 +151,12 @@ namespace Auto {
 
         settled = false;
 
-        while (abs(target_angle - positionSI.theta) >= 0.5 && pros::millis() - start_time <= timeout*1000) {
-            Odom::update_odometry();
-
+        while (abs(target_angle - positionSI.theta) >= 0.1 && pros::millis() - start_time <= timeout*1000) {
+            
             float error = abs(target_angle - positionSI.theta);
-
             float deriv_error = error - prev_error;
 
-            float control_output = std::fmax(error * Rp + deriv_error * Rd, 3000);
+            float control_output = std::fmax(error * Rp + deriv_error * Rd, 2000);
 
 
             prev_error = error;
@@ -167,10 +173,8 @@ namespace Auto {
                 RBMotor.moveVoltage(control_output);
             }
 
-
             pros::delay(20);
         }
-        printf("Angle reached\n");
 
         LFMotor.moveVoltage(0);
         RFMotor.moveVoltage(0);
@@ -178,10 +182,38 @@ namespace Auto {
         RBMotor.moveVoltage(0);
         
         settled = true;
-
-        Odom::setState(position.x, position.y, position.theta);
     }
 
+    /**
+     * @brief PID controlling robot's rotation (a step only)
+     * 
+     * @param target_angle targeted angle
+     * @param prev_error previous angle error
+     * 
+     * @returns previous direction error
+     */
+    float directionPIDStep(float target_angle, float prev_error) {
+        float error = abs(target_angle - positionSI.theta);
+        float deriv_error = error - prev_error;
+
+        float control_output = std::fmax(error * Rp + deriv_error * Rd, 2000);
+
+
+        prev_error = error;
+
+        if (target_angle - positionSI.theta > 0) {
+            LFMotor.moveVoltage(control_output);
+            LBMotor.moveVoltage(control_output);
+            RFMotor.moveVoltage(-control_output);
+            RBMotor.moveVoltage(-control_output);
+        } else {
+            LFMotor.moveVoltage(-control_output);
+            LBMotor.moveVoltage(-control_output);
+            RFMotor.moveVoltage(control_output);
+            RBMotor.moveVoltage(control_output);
+        }
+        return prev_error;
+    }
     /**
      * @brief PID controlling robot's absolute direction
      * 
@@ -190,14 +222,13 @@ namespace Auto {
     
     void directionPIDAbs(float angle) {
         float target_angle = angle;
-        float prev_error = abs(angle);
+        float prev_error = abs(target_angle - positionSI.theta);
         float start_time = pros::millis();  
         float timeout = 10; // maximum runtime in seconds
 
         settled = false;
 
         while (abs(target_angle - positionSI.theta) >= 0.5 && pros::millis() - start_time <= timeout*1000) {
-            Odom::update_odometry();
 
             float error = abs(target_angle - positionSI.theta);
 
@@ -223,7 +254,6 @@ namespace Auto {
 
             pros::delay(20);
         }
-        printf("Angle reached\n");
 
         LFMotor.moveVoltage(0);
         RFMotor.moveVoltage(0);
@@ -232,8 +262,6 @@ namespace Auto {
         pros::delay(200);
         
         settled = true;
-
-        Odom::setState(position.x, position.y, position.theta);
     }
 
     /**
@@ -264,7 +292,6 @@ namespace Auto {
      */
     void faceCoordinate(float xPercent, float yPercent, bool aimMode) {
         settled = false;
-        Odom::update_odometry();
         float xDist = xPercent - positionSI.xPercent;
         float yDist = yPercent - positionSI.yPercent;
 
@@ -305,7 +332,6 @@ namespace Auto {
         } else {
             faceAngle = formatAngle(relativeAngle - positionSI.theta);
         }
-        printf("%f %f %f %f %f\n", xPercent, yPercent, positionSI.xPercent, positionSI.yPercent, faceAngle);
 
         turnAngle(faceAngle);
         settled = true;
@@ -349,9 +375,7 @@ namespace Auto {
         float yDist = yPercent - positionSI.yPercent;
         float dist = sqrt(xDist*xDist + yDist*yDist);
 
-        printf("face\n");
         faceCoordinate(xPercent, yPercent, false);
-        printf("move\n");
         moveDistance(dist);
 
     }
