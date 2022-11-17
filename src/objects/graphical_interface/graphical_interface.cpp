@@ -1,6 +1,7 @@
 #include "graphical_interface.h"
 #include "../../datas/constants.h"
 #include "main.h"
+#include <any>
 
 #define WIDTH  Constants::GraphicalInterface::SCREEN_WIDTH
 #define HEIGHT Constants::GraphicalInterface::SCREEN_HEIGHT
