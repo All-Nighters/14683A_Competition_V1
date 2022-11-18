@@ -14,6 +14,7 @@ namespace Gun {
      */
     void init(shootMode mode) {
         shoot_mode = mode;
+        pros::delay(200);
         reposition();
     }
 

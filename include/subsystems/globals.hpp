@@ -54,8 +54,8 @@ enum shootMode
  * Motor ports
 */
 inline int frontLeftMotorPort = 1;
-inline int frontRightMotorPort = 2;
-inline int bottomRightMotorPort = -3;
+inline int frontRightMotorPort = -2;
+inline int bottomRightMotorPort = 3;
 inline int bottomLeftMotorPort = -4;
 
 inline int flywheelMotorPort1 = 5;
@@ -94,13 +94,15 @@ inline char pistonPort2 = 'H';
 inline ControllerAnalog ForwardAxis = ControllerAnalog::leftY;
 inline ControllerAnalog TurnAxis = ControllerAnalog::rightX;
 
-inline ControllerDigital IntakeButton = ControllerDigital::B;
-inline ControllerDigital RollerUpButton = ControllerDigital::L1;
-inline ControllerDigital RollerDownButton = ControllerDigital::L2;
-inline ControllerDigital AimButton = ControllerDigital::down;
-inline ControllerDigital ShootButton = ControllerDigital::R1;
-inline ControllerDigital TripleShootButton = ControllerDigital::R2;
-inline ControllerDigital FlywheelStopMotor = ControllerDigital::A;
+// inline ControllerDigital IntakeButton = ControllerDigital::B;
+// inline ControllerDigital RollerUpButton = ControllerDigital::L1;
+// inline ControllerDigital RollerDownButton = ControllerDigital::L2;
+inline ControllerDigital IntakeButton = ControllerDigital::R1;
+inline ControllerDigital IntakeButtonRev = ControllerDigital::A;
+inline ControllerDigital AimButton = ControllerDigital::L1;
+inline ControllerDigital ShootButton = ControllerDigital::L2;
+inline ControllerDigital TripleShootButton = ControllerDigital::right;
+inline ControllerDigital FlywheelStopButton = ControllerDigital::B;
 inline ControllerDigital ExpansionButton = ControllerDigital::X;
 
 /**

@@ -58,6 +58,15 @@ namespace Intake {
     }
 
     /**
+     * @brief Turn on intake motor (reverse)
+     * 
+     */
+    void turnOnRev() {
+        enabled = true;
+        IntakeMotor.moveVoltage(12000);
+    }
+
+    /**
      * @brief Turn off intake motor
      * 
      */

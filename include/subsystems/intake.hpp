@@ -10,6 +10,7 @@ namespace Intake {
     void setDiskHolding(int disks);
     void toggle();
     void turnOn();
+    void turnOnRev();
     void turnOff();
     void takeDisk(int disks);
 }

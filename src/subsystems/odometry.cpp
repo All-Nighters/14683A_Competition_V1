@@ -209,7 +209,7 @@ namespace Odom {
 	 */
 	void debug() {
 		printf("Odometry: x=%f, y=%f, a=%f\n", positionSI.xPercent, positionSI.yPercent, positionSI.theta);
-		printf("Encoder: l=%f, r=%f, m=%f, imu=%f\n",  leftTW.get(),  rightTW.get(), -midTW.get(), (imu_sensor_1.get_rotation() + imu_sensor_2.get_rotation())/2);
+		// printf("Encoder: l=%f, r=%f, m=%f, imu=%f\n",  leftTW.get(),  rightTW.get(), -midTW.get(), (imu_sensor_1.get_rotation() + imu_sensor_2.get_rotation())/2);
 	}
 
 	/**

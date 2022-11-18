@@ -103,7 +103,8 @@ namespace Flywheel {
      * @return current RPM of the flywheel
      */
     float getCurrentVelocity() {
-        float velocity = (FlywheelMotor1.getActualVelocity() + FlywheelMotor2.getActualVelocity()) / 2.0 * 15;
+        // float velocity = (FlywheelMotor1.getActualVelocity() + FlywheelMotor2.getActualVelocity()) / 2.0 * 15;
+        float velocity = (FlywheelMotor1.getActualVelocity()) * 15;
         return velocity;
     }
 
@@ -120,10 +121,11 @@ namespace Flywheel {
         float deriv_error = v_error - prevVError;
         
 
-        prevCtlOutput = clamp(prevCtlOutput + (v_error * Vp + deriv_error * Vd), -12000.0, 12000.0);
+        prevCtlOutput += v_error * Vp + deriv_error * Vd;
+        // printf("%f\n", (FlywheelMotor2.getActualVelocity()));
 
-        FlywheelMotor1.moveVoltage(prevCtlOutput);
-        FlywheelMotor2.moveVoltage(prevCtlOutput);
+        FlywheelMotor1.moveVoltage(clamp(prevCtlOutput, -12000.0, 12000.0));
+        FlywheelMotor2.moveVoltage(clamp(prevCtlOutput, -12000.0, 12000.0));
 
         prevVError = v_error;
     }

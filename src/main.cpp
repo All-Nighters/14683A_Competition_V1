@@ -8,35 +8,32 @@
  */
 void initialize() {
 	GraphicalInterface selector;
-	// printf("\nINITIALIZATION STARTED\n");
-	// printf("======================\n");
-	// pros::lcd::initialize();
-	// pros::lcd::set_text(1, "Hello PROS User!");
+	printf("\nINITIALIZATION STARTED\n");
+	printf("======================\n");
 
-	// // // Initialize subsystems
-	// // Odom::init(BASIC);
-	// // Odom::set_state(50, 50, 0);
-	// printf("1. Starting flywheel control loop...");
-	// Flywheel::startControlLoop();
-	// printf("OK\n");
-	// printf("2. Starting flywheel grapher...");
-	// Flywheel::grapher::start_graphing();
-	// printf("OK\n");
-	// printf("3. Initializing gun...");
-	// Gun::init(FORCE_MODE);
-	// printf("OK\n");
+	// // Initialize subsystems
+	Odom::init(BASIC);
+	// Odom::set_state(50, 50, 0);
+	printf("1. Starting flywheel control loop...");
+	Flywheel::startControlLoop();
+	printf("OK\n");
+	printf("2. Starting flywheel grapher...");
+	Flywheel::grapher::start_graphing();
+	printf("OK\n");
+	printf("3. Initializing gun...");
+	Gun::init(FORCE_MODE);
+	printf("OK\n");
 
-	// // Set motor brake modes
-	// printf("4. Setting motor breakmode...");
-	// LFMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
-	// RFMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
-	// RBMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
-	// LBMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
-	// IndexerMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::hold);
-	// IntakeMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::hold);
-	// RollerMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::hold);
+	// Set motor brake modes
+	printf("4. Setting motor breakmode...");
+	LFMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
+	RFMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
+	RBMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
+	LBMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
+	IndexerMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::hold);
+	IntakeMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::hold);
+	RollerMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::hold);
 
-	printf("5. Setting up selector screen...");
 	printf("OK\n");
 	printf("\nReady to go!\n");
 	printf("======================\n\n");
@@ -109,7 +106,22 @@ void readSelectorConfiguration() {
 		}
 		auto_procedure_running = procedure_combinations[procedure_idx];
 	}	
-
+	if (procedure_idx == 0 || procedure_idx == 1 || procedure_idx == 2) { // red first
+		Odom::set_state(86.38888888888889, 76.2037037037037, 180);
+	}
+	else if (procedure_idx == 3 || procedure_idx == 4 || procedure_idx == 5) { // red second
+		Odom::set_state(58.05, 10.41, 90);
+	}
+	else if (procedure_idx == 6 || procedure_idx == 7 || procedure_idx == 8) { // blue first
+		Odom::set_state(10.10, 24.35, 0);
+	}
+	else if (procedure_idx == 9 || procedure_idx == 10 || procedure_idx == 11) { // blue second
+		Odom::set_state(41.9, 90.95, -90);
+	}
+	else if (procedure_idx == 12) { // skill
+		Odom::set_state(0, 0, 0);
+	}
+	
 }
 
 /**
@@ -151,6 +163,24 @@ void autonomous() {
 	printf("\nAUTONOMOUS\n");
 	printf("======================\n");
 	readSelectorConfiguration();
+
+	// // position #1 auto
+	// if (auto_procedure_running == RED_FIRST_SCORING || 
+	// 	auto_procedure_running == BLUE_FIRST_SCORING || 
+	// 	auto_procedure_running == RED_FIRST_SUPPORTIVE ||
+	// 	auto_procedure_running == BLUE_FIRST_SUPPORTIVE 
+	// ) {
+	// 	// roller
+	// 	LFMotor.moveVelocity(-200);
+	// 	LBMotor.moveVelocity(-200);
+	// 	RFMotor.moveVelocity(-200);
+	// 	RBMotor.moveVelocity(-200);
+	// 	pros::delay(300);
+	// 	LFMotor.moveVelocity(0);
+	// 	LBMotor.moveVelocity(0);
+	// 	RFMotor.moveVelocity(0);
+	// 	RBMotor.moveVelocity(0);
+	// }
 	
 }
 
@@ -192,7 +222,7 @@ void PPTest() {
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-	autonomous();
+	readSelectorConfiguration(); // remember to delete this in production
 
 	printf("\nDRIVER CONTROL\n");
 	printf("======================\n");
@@ -239,84 +269,84 @@ void opcontrol() {
 
 	float prev_error = 0;
 
-	Flywheel::setLinearEjectVelocity(6);
 	printf("Driver configuration finished\n");
 
+	bool prevButtonState = false;
+	bool isSpinning = false;
+	bool isEndGame = false;
+	// Flywheel::setLinearEjectVelocity(6);
 
 	/*
 	For controls, see globals.hpp
 	*/
 	while (true) {
-
-		// Align to the high goal when pressing the button
-		if (controller.getDigital(AimButton)) {
-			printf("Facing high goal\n");
-			
-			/*
-			Converting x and y distance to angle to face
-			*/
-			float xDist = HighGoalPositionPercent[0] - positionSI.xPercent;
-			float yDist = HighGoalPositionPercent[1] - positionSI.yPercent;
-
-			if (abs(xDist) < 0.1 && abs(yDist) < 0.1) {
-				return;
-			}
-
-			float relativeAngle;
-
-			if (xDist > 0 && yDist > 0) { // first quadrant
-				relativeAngle = atan(abs(yDist/xDist)) * 180 / M_PI;
-			}
-			else if (xDist > 0 && yDist < 0) { // second quadrant
-				relativeAngle = -atan(abs(yDist/xDist)) * 180 / M_PI;
-			}
-			else if (xDist < 0 && yDist < 0) { // third quadrant
-				relativeAngle = -180 + (atan(abs(yDist/xDist)) * 180 / M_PI);
-			}
-			else if (xDist < 0 && yDist > 0) { // fourth quadrant
-				relativeAngle = 180 - (atan(abs(yDist/xDist)) * 180 / M_PI);
-			}
-			else if (xDist == 0 && yDist != 0) {
-				relativeAngle = (yDist / abs(yDist))*90;
-			}
-			else if (xDist != 0 && yDist == 0) {
-				relativeAngle = 0;
-			} else {
-				return;
-			}
-
-			// angle to face to aim the goal
-			float faceAngle = formatAngle((relativeAngle - positionSI.theta) + aimAngleDeviation);
-
-			/*
-			Rotate to angle
-			*/
-			float target_angle = positionSI.theta + faceAngle;
-			prev_error = Auto::directionPIDStep(target_angle, prev_error);
-		} 
+		Odom::debug();
 		
-		else {
-			prev_error = 0;
-			// locomotion
-			drive->getModel()->arcade(controller.getAnalog(ForwardAxis), 0.5*controller.getAnalog(TurnAxis));
-		}
 
-		// spin roller
-		if (controller.getDigital(RollerDownButton)) {
-			printf("Rolling down\n");
-			RollerMotor.moveVoltage(6000);
-		} else if (controller.getDigital(RollerUpButton)) {
-			printf("Rolling up\n");
-			RollerMotor.moveVoltage(-6000);
+		// // Align to the high goal when pressing the button
+		// if (controller.getDigital(AimButton)) {
+		// 	printf("Facing high goal\n");
+			
+		// 	/*
+		// 	Converting x and y distance to angle to face
+		// 	*/
+		// 	float xDist = HighGoalPositionPercent[0] - positionSI.xPercent;
+		// 	float yDist = HighGoalPositionPercent[1] - positionSI.yPercent;
+
+		// 	if (abs(xDist) < 0.1 && abs(yDist) < 0.1) {
+		// 		return;
+		// 	}
+
+		// 	float relativeAngle;
+
+		// 	if (xDist > 0 && yDist > 0) { // first quadrant
+		// 		relativeAngle = atan(abs(yDist/xDist)) * 180 / M_PI;
+		// 	}
+		// 	else if (xDist > 0 && yDist < 0) { // second quadrant
+		// 		relativeAngle = -atan(abs(yDist/xDist)) * 180 / M_PI;
+		// 	}
+		// 	else if (xDist < 0 && yDist < 0) { // third quadrant
+		// 		relativeAngle = -180 + (atan(abs(yDist/xDist)) * 180 / M_PI);
+		// 	}
+		// 	else if (xDist < 0 && yDist > 0) { // fourth quadrant
+		// 		relativeAngle = 180 - (atan(abs(yDist/xDist)) * 180 / M_PI);
+		// 	}
+		// 	else if (xDist == 0 && yDist != 0) {
+		// 		relativeAngle = (yDist / abs(yDist))*90;
+		// 	}
+		// 	else if (xDist != 0 && yDist == 0) {
+		// 		relativeAngle = 0;
+		// 	} else {
+		// 		return;
+		// 	}
+
+		// 	// angle to face to aim the goal
+		// 	float faceAngle = formatAngle((relativeAngle - positionSI.theta) + aimAngleDeviation);
+
+		// 	/*
+		// 	Rotate to angle
+		// 	*/
+		// 	float target_angle = positionSI.theta + faceAngle;
+		// 	prev_error = Auto::directionPIDStep(target_angle, prev_error);
+		// } 
+		
+		// else {
+		// 	prev_error = 0;
+		// 	// locomotion
+		// 	drive->getModel()->arcade(controller.getAnalog(ForwardAxis), 0.5*controller.getAnalog(TurnAxis));
+		// }
+
+		drive->getModel()->arcade(controller.getAnalog(ForwardAxis), 0.5*controller.getAnalog(TurnAxis));
+
+		// spin intake
+		if (controller.getDigital(IntakeButton)) {
+			printf("Running Intake\n");
+			Intake::turnOn();
+		} else if (controller.getDigital(IntakeButtonRev)) {
+			printf("Running Intake\n");
+			Intake::turnOnRev();
 		} else {
-
-			// spin intake
-			if (controller.getDigital(IntakeButton)) {
-				printf("Running Intake\n");
-				Intake::turnOn();
-			} else {
-				Intake::turnOff();
-			}
+			Intake::turnOff();
 		}
 
 		// shoot disk
@@ -330,16 +360,37 @@ void opcontrol() {
 		if (controller.getDigital(TripleShootButton)) {
 			printf("Shooting 3 disks\n");
 			Gun::shootDisk(3, FORCE_MODE);
-		}
 
-		if (controller.getDigital(FlywheelStopMotor)) {
 			Flywheel::setLinearEjectVelocity(0);
-		} else {
-			Flywheel::setLinearEjectVelocity(6);
+			isSpinning = false;
 		}
 
-		// expansion
-		if (pros::millis()-round_begin_milliseconds >= 105 * 1000 && controller.getDigital(ExpansionButton)) {
+		if (controller.getDigital(FlywheelStopButton) && !prevButtonState) {
+			prevButtonState = true;
+			if (isSpinning) {
+				Flywheel::setLinearEjectVelocity(0);
+				isSpinning = false;
+			} else {
+				Flywheel::setLinearEjectVelocity(5);
+				isSpinning = true;
+			}
+			
+			
+		} else if (!controller.getDigital(FlywheelStopButton)) {
+			prevButtonState = false;
+		}
+
+
+		if (pros::millis()-round_begin_milliseconds >= 90 * 1000 && !isEndGame) {
+			controller.clearLine(0);
+			controller.setText(0,0,"Endgame");
+			isEndGame = true;
+		} else {
+			controller.setText(0,0, isSpinning? "SPIN" : "STOP");
+		}
+
+
+		if (pros::millis()-round_begin_milliseconds >= 90 * 1000 && controller.getDigital(ExpansionButton)) {
 			printf("Trigger expansion\n");
 
 			// remember to change the value in autos.cpp
