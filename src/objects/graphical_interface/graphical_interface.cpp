@@ -1,6 +1,7 @@
 #include "graphical_interface.h"
 #include "../../datas/constants.h"
 #include "main.h"
+#include <any>
 
 #define WIDTH  Constants::GraphicalInterface::SCREEN_WIDTH
 #define HEIGHT Constants::GraphicalInterface::SCREEN_HEIGHT
@@ -55,9 +56,9 @@ void GraphicalInterface::interface_menu() {
     this->object_scale(footer_menu     , 100, 50, (WIDTH - 100), 0);
     // home screen
     lv_obj_t* home_container = this->container_initialize(lv_scr_act(), GraphicalInterface::InterfaceType::HOME_CONTAINER);
-    lv_obj_t* home_icon = this->image_initialize(home_container, GraphicalInterface::InterfaceType::HOME_IMAGE);
+    lv_obj_t* home_icon      = this->image_initialize(home_container, GraphicalInterface::InterfaceType::HOME_IMAGE);
     this->object_scale(home_container, WIDTH, (HEIGHT - 100), 0, 50);
-    this->object_scale(home_icon, 200, 200, (WIDTH / 2) - 100, ((HEIGHT - 100) / 2) - 100);
+    this->object_scale(home_icon,      480,   142,            0, 0);
     lv_img_set_src(home_icon, &allnighters_logo);
     // selector
     lv_obj_t* selector_container = this->container_initialize(lv_scr_act(), GraphicalInterface::InterfaceType::SELECTOR_CONTAINER);
