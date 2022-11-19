@@ -17,9 +17,9 @@ void initialize() {
 	printf("1. Starting flywheel control loop...");
 	Flywheel::startControlLoop();
 	printf("OK\n");
-	printf("2. Starting flywheel grapher...");
+	// printf("2. Starting flywheel grapher...");
 	Flywheel::grapher::start_graphing();
-	printf("OK\n");
+	// printf("OK\n");
 	printf("3. Initializing gun...");
 	Gun::init(FORCE_MODE);
 	printf("OK\n");
@@ -160,27 +160,18 @@ void competition_initialize() {
  * from where it left off.
  */
 void autonomous() {
-	printf("\nAUTONOMOUS\n");
-	printf("======================\n");
-	readSelectorConfiguration();
+	// printf("\nAUTONOMOUS\n");
+	// printf("======================\n");
+	// readSelectorConfiguration();
 
 	// // position #1 auto
-	// if (auto_procedure_running == RED_FIRST_SCORING || 
-	// 	auto_procedure_running == BLUE_FIRST_SCORING || 
-	// 	auto_procedure_running == RED_FIRST_SUPPORTIVE ||
-	// 	auto_procedure_running == BLUE_FIRST_SUPPORTIVE 
-	// ) {
-	// 	// roller
-	// 	LFMotor.moveVelocity(-200);
-	// 	LBMotor.moveVelocity(-200);
-	// 	RFMotor.moveVelocity(-200);
-	// 	RBMotor.moveVelocity(-200);
-	// 	pros::delay(300);
-	// 	LFMotor.moveVelocity(0);
-	// 	LBMotor.moveVelocity(0);
-	// 	RFMotor.moveVelocity(0);
-	// 	RBMotor.moveVelocity(0);
-	// }
+	Flywheel::setLinearEjectVelocity(7.8);
+	pros::delay(5000);
+	Gun::shootDisk(FORCE_MODE);
+	pros::delay(2500);
+	Gun::shootDisk(FORCE_MODE);
+	pros::delay(1000);
+	Flywheel::setLinearEjectVelocity(0);
 	
 }
 
@@ -271,17 +262,22 @@ void opcontrol() {
 
 	printf("Driver configuration finished\n");
 
-	bool prevButtonState = false;
+	bool flywheelEnabledButtonState = false;
+	bool fullpowerButtonState = false;
+
 	bool isSpinning = false;
 	bool isEndGame = false;
+	bool isFullPower = false;
+
+	int normal_velocity = 5;
+	int fullpower_velocity = 8;
+	int flywheel_velocity = normal_velocity;
 	// Flywheel::setLinearEjectVelocity(6);
 
 	/*
 	For controls, see globals.hpp
 	*/
-	while (true) {
-		Odom::debug();
-		
+	while (true) {		
 
 		// // Align to the high goal when pressing the button
 		// if (controller.getDigital(AimButton)) {
@@ -352,32 +348,52 @@ void opcontrol() {
 		// shoot disk
 		if (controller.getDigital(ShootButton)) {
 			printf("Shooting disk\n");
+			Intake::turnOn();
 			Gun::shootDisk();
+			Intake::turnOff();
 		}
 
 
 		// triple shoot disk
 		if (controller.getDigital(TripleShootButton)) {
 			printf("Shooting 3 disks\n");
+			Intake::turnOn();
 			Gun::shootDisk(3, FORCE_MODE);
+			Intake::turnOff();
 
 			Flywheel::setLinearEjectVelocity(0);
 			isSpinning = false;
 		}
 
-		if (controller.getDigital(FlywheelStopButton) && !prevButtonState) {
-			prevButtonState = true;
-			if (isSpinning) {
-				Flywheel::setLinearEjectVelocity(0);
-				isSpinning = false;
-			} else {
-				Flywheel::setLinearEjectVelocity(5);
-				isSpinning = true;
-			}
-			
-			
+		// flywheel enable button
+		if (controller.getDigital(FlywheelStopButton) && !flywheelEnabledButtonState) {
+			flywheelEnabledButtonState = true;
+			isSpinning = !isSpinning;
 		} else if (!controller.getDigital(FlywheelStopButton)) {
-			prevButtonState = false;
+			flywheelEnabledButtonState = false;
+		}
+
+		// controlling flywheel velocity
+		if (isSpinning) {
+			Flywheel::setLinearEjectVelocity(flywheel_velocity);
+		} else {
+			Flywheel::setLinearEjectVelocity(0);
+		}
+		
+		printf("%d\n", isFullPower);
+		// fullpower
+		if (controller.getDigital(ExpansionButton) && !fullpowerButtonState) {
+			fullpowerButtonState = true;
+			if (isFullPower) {
+				flywheel_velocity = normal_velocity;
+				isFullPower = false;
+			} else {
+				flywheel_velocity = fullpower_velocity;
+				isFullPower = true;
+			}
+				
+		} else if (!controller.getDigital(ExpansionButton)) {
+			fullpowerButtonState = false;
 		}
 
 
@@ -386,17 +402,17 @@ void opcontrol() {
 			controller.setText(0,0,"Endgame");
 			isEndGame = true;
 		} else {
-			controller.setText(0,0, isSpinning? "SPIN" : "STOP");
+			controller.setText(0,0, isFullPower? "FULL" : "NORM");
 		}
 
 
-		if (pros::millis()-round_begin_milliseconds >= 90 * 1000 && controller.getDigital(ExpansionButton)) {
-			printf("Trigger expansion\n");
+		// if (pros::millis()-round_begin_milliseconds >= 90 * 1000 && controller.getDigital(ExpansionButton)) {
+		// 	printf("Trigger expansion\n");
 
-			// remember to change the value in autos.cpp
-			piston1.set_value(true); 
-			piston2.set_value(true);
-		}
+		// 	// remember to change the value in autos.cpp
+		// 	piston1.set_value(true); 
+		// 	piston2.set_value(true);
+		// }
 
 		pros::delay(20);
 	}

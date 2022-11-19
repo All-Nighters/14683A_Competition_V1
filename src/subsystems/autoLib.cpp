@@ -60,7 +60,7 @@ namespace Auto {
         // float lefttargetAngle = revs * 360 + leftTW.get();
         float targetAngle = revs * 360 + getMotorPosition();
 
-        float targetFaceAngle = positionSI.theta; 
+        float targetFaceAngle = (imu_sensor_1.get_rotation() + imu_sensor_2.get_rotation()) / 2; 
         float start_time = pros::millis();  
         float timeout = 10; // maximum runtime in seconds
 
@@ -85,7 +85,7 @@ namespace Auto {
             float error_position;
 
             prevErrorPosition = abs(targetAngle - getMotorPosition());
-            float error_Facing = targetFaceAngle-positionSI.theta;
+            float error_Facing = targetFaceAngle- ((imu_sensor_1.get_rotation() + imu_sensor_2.get_rotation()) / 2);
 
 
             float deriv_position = error_position - prevErrorPosition;

@@ -65,7 +65,7 @@ namespace Gun {
      * 
      */
     bool readyToShoot() {
-        return abs(desiredLinearEjectVelocity - Flywheel::getCurrentEjectVelocity()) <= 0.1;
+        return abs(desiredLinearEjectVelocity - FlywheelMotor1.getActualVelocity()) <= 0.1;
         
     }
 
@@ -113,8 +113,8 @@ namespace Gun {
         
         if (mode == ACCURATE_MODE) {
             while (!readyToShoot()) {
-                aim();
-                pros::delay(20);
+                // aim();
+                // pros::delay(20);
             }
             trigger();
             FlywheelMotor1.moveVoltage(0);
@@ -139,8 +139,8 @@ namespace Gun {
         if (mode == ACCURATE_MODE) {
             for (int i = 0; i < diskCount; i++) {
                 while (!readyToShoot()) {
-                    aim();
-                    pros::delay(20);
+                    // aim();
+                    // pros::delay(20);
                 }
                 trigger();
             }
