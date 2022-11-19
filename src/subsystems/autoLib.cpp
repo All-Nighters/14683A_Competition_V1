@@ -43,10 +43,14 @@ namespace Auto {
      * @return degree of rotation
      */
     float getMotorPosition() {
-        if (Odom::getOdomMode() == BASIC) {
+        if (Odom::getOdomMode() == MOTOR_IMU) {
             return ((RFMotor.getPosition() + RBMotor.getPosition()) / 2.0) * 36/60.0;
-        } else {
+        } 
+        else if (Odom::getOdomMode() == RIGHTTW_IMU) {
             return rightTW.get();
+        }
+        else if (Odom::getOdomMode() == LEFTTW_IMU || Odom::getOdomMode() == THREEWHEEL) {
+            return leftTW.get();
         }
     }
     /**
@@ -57,7 +61,6 @@ namespace Auto {
     void distancePID(float percentage) {
         float target_distance = fieldLength * percentage / 100;
         float revs = target_distance / (M_PI*(trackingWheelDiameter.convert(meter)));
-        // float lefttargetAngle = revs * 360 + leftTW.get();
         float targetAngle = revs * 360 + getMotorPosition();
 
         float targetFaceAngle = (imu_sensor_1.get_rotation() + imu_sensor_2.get_rotation()) / 2; 

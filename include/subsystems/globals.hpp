@@ -17,7 +17,11 @@ typedef struct OdomStateSI {
 	float yPercent; // y position in percentage
 }OdomStateSI;
 
-enum odomMode {THREEWHEEL, TWOWHEELIMU, BASIC}; // Odometry mode
+enum odomMode {
+	THREEWHEEL, 
+	RIGHTTW_IMU, 
+	LEFTTW_IMU,
+	MOTOR_IMU}; // Odometry mode
 enum teamColor {REDTEAM, BLUETEAM}; // Allnighters team color 
 
 // 15 second autonomous procedures
