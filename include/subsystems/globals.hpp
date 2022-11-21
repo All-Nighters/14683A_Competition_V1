@@ -18,10 +18,11 @@ typedef struct OdomStateSI {
 }OdomStateSI;
 
 enum odomMode {
-	THREEWHEEL, 
-	RIGHTTW_IMU, 
-	LEFTTW_IMU,
-	MOTOR_IMU}; // Odometry mode
+	THREEWHEEL, // three tracking wheel odom
+	RIGHTTW_IMU, // right tracking wheel, middle tracking wheel, and IMU odometry
+	LEFTTW_IMU,	// left tracking wheel, middle tracking wheel, and IMU odometry
+	MOTOR_IMU // motor sensors, middle tracking wheel, and IMU odometry
+	};
 enum teamColor {REDTEAM, BLUETEAM}; // Allnighters team color 
 
 // 15 second autonomous procedures

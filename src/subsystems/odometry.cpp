@@ -71,6 +71,7 @@ namespace Odom {
 	 */
 	int position_tracking() {
 		while(1) {
+			// get position values
 			if (odometry_mode == MOTOR_IMU) {
 				float gear_ratio = 36/60.0;
 				LPos = ((LFMotor.getPosition() + LBMotor.getPosition()) / 2.0) * gear_ratio;
@@ -111,10 +112,10 @@ namespace Odom {
 
 			//Calculate the current absolute orientation (RADIANS)
 
-			if (odometry_mode == THREEWHEEL || odometry_mode == MOTOR_IMU) {
+			if (odometry_mode == THREEWHEEL) {
 				currentAbsoluteOrientation = THETA_START + ((totalDeltaDistL - totalDeltaDistR) / (LTrackRadius + RTrackRadius));
 			} 
-			else if (odometry_mode == TWOWHEELIMU) {
+			else if (odometry_mode == LEFTTW_IMU || odometry_mode == RIGHTTW_IMU || odometry_mode == MOTOR_IMU) {
 				currentAbsoluteOrientation = THETA_START + ((imu_sensor_1.get_rotation() + imu_sensor_2.get_rotation()) / 2) * M_PI / 180.0;
 
 				if (isinf(currentAbsoluteOrientation)) {
@@ -220,9 +221,9 @@ namespace Odom {
 			printf("Encoder: r=%f, m=%f, imu=%f\n",  rightTW.get(), midTW.get(), (imu_sensor_1.get_rotation() + imu_sensor_2.get_rotation()) / 2);
 		}
 		else if (odometry_mode == MOTOR_IMU) {
-			printf("Encoder: l=%f, r=%f, m=%f\n",  (LFMotor.getPosition() + LBMotor.getPosition()) / 2.0,  (RFMotor.getPosition() + RBMotor.getPosition()) / 2.0, midTW.get());
+			printf("Encoder: l=%f, r=%f, m=%f, imu=%f\n",  (LFMotor.getPosition() + LBMotor.getPosition()) / 2.0,  (RFMotor.getPosition() + RBMotor.getPosition()) / 2.0, midTW.get(), (imu_sensor_1.get_rotation() + imu_sensor_2.get_rotation()) / 2);
 		} else {
-			printf("Unspecified odom mode\n");
+			printf("Error: Unspecified odom mode\n");
 		}
 		
 	}

@@ -12,7 +12,7 @@ void initialize() {
 	printf("======================\n");
 
 	// // Initialize subsystems
-	Odom::init(BASIC);
+	Odom::init(MOTOR_IMU);
 	// Odom::set_state(50, 50, 0);
 	printf("1. Starting flywheel control loop...");
 	Flywheel::startControlLoop();
@@ -267,12 +267,6 @@ void opcontrol() {
 
 	bool isSpinning = false;
 	bool isEndGame = false;
-	bool isFullPower = false;
-
-	int normal_velocity = 5;
-	int fullpower_velocity = 8;
-	int flywheel_velocity = normal_velocity;
-	// Flywheel::setLinearEjectVelocity(6);
 
 	/*
 	For controls, see globals.hpp
@@ -375,34 +369,18 @@ void opcontrol() {
 
 		// controlling flywheel velocity
 		if (isSpinning) {
-			Flywheel::setLinearEjectVelocity(flywheel_velocity);
+			controller.setText(0,0, "SPIN   ");
+			Flywheel::setLinearEjectVelocity(5);
 		} else {
+			controller.setText(0,0, "STOP   ");
 			Flywheel::setLinearEjectVelocity(0);
 		}
-		
-		printf("%d\n", isFullPower);
-		// fullpower
-		if (controller.getDigital(ExpansionButton) && !fullpowerButtonState) {
-			fullpowerButtonState = true;
-			if (isFullPower) {
-				flywheel_velocity = normal_velocity;
-				isFullPower = false;
-			} else {
-				flywheel_velocity = fullpower_velocity;
-				isFullPower = true;
-			}
-				
-		} else if (!controller.getDigital(ExpansionButton)) {
-			fullpowerButtonState = false;
-		}
+
 
 
 		if (pros::millis()-round_begin_milliseconds >= 90 * 1000 && !isEndGame) {
-			controller.clearLine(0);
 			controller.setText(0,0,"Endgame");
 			isEndGame = true;
-		} else {
-			controller.setText(0,0, isFullPower? "FULL" : "NORM");
 		}
 
 
