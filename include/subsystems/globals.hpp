@@ -21,7 +21,7 @@ enum odomMode {
 	THREEWHEEL, // three tracking wheel odom
 	RIGHTTW_IMU, // right tracking wheel, middle tracking wheel, and IMU odometry
 	LEFTTW_IMU,	// left tracking wheel, middle tracking wheel, and IMU odometry
-	MOTOR_IMU // motor sensors, middle tracking wheel, and IMU odometry
+	MOTOR_IMU, // motor sensors, middle tracking wheel, and IMU odometry
 	};
 enum teamColor {REDTEAM, BLUETEAM}; // Allnighters team color 
 
@@ -43,8 +43,6 @@ enum AutoProcedure
 	BLUE_SECOND_IDLE,
 
 	SKILL,
-
-	DQ
 };
 
 // disk shooting behavior
@@ -121,7 +119,7 @@ inline float blueHighGoalPosition_percent[] = {86, 14.54, 20.99};
 /**
  * Flywheel constants
 */
-inline float aimAngleDeviation = 20; // deviation of angle when aiming a point
+inline float aimAngleDeviation = 1; // deviation of angle when aiming a point
 inline float g = 9.81; // gravitational constant
 inline float maxEjectVel = 8; // maximum eject velocity in m/s
 inline float minEjectVel = 1; // minimum eject velocity in m/s
@@ -142,19 +140,29 @@ extern OdomStateSI positionSI; // odometry state in SI units and percentage
 /**
  * Hardware parameters
 */
-inline QLength wheelDiameter = 4_in;
-inline QLength wheeltrackLength = 13.38_in;
-inline QLength middleEncoderDistance = 1_in;
+
+// chassis
+inline QLength wheelDiameter = 2.75_in;
+inline QLength wheeltrackLength = 33_cm;
+inline QLength middleEncoderDistance = 16.5_cm;
 inline QLength trackingWheelDiameter = 2.75_in;
-inline QAngle turnRightAngle = 163.7_deg;
+inline float external_gear_ratio = 36/60.0 / 16 * 20;
+inline AbstractMotor::gearset chassis_motor_gearset = AbstractMotor::gearset::blue;
+
+// shooter
+inline QLength launcher_height = 0.31_m;
+inline QAngle launch_angle = 45_deg;
 inline QLength flyWheelDiameter = 4_in;
+
+// disk
 inline QLength diskDiameter = 14_cm;
 inline QMass diskMass = 0.06_kg;
 inline float diskHorizontalArea = 0.015393804;
 inline float diskVerticalArea = 0.0028;
-inline QLength launcher_height = 0.31_m;
-inline QAngle launch_angle = 45_deg;
+
+// field
 inline float fieldLength = 3.6576;
+
 
 
 
@@ -192,3 +200,5 @@ extern pros::ADIDigitalIn intake_sensor;
 
 extern pros::Imu imu_sensor_1;
 extern pros::Imu imu_sensor_2;
+
+extern std::shared_ptr<ChassisController> drive;

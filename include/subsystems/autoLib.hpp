@@ -20,5 +20,4 @@ namespace Auto {
     void simpleMoveToPoint(float xPercent, float yPercent);
     void simpleMoveToPointBackwards(float xPercent, float yPercent);
     void waitUntilSettled();
-    void trackVelocityPID(float leftV, float rightV);
 }

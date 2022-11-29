@@ -2,71 +2,7 @@
 #include <string>
 
 namespace Autos {
-
-    Coordinates minimum_path[] = {
-        Coordinates(10.083, 24.35, 0), // start (first roller)
-
-        Coordinates(15, 24.35, 0), // move forward
-
-        Coordinates(23.05, 13.79, 0), // second roller
-
-        Coordinates(23.05, 13.79, 0), // move forward
-
-        Coordinates(86.01, 78.88, 0), // third roller
-
-        Coordinates(86.01, 78.88, 0), // move forward
-
-        Coordinates(77.6, 86.38, 0), // fourth roller
-
-        Coordinates(77.6, 86.38, 0), // move forward
-
-    };
-    int touchDelay = 300;
-
-    /**
-     * @brief very minimum autonomous code
-     * 
-     */
-    void minimum() {
-        for (int i = 0; i < sizeof(minimum_path)/sizeof(minimum_path[0]); i++) {
-            Coordinates c = minimum_path[i];
-            Auto::simpleMoveToPoint(c.get_x(), c.get_y());
-            controller.setText(0,0,std::to_string(positionSI.xPercent) + ", " + std::to_string(positionSI.yPercent));
-            pros::delay(10000);
-
-            if (i == 2) { // second roller
-                Auto::turnAngle(135);
-                Roller::roll("red");
-                LFMotor.moveVelocity(-400);
-                RFMotor.moveVelocity(-400);
-                LBMotor.moveVelocity(-400);
-                RBMotor.moveVelocity(-400);
-                pros::delay(touchDelay);
-                Roller::stop();
-            }
-            else if (i == 4) { // third roller
-                Auto::turnAngle(135);
-                Roller::roll("red");
-                LFMotor.moveVelocity(-400);
-                RFMotor.moveVelocity(-400);
-                LBMotor.moveVelocity(-400);
-                RBMotor.moveVelocity(-400);
-                pros::delay(touchDelay);
-                Roller::stop();
-            }
-            else if (i == 6) { // fourth roller
-                Auto::turnAngle(135);
-                Roller::roll("blue");
-                LFMotor.moveVelocity(-400);
-                RFMotor.moveVelocity(-400);
-                LBMotor.moveVelocity(-400);
-                RBMotor.moveVelocity(-400);
-                pros::delay(touchDelay);
-                Roller::stop();
-            }
-
-        }
-    }
+    float touchDelay = 300;
 
     /**
      * @brief scoring mode for blue team at the first position (with roller).
@@ -75,23 +11,27 @@ namespace Autos {
     void blue_first_scoring() {
         Odom::set_state(10.10, 24.35, 0);
 
-        Roller::roll("blue");
-        LFMotor.moveVelocity(-400);
-        RFMotor.moveVelocity(-400);
-        LBMotor.moveVelocity(-400);
-        RBMotor.moveVelocity(-400);
-        pros::delay(touchDelay);
-        Roller::stop();
-        LFMotor.moveVelocity(0);
-        RFMotor.moveVelocity(0);
-        LBMotor.moveVelocity(0);
-        RBMotor.moveVelocity(0);
-        pros::delay(1000);
+        // LFMotor.moveVelocity(-400);
+        // RFMotor.moveVelocity(-400);
+        // LBMotor.moveVelocity(-400);
+        // RBMotor.moveVelocity(-400);
+        // pros::delay(touchDelay);
+        // LFMotor.moveVelocity(0);
+        // RFMotor.moveVelocity(0);
+        // LBMotor.moveVelocity(0);
+        // RBMotor.moveVelocity(0);
+        // pros::delay(1000);
 
         Auto::moveDistance(2);
 
         Auto::faceCoordinate(blueHighGoalPosition_percent[0], blueHighGoalPosition_percent[1], false);
-        Gun::shootDisk(2); // shoot out preloads
+        Flywheel::setLinearEjectVelocity(7);
+        pros::delay(3000);
+        Intake::turnOn();
+        Gun::shootDisk();
+        pros::delay(1000);
+        Gun::shootDisk();
+        Intake::turnOff();
 
         Intake::turnOn();
         Auto::simpleMoveToPointBackwards(41.57407407407407, 58.7037037037037);
@@ -109,13 +49,11 @@ namespace Autos {
     void blue_first_supportive() {
         Odom::set_state(10.10, 24.35, 0);
 
-        Roller::roll("blue");
         LFMotor.moveVelocity(-400);
         RFMotor.moveVelocity(-400);
         LBMotor.moveVelocity(-400);
         RBMotor.moveVelocity(-400);
         pros::delay(touchDelay);
-        Roller::stop();
         LFMotor.moveVelocity(0);
         RFMotor.moveVelocity(0);
         LBMotor.moveVelocity(0);
@@ -132,13 +70,11 @@ namespace Autos {
 
 
         Auto::faceAngle(-90);
-        Roller::roll("blue");
         LFMotor.moveVelocity(-400);
         RFMotor.moveVelocity(-400);
         LBMotor.moveVelocity(-400);
         RBMotor.moveVelocity(-400);
         pros::delay(1.5*touchDelay);
-        Roller::stop();
         LFMotor.moveVelocity(0);
         RFMotor.moveVelocity(0);
         LBMotor.moveVelocity(0);
@@ -151,28 +87,30 @@ namespace Autos {
      * 
      */
     void blue_second_scoring() {
-        Odom::set_state(41.9, 90.95, -90);
-        Auto::moveDistance(34);
+        Odom::set_state(39.44444444444444, 90.55555555555556, -90);
+        Auto::faceCoordinate(blueHighGoalPosition_percent[0], blueHighGoalPosition_percent[1], true);
+        Flywheel::setLinearEjectVelocity(8);
+        pros::delay(3000);
+        Intake::turnOn();
+        Gun::shootDisk();
+        pros::delay(500);
+        Gun::shootDisk();
+        Flywheel::setLinearEjectVelocity(4);
+
+        Auto::turnAngle(160);
+        Auto::moveDistance(-34);
+        Intake::turnOff();
 
         Auto::faceCoordinate(blueHighGoalPosition_percent[0], blueHighGoalPosition_percent[1], true);
-        Gun::shootDisk(2);
-
-
-        Auto::simpleMoveToPoint(76.85185185185185, 89.81481481481481);
-        Auto::faceAngle(-90);
-
-        Roller::roll("blue");
-        LFMotor.moveVelocity(-400);
-        RFMotor.moveVelocity(-400);
-        LBMotor.moveVelocity(-400);
-        RBMotor.moveVelocity(-400);
-        pros::delay(touchDelay);
-        Roller::stop();
-        LFMotor.moveVelocity(0);
-        RFMotor.moveVelocity(0);
-        LBMotor.moveVelocity(0);
-        RBMotor.moveVelocity(0);
-        pros::delay(1000);
+        Flywheel::setLinearEjectVelocity(7);
+        pros::delay(3000);
+        Intake::turnOn();
+        Gun::shootDisk();
+        pros::delay(500);
+        Gun::shootDisk();
+        pros::delay(500);
+        Gun::shootDisk();
+        pros::delay(500);
     }
 
     /**
@@ -188,13 +126,11 @@ namespace Autos {
         Auto::faceAngle(0);
 
 
-        Roller::roll("blue");
         LFMotor.moveVelocity(-400);
         RFMotor.moveVelocity(-400);
         LBMotor.moveVelocity(-400);
         RBMotor.moveVelocity(-400);
         pros::delay(touchDelay);
-        Roller::stop();
         LFMotor.moveVelocity(0);
         RFMotor.moveVelocity(0);
         LBMotor.moveVelocity(0);
@@ -212,13 +148,11 @@ namespace Autos {
         Odom::set_state(86.38888888888889, 76.2037037037037, 180);
         controller.setText(0,0,std::to_string(positionSI.theta));
 
-        Roller::roll("red");
         LFMotor.moveVelocity(-400);
         RFMotor.moveVelocity(-400);
         LBMotor.moveVelocity(-400);
         RBMotor.moveVelocity(-400);
         pros::delay(touchDelay);
-        Roller::stop();
         LFMotor.moveVelocity(0);
         RFMotor.moveVelocity(0);
         LBMotor.moveVelocity(0);
@@ -249,13 +183,11 @@ namespace Autos {
     void red_first_supportive() {
         Odom::set_state(86.38888888888889, 76.2037037037037, 180);
 
-        Roller::roll("red");
         LFMotor.moveVelocity(-400);
         RFMotor.moveVelocity(-400);
         LBMotor.moveVelocity(-400);
         RBMotor.moveVelocity(-400);
         pros::delay(touchDelay);
-        Roller::stop();
         LFMotor.moveVelocity(0);
         RFMotor.moveVelocity(0);
         LBMotor.moveVelocity(0);
@@ -271,13 +203,11 @@ namespace Autos {
         Auto::moveDistance(90);
 
         Auto::faceAngle(90);
-        Roller::roll("red");
         LFMotor.moveVelocity(-400);
         RFMotor.moveVelocity(-400);
         LBMotor.moveVelocity(-400);
         RBMotor.moveVelocity(-400);
         pros::delay(1.5*touchDelay);
-        Roller::stop();
         LFMotor.moveVelocity(0);
         RFMotor.moveVelocity(0);
         LBMotor.moveVelocity(0);
@@ -301,13 +231,11 @@ namespace Autos {
         Auto::simpleMoveToPoint(22.407407407407405, 10.462962962962962);
         Auto::faceAngle(90);
 
-        Roller::roll("red");
         LFMotor.moveVelocity(-400);
         RFMotor.moveVelocity(-400);
         LBMotor.moveVelocity(-400);
         RBMotor.moveVelocity(-400);
         pros::delay(1.5*touchDelay);
-        Roller::stop();
         LFMotor.moveVelocity(0);
         RFMotor.moveVelocity(0);
         LBMotor.moveVelocity(0);
@@ -327,13 +255,11 @@ namespace Autos {
         Auto::simpleMoveToPoint(89.16666666666666, 77.5);
         Auto::faceAngle(180);
 
-        Roller::roll("blue");
         LFMotor.moveVelocity(-400);
         RFMotor.moveVelocity(-400);
         LBMotor.moveVelocity(-400);
         RBMotor.moveVelocity(-400);
         pros::delay(touchDelay);
-        Roller::stop();
         LFMotor.moveVelocity(0);
         RFMotor.moveVelocity(0);
         LBMotor.moveVelocity(0);
@@ -345,22 +271,6 @@ namespace Autos {
     void run(AutoProcedure mode) {
 
         int round_begin_milliseconds = pros::millis();
-        // while (pros::millis() - round_begin_milliseconds < 45*1000) {
-        //     printf("%f\n", pros::millis() - round_begin_milliseconds);
-        // }
-        if (mode == RED_FIRST_IDLE) {
-            ; // set odom position
-        }
-        else if (mode == RED_SECOND_IDLE) {
-            ; // set odom position
-        }
-        if (mode == BLUE_FIRST_IDLE) {
-            ; // set odom position
-        }
-        else if (mode == BLUE_SECOND_IDLE) {
-            ; // set odom position
-        }
-
 
         /*
             Blue team autonomous
@@ -368,22 +278,31 @@ namespace Autos {
             2. Supportive mode
             3. Idle
         */
-        else if (mode == BLUE_FIRST_SCORING) {
+        if (mode == BLUE_FIRST_SCORING) {
             blue_first_scoring();
         }
         else if (mode == BLUE_FIRST_SUPPORTIVE) {
-            blue_first_supportive();
+            ;
+        }
+        else if (mode == BLUE_SECOND_SCORING) {
+            blue_second_scoring();
+        }
+        else if (mode == BLUE_SECOND_SUPPORTIVE) {
+            ;
         }
         else if (mode == RED_FIRST_SCORING) {
             red_first_scoring();
         }
         else if (mode == RED_FIRST_SUPPORTIVE) {
-            red_first_supportive();
-        } 
-        else if (mode == DQ) {
-            Auto::trackVelocityPID(200, 200);
-            pros::delay(5000);
-            Auto::trackVelocityPID(0, 0);
+            ;
         }
+        else if (mode == RED_SECOND_SCORING) {
+            red_second_scoring();
+        }
+        else if (mode == RED_SECOND_SUPPORTIVE) {
+            ;
+        }
+
+
     }
 }

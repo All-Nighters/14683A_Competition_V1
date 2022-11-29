@@ -12,32 +12,36 @@ void initialize() {
 	printf("======================\n");
 
 	// // Initialize subsystems
+	printf("1. Initializing odometry...");
 	Odom::init(MOTOR_IMU);
-	// Odom::set_state(50, 50, 0);
-	printf("1. Starting flywheel control loop...");
+	printf("OK\n");
+
+	printf("2. Starting flywheel control loop...");
 	Flywheel::startControlLoop();
 	printf("OK\n");
-	// printf("2. Starting flywheel grapher...");
+	
+	printf("3. Starting flywheel grapher...");
 	Flywheel::grapher::start_graphing();
-	// printf("OK\n");
-	printf("3. Initializing gun...");
+	printf("OK\n");
+
+	printf("4. Initializing gun...");
 	Gun::init(FORCE_MODE);
 	printf("OK\n");
 
 	// Set motor brake modes
-	printf("4. Setting motor breakmode...");
-	LFMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
-	RFMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
-	RBMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
-	LBMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
+	printf("5. Setting motor breakmode...");
+	// LFMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
+	// RFMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
+	// RBMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
+	// LBMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
 	IndexerMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::hold);
 	IntakeMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::hold);
 	RollerMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::hold);
+	Drivetrain::tarePosition();
 
 	printf("OK\n");
 	printf("\nReady to go!\n");
-	printf("======================\n\n");
-	
+	printf("======================\n\n");	
 }
 
 /**
@@ -160,22 +164,17 @@ void competition_initialize() {
  * from where it left off.
  */
 void autonomous() {
-	// printf("\nAUTONOMOUS\n");
-	// printf("======================\n");
+	pros::delay(3000);
+	printf("\nAUTONOMOUS\n");
+	printf("======================\n");
 	// readSelectorConfiguration();
-
-	// // position #1 auto
-	Flywheel::setLinearEjectVelocity(7.8);
-	pros::delay(5000);
-	Gun::shootDisk(FORCE_MODE);
-	pros::delay(2500);
-	Gun::shootDisk(FORCE_MODE);
-	pros::delay(1000);
-	Flywheel::setLinearEjectVelocity(0);
-	
+	// Auto::moveDistance(meterToPercentage(1));
+	Auto::turnAngle(160);
+	// pros::delay(1000);
+	// Autos::run(BLUE_SECOND_SCORING);
 }
 
-void PPTest() {
+void ramsete_test() {
 	Odom::set_state(0_m, 0_m, 0_deg);
 	std::vector<Waypoint> pathway;
 	
@@ -213,32 +212,12 @@ void PPTest() {
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-	readSelectorConfiguration(); // remember to delete this in production
+	autonomous();
+	// readSelectorConfiguration(); // remember to delete this in production
 
 	printf("\nDRIVER CONTROL\n");
 	printf("======================\n");
-
-
-	/*
-	 set up drive model
-	*/
-	std::shared_ptr<ChassisController> drive =
-        ChassisControllerBuilder()
-            .withMotors(
-				frontLeftMotorPort,  // Top left
-				frontRightMotorPort, // Top right (reversed)
-				bottomRightMotorPort, // Bottom right (reversed)
-				bottomLeftMotorPort   // Bottom left
-			)
-            // Green gearset, 4 in wheel diam, 11.5 in wheel track
-            .withDimensions({AbstractMotor::gearset::blue, (84.0 / 36.0)}, {{4_in, 13.38_in}, imev5BlueTPR})
-			.withMaxVelocity(200)
-			.withGains(
-				{0.001, 0, 0.00001}, // Distance controller gains
-				{0.008, 0, 0.0001}, // Turn controller gains
-				{0.001, 0, 0.00001}  // Angle controller gains (helps drive straight)
-			)
-            .build();
+	
 		
 	int round_begin_milliseconds = pros::millis();
 	auto xModel = std::dynamic_pointer_cast<XDriveModel>(drive->getModel());
@@ -263,7 +242,6 @@ void opcontrol() {
 	printf("Driver configuration finished\n");
 
 	bool flywheelEnabledButtonState = false;
-	bool fullpowerButtonState = false;
 
 	bool isSpinning = false;
 	bool isEndGame = false;
@@ -271,60 +249,8 @@ void opcontrol() {
 	/*
 	For controls, see globals.hpp
 	*/
-	while (true) {		
-
-		// // Align to the high goal when pressing the button
-		// if (controller.getDigital(AimButton)) {
-		// 	printf("Facing high goal\n");
-			
-		// 	/*
-		// 	Converting x and y distance to angle to face
-		// 	*/
-		// 	float xDist = HighGoalPositionPercent[0] - positionSI.xPercent;
-		// 	float yDist = HighGoalPositionPercent[1] - positionSI.yPercent;
-
-		// 	if (abs(xDist) < 0.1 && abs(yDist) < 0.1) {
-		// 		return;
-		// 	}
-
-		// 	float relativeAngle;
-
-		// 	if (xDist > 0 && yDist > 0) { // first quadrant
-		// 		relativeAngle = atan(abs(yDist/xDist)) * 180 / M_PI;
-		// 	}
-		// 	else if (xDist > 0 && yDist < 0) { // second quadrant
-		// 		relativeAngle = -atan(abs(yDist/xDist)) * 180 / M_PI;
-		// 	}
-		// 	else if (xDist < 0 && yDist < 0) { // third quadrant
-		// 		relativeAngle = -180 + (atan(abs(yDist/xDist)) * 180 / M_PI);
-		// 	}
-		// 	else if (xDist < 0 && yDist > 0) { // fourth quadrant
-		// 		relativeAngle = 180 - (atan(abs(yDist/xDist)) * 180 / M_PI);
-		// 	}
-		// 	else if (xDist == 0 && yDist != 0) {
-		// 		relativeAngle = (yDist / abs(yDist))*90;
-		// 	}
-		// 	else if (xDist != 0 && yDist == 0) {
-		// 		relativeAngle = 0;
-		// 	} else {
-		// 		return;
-		// 	}
-
-		// 	// angle to face to aim the goal
-		// 	float faceAngle = formatAngle((relativeAngle - positionSI.theta) + aimAngleDeviation);
-
-		// 	/*
-		// 	Rotate to angle
-		// 	*/
-		// 	float target_angle = positionSI.theta + faceAngle;
-		// 	prev_error = Auto::directionPIDStep(target_angle, prev_error);
-		// } 
-		
-		// else {
-		// 	prev_error = 0;
-		// 	// locomotion
-		// 	drive->getModel()->arcade(controller.getAnalog(ForwardAxis), 0.5*controller.getAnalog(TurnAxis));
-		// }
+	while (true) {	
+		// Odom::debug();
 
 		drive->getModel()->arcade(controller.getAnalog(ForwardAxis), 0.5*controller.getAnalog(TurnAxis));
 

@@ -48,7 +48,7 @@ namespace Odom {
 	float gear_ratio = 36/60.0;
 
 
-	odomMode odometry_mode = TWOWHEELIMU;
+	odomMode odometry_mode = MOTOR_IMU;
 
 	/**
 	 * @brief Save global position and rotation to positionSI structure
@@ -70,16 +70,17 @@ namespace Odom {
 	 * @returns 1 
 	 */
 	int position_tracking() {
+		printf("Position tracking started\n");
 		while(1) {
 			// get position values
 			if (odometry_mode == MOTOR_IMU) {
-				float gear_ratio = 36/60.0;
-				LPos = ((LFMotor.getPosition() + LBMotor.getPosition()) / 2.0) * gear_ratio;
-				RPos = ((RFMotor.getPosition() + RBMotor.getPosition()) / 2.0) * gear_ratio;
+				LPos = Drivetrain::getLeftPosition();
+				RPos = Drivetrain::getRightPosition();
 				SPos = midTW.get();
+				// printf("%f, %f, %f %f\n", LPos, RPos, SPos, (imu_sensor_1.get_rotation() + imu_sensor_2.get_rotation()) / 2);
 			} 
 			else if (odometry_mode == LEFTTW_IMU) {
-				LPos = leftTW.get();
+				// LPos = leftTW.get();
 				RPos = 0;
 				SPos = midTW.get();
 			}
@@ -89,7 +90,7 @@ namespace Odom {
 				SPos = midTW.get();
 			}
 			else if (odometry_mode == THREEWHEEL) {
-				LPos = leftTW.get();
+				// LPos = leftTW.get();
 				RPos = rightTW.get();
 				SPos = midTW.get();
 			}
@@ -132,7 +133,7 @@ namespace Odom {
 			//If we didn't turn, then we only translated
 			if(deltaTheta == 0) {
 				deltaXLocal = deltaDistS;
-				if (odometry_mode == THREEWHEEL || odometry_mode == LEFTTW_IMU) {
+				if (odometry_mode == THREEWHEEL || odometry_mode == LEFTTW_IMU || odometry_mode == MOTOR_IMU) {
 					deltaYLocal = deltaDistL;
 				}
 				else if (odometry_mode == RIGHTTW_IMU) {
@@ -172,25 +173,30 @@ namespace Odom {
 	 */
 	void init(odomMode mode) {
 		odometry_mode = mode;
-		if (mode == MOTOR_IMU || mode == LEFTTW_IMU || mode == RIGHTTW_IMU) {
-			imu_sensor_1.tare();
-			imu_sensor_2.tare();
+		switch (mode) {
+			case MOTOR_IMU:
+				imu_sensor_1.tare();
+				imu_sensor_2.tare();
+				Drivetrain::tarePosition();
+				break;
+			case LEFTTW_IMU:
+				imu_sensor_1.tare();
+				imu_sensor_2.tare();
+				// leftTW.reset();
+				midTW.reset();
+				break;
+			case RIGHTTW_IMU:
+				imu_sensor_1.tare();
+				imu_sensor_2.tare();
+				rightTW.reset();
+				midTW.reset();
+				break;
+			case THREEWHEEL:
+				// leftTW.reset();
+				rightTW.reset();
+				midTW.reset();
+				break;
 		}
-		else if (mode == THREEWHEEL) {
-			leftTW.reset();
-			rightTW.reset();
-			midTW.reset();
-		}
-
-		if (mode == LEFTTW_IMU) {
-			leftTW.reset();
-			midTW.reset();
-		}
-		else if (mode == RIGHTTW_IMU) {
-			rightTW.reset();
-			midTW.reset();
-		}
-		
 		
 		pros::Task tracking(position_tracking);
 	}
@@ -210,18 +216,18 @@ namespace Odom {
 	 * 
 	 */
 	void debug() {
-		printf("Odometry: x=%f, y=%f, a=%f\n", positionSI.xPercent, positionSI.yPercent, positionSI.theta);
+		printf("Odometry: x=%f, y=%f, a=%f\n", positionSI.x, positionSI.y, positionSI.theta);
 		if (odometry_mode == THREEWHEEL) {
-			printf("Encoder: l=%f, r=%f, m=%f, imu=%f\n",  leftTW.get(),  rightTW.get(), midTW.get());
+			// printf("Encoder: l=%f, r=%f, m=%f, imu=%f\n",  leftTW.get(),  rightTW.get(), midTW.get());
 		}
 		else if (odometry_mode == LEFTTW_IMU) {
-			printf("Encoder: l=%f, m=%f, imu=%f\n",  leftTW.get(), midTW.get(), (imu_sensor_1.get_rotation() + imu_sensor_2.get_rotation()) / 2);
+			// printf("Encoder: l=%f, m=%f, imu=%f\n",  leftTW.get(), midTW.get(), (imu_sensor_1.get_rotation() + imu_sensor_2.get_rotation()) / 2);
 		}
 		else if (odometry_mode == RIGHTTW_IMU) {
 			printf("Encoder: r=%f, m=%f, imu=%f\n",  rightTW.get(), midTW.get(), (imu_sensor_1.get_rotation() + imu_sensor_2.get_rotation()) / 2);
 		}
 		else if (odometry_mode == MOTOR_IMU) {
-			printf("Encoder: l=%f, r=%f, m=%f, imu=%f\n",  (LFMotor.getPosition() + LBMotor.getPosition()) / 2.0,  (RFMotor.getPosition() + RBMotor.getPosition()) / 2.0, midTW.get(), (imu_sensor_1.get_rotation() + imu_sensor_2.get_rotation()) / 2);
+			// printf("Encoder: l=%f, r=%f, m=%f, imu=%f\n",  Drivetrain::getLeftPosition(),  Drivetrain::getRightPosition(), midTW.get(), (imu_sensor_1.get_rotation() + imu_sensor_2.get_rotation()) / 2);
 		} else {
 			printf("Error: Unspecified odom mode\n");
 		}
@@ -237,10 +243,36 @@ namespace Odom {
 		Y_START = y.convert(meter);
 		THETA_START = angle.convert(radian);
 
+		LPos = 0;
+		RPos = 0;
+		SPos = 0;
+
+		LPrevPos = 0;
+		RPrevPos = 0;
+		SPrevPos = 0;
+
+		deltaDistL = 0;
+		deltaDistR = 0;
+		deltaDistS = 0;
+
+		totalDeltaDistL = 0;
+		totalDeltaDistR = 0;
+
+		currentAbsoluteOrientation = THETA_START;
+		previousTheta = THETA_START;
+		deltaTheta = 0;
+		avgThetaForArc = currentAbsoluteOrientation + (deltaTheta / 2);
+
+		deltaXLocal = 0;
+		deltaYLocal = 0;
+		deltaXGlobal = 0;
+		deltaYGlobal = 0;
+
 		xPosGlobal = X_START;
 		yPosGlobal = Y_START;
-		currentAbsoluteOrientation = THETA_START;
+
 		save_results();
+		printf("Set odom state to (%f, %f, %f)\n", positionSI.xPercent, positionSI.yPercent, positionSI.theta);
 	}
 
 	/**
@@ -250,11 +282,36 @@ namespace Odom {
 	void set_state(float x, float y, float angle) {
 		X_START = percentageToMeter(x);
 		Y_START = percentageToMeter(y);
-		THETA_START = angle*pi/180.0;
+		THETA_START = angle * pi/180;
 
+		LPos = 0;
+		RPos = 0;
+		SPos = 0;
+
+		LPrevPos = 0;
+		RPrevPos = 0;
+		SPrevPos = 0;
+
+		deltaDistL = 0;
+		deltaDistR = 0;
+		deltaDistS = 0;
+
+		totalDeltaDistL = 0;
+		totalDeltaDistR = 0;
+
+		currentAbsoluteOrientation = THETA_START;
+		previousTheta = THETA_START;
+		deltaTheta = 0;
+		avgThetaForArc = currentAbsoluteOrientation + (deltaTheta / 2);
+
+		deltaXLocal = 0;
+		deltaYLocal = 0;
+		deltaXGlobal = 0;
+		deltaYGlobal = 0;
+		
 		xPosGlobal = X_START;
 		yPosGlobal = Y_START;
-		currentAbsoluteOrientation = THETA_START;
+
 		save_results();
 		printf("Set odom state to (%f, %f, %f)\n", positionSI.xPercent, positionSI.yPercent, positionSI.theta);
 	}

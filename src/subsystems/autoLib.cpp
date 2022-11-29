@@ -2,18 +2,20 @@
 #include <math.h>
 
 namespace Auto {
-    float gearRatio = (float) 36/84;
-    float readingToAngleGain = (float)305 / 360;
-
     // traslational (position) PID Coefficients
     float Tp = 15;
     float Ti = 0;
     float Td = 100;
 
+    // facing PID Coefficients (keeping robot straight)
+    float Fp = 100;
+    float Fi = 0;
+    float Fd = 300;
+
     // rotational PID Coefficients
-    float Rp = 200;
+    float Rp = 300;
     float Ri = 0;
-    float Rd = 350;
+    float Rd = 300;
 
 
     bool settled = true;
@@ -25,32 +27,23 @@ namespace Auto {
     float aimMode_for_async;
 
     /**
-     * @brief PID (nonblocking) for controlling velocity
-     * 
-     * @param leftV left side target velocity in RPM
-     * @param rightV right side target velocity in RPM
-     */
-    void trackVelocityPID(float leftV, float rightV) {
-        LFMotor.moveVelocity(leftV);
-        RFMotor.moveVelocity(rightV);
-        LBMotor.moveVelocity(leftV);
-        RBMotor.moveVelocity(rightV);
-    }
-
-    /**
      * @brief Get the degree of rotations forward
      * 
      * @return degree of rotation
      */
     float getMotorPosition() {
         if (Odom::getOdomMode() == MOTOR_IMU) {
-            return ((RFMotor.getPosition() + RBMotor.getPosition()) / 2.0) * 36/60.0;
+            float right_track_velocity = Drivetrain::getRightPosition();
+            return right_track_velocity;
         } 
         else if (Odom::getOdomMode() == RIGHTTW_IMU) {
             return rightTW.get();
         }
         else if (Odom::getOdomMode() == LEFTTW_IMU || Odom::getOdomMode() == THREEWHEEL) {
-            return leftTW.get();
+            // return leftTW.get();
+            return 0;
+        } else {
+            return -1;
         }
     }
     /**
@@ -60,7 +53,13 @@ namespace Auto {
      */
     void distancePID(float percentage) {
         float target_distance = fieldLength * percentage / 100;
-        float revs = target_distance / (M_PI*(trackingWheelDiameter.convert(meter)));
+        float revs;
+        if (Odom::getOdomMode() == MOTOR_IMU) {
+            revs = target_distance / (M_PI*(wheelDiameter.convert(meter))); // # of revolutions of wheels
+        } else {
+            revs = target_distance / (M_PI*(trackingWheelDiameter.convert(meter))); // # of revolutions of tracking wheels
+        }
+
         float targetAngle = revs * 360 + getMotorPosition();
 
         float targetFaceAngle = (imu_sensor_1.get_rotation() + imu_sensor_2.get_rotation()) / 2; 
@@ -69,23 +68,23 @@ namespace Auto {
 
         int direction;
 
-        if (revs * 360  < 0) {
+        if (revs < 0) {
             direction = -1;
         } else {
             direction = 1;
         }
         
-        // float prevErrorLeft = abs(lefttargetAngle - leftTW.get());
         float prevErrorPosition = abs(targetAngle - getMotorPosition());
         float prevFaceAngleError = 0;
 
 
         settled = false;
 
+
         while (abs(targetAngle - getMotorPosition()) >= 10 && 
         pros::millis() - start_time <= timeout*1000) {
 
-            float error_position;
+            float error_position = abs(targetAngle - getMotorPosition());
 
             prevErrorPosition = abs(targetAngle - getMotorPosition());
             float error_Facing = targetFaceAngle- ((imu_sensor_1.get_rotation() + imu_sensor_2.get_rotation()) / 2);
@@ -96,8 +95,7 @@ namespace Auto {
 
 
             float control_output = error_position * Tp + deriv_position * Td;
-            float control_output_Facing = error_Facing * Rp + deriv_Facing * Rd;
-
+            float control_output_Facing = error_Facing * Fp + deriv_Facing * Fd;
 
             float control_output_Left = direction * std::fmax(std::fmin(control_output, 8000), -8000) + std::fmax(std::fmin(control_output_Facing, 4000), -4000);
             float control_output_Right = direction * std::fmax(std::fmin(control_output, 8000), -8000) - std::fmax(std::fmin(control_output_Facing, 4000), -4000);
@@ -154,27 +152,23 @@ namespace Auto {
 
         settled = false;
 
-        while (abs(target_angle - positionSI.theta) >= 0.1 && pros::millis() - start_time <= timeout*1000) {
+        while (abs(target_angle - positionSI.theta) >= 1 && pros::millis() - start_time <= timeout*1000) {
             
-            float error = abs(target_angle - positionSI.theta);
+            float error = target_angle - positionSI.theta;
             float deriv_error = error - prev_error;
 
-            float control_output = std::fmax(error * Rp + deriv_error * Rd, 2000);
+            float control_output = clamp(error * Rp + deriv_error * Rd, -12000, 12000);
 
+            if (abs(control_output) < 2000) {
+                control_output = control_output > 0 ? 2000 : -2000;
+            }
 
             prev_error = error;
 
-            if (target_angle - positionSI.theta > 0) {
-                LFMotor.moveVoltage(control_output);
-                LBMotor.moveVoltage(control_output);
-                RFMotor.moveVoltage(-control_output);
-                RBMotor.moveVoltage(-control_output);
-            } else {
-                LFMotor.moveVoltage(-control_output);
-                LBMotor.moveVoltage(-control_output);
-                RFMotor.moveVoltage(control_output);
-                RBMotor.moveVoltage(control_output);
-            }
+            LFMotor.moveVoltage(control_output);
+            LBMotor.moveVoltage(control_output);
+            RFMotor.moveVoltage(-control_output);
+            RBMotor.moveVoltage(-control_output);
 
             pros::delay(20);
         }
@@ -225,15 +219,15 @@ namespace Auto {
     
     void directionPIDAbs(float angle) {
         float target_angle = angle;
-        float prev_error = abs(target_angle - positionSI.theta);
+        float prev_error = abs(formatAngle(target_angle) - formatAngle(positionSI.theta));
         float start_time = pros::millis();  
-        float timeout = 10; // maximum runtime in seconds
+        float timeout = 1000; // maximum runtime in seconds
 
         settled = false;
 
-        while (abs(target_angle - positionSI.theta) >= 0.5 && pros::millis() - start_time <= timeout*1000) {
+        while (abs(formatAngle(target_angle) - formatAngle(positionSI.theta)) >= 0.5 && pros::millis() - start_time <= timeout*1000) {
 
-            float error = abs(target_angle - positionSI.theta);
+            float error = abs(formatAngle(target_angle) - formatAngle(positionSI.theta));
 
             float deriv_error = error - prev_error;
 

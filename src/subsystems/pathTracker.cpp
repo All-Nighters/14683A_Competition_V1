@@ -20,9 +20,7 @@ namespace pathTracker {
 
         // apply rotation matrix
         float newX = yDist*cos(positionSI.theta*M_PI/180.0) - xDist*sin(positionSI.theta*M_PI/180.0);
-        // = 0
         float newY = yDist*sin(positionSI.theta*M_PI/180.0) + xDist*cos(positionSI.theta*M_PI/180.0);
-        // +
 
         Odom::debug();
         // printf("x = %f, y = %f, facing = %f —> newX (side) = %f, newY (forward) = %f\n", positionSI.xPercent, positionSI.yPercent, positionSI.theta, newX, newY);
@@ -127,7 +125,7 @@ namespace pathTracker {
             float rightV = std::fmin(std::fmax(targetLinearVelocity - targetAngularVelocity, -200), 200);
 
             
-            Auto::trackVelocityPID(leftV, rightV);
+            Drivetrain::moveVelocity(leftV, rightV);
         }
 
 

@@ -2,19 +2,27 @@
 
 namespace Flywheel {
     
-    float Vp = 0.08;
+    float VpHI = 0.9;
+    float ViHI = 0;
+    float VdHI = 0.05;
+
+    float VpLO = 0.8;
+    float ViLO = 0;
+    float VdLO = 4;
+
+    float Vp = 0.8;
     float Vi = 0;
-    float Vd = 2;
+    float Vd = 4;
 
-    float idleLinearVelocity = 2;
+    float idle_linear_velocity = 2;
 
 
-    float prevVError = 0;
-    float prevCtlOutput = 0;
+    float prev_v_error = 0;
+    float v_control_coutput = 0;
 
-    float queuedLinearVelocity = 0;
+    float queued_linear_velocity = 0;
 
-    bool keepRunning = true; // to stop the control loop, set this to false
+    bool keep_running = true; // to stop the control loop, set this to false
 
     namespace grapher {
 
@@ -34,7 +42,7 @@ namespace Flywheel {
             bool written[graph_length] = {false};
             while (keepRunningGrapher) 
             {
-                float target = Flywheel::getExpectRPMFromEjectVelocity(queuedLinearVelocity);
+                float target = Flywheel::getExpectRPMFromEjectVelocity(queued_linear_velocity);
                 float current = Flywheel::getCurrentVelocity();
                 // printf("%f\n", current);
 
@@ -98,13 +106,29 @@ namespace Flywheel {
 
 
     /**
-     * @brief Get the current velocity of the flywheel in RPM
+     * @brief Get the current velocity of the flywheel in RPM. Return 0 if unreadable
      * 
      * @return current RPM of the flywheel
      */
     float getCurrentVelocity() {
-        // float velocity = (FlywheelMotor1.getActualVelocity() + FlywheelMotor2.getActualVelocity()) / 2.0 * 15;
-        float velocity = (FlywheelMotor1.getActualVelocity()) * 15;
+        float flywheel_1_velocity = FlywheelMotor1.getActualVelocity();
+        float flywheel_2_velocity = FlywheelMotor2.getActualVelocity();
+        float velocity;
+
+        if (isinf(flywheel_1_velocity) && isinf(flywheel_2_velocity)) {
+            printf("Warning: flywheel 1 and 2 velocity is inf\n");
+            velocity = 0;
+        }
+        else if (isinf(flywheel_1_velocity)) {
+            printf("Warning: flywheel 1 velocity is inf\n");
+            velocity = (FlywheelMotor2.getActualVelocity()) * 15;
+        }
+        else if (isinf(flywheel_2_velocity)) {
+            printf("Warning: flywheel 2 velocity is inf\n");
+            velocity = (FlywheelMotor1.getActualVelocity()) * 15;
+        } else {
+            velocity = (FlywheelMotor1.getActualVelocity() + FlywheelMotor2.getActualVelocity()) / 2.0 * 15;
+        }
         return velocity;
     }
 
@@ -115,19 +139,18 @@ namespace Flywheel {
      */
     void velocityPID(float target_velocity) {
         
-        float current_velocity = getCurrentVelocity();
+        float current_velocity = getCurrentVelocity() / 15.0;
 
-        float v_error = std::fmax(std::fmin(target_velocity, 3000), 0) - current_velocity;
-        float deriv_error = v_error - prevVError;
+        float v_error = std::fmax(std::fmin(target_velocity, 3000), 0) / 15.0 - current_velocity;
+        float deriv_error = v_error - prev_v_error;
         
 
-        prevCtlOutput += v_error * Vp + deriv_error * Vd;
-        // printf("%f\n", (FlywheelMotor2.getActualVelocity()));
+        v_control_coutput = clamp(v_control_coutput + (v_error * Vp + deriv_error * Vd), -12000.0, 12000.0);
 
-        FlywheelMotor1.moveVoltage(clamp(prevCtlOutput, -12000.0, 12000.0));
-        FlywheelMotor2.moveVoltage(clamp(prevCtlOutput, -12000.0, 12000.0));
+        FlywheelMotor1.moveVoltage(v_control_coutput);
+        FlywheelMotor2.moveVoltage(v_control_coutput);
 
-        prevVError = v_error;
+        prev_v_error = v_error;
     }
     
     /**
@@ -164,7 +187,16 @@ namespace Flywheel {
      * @param velocity target eject velocity in meters/second
      */
     void setLinearEjectVelocity(float velocity) {
-        queuedLinearVelocity = velocity;
+        if (velocity > 6) {
+            Vp = VpHI;
+            Vi = ViHI;
+            Vd = VdHI;
+        } else {
+            Vp = VpLO;
+            Vi = ViLO;
+            Vd = VdLO;
+        }
+        queued_linear_velocity = velocity;
     }
     
     /**
@@ -172,7 +204,7 @@ namespace Flywheel {
      * 
      */
     void idle() {
-        setLinearEjectVelocity(idleLinearVelocity);
+        setLinearEjectVelocity(idle_linear_velocity);
     }
 
     /**
@@ -198,8 +230,8 @@ namespace Flywheel {
      * 
      */
     void velocityControlLoop() {
-        while (keepRunning) {
-            float rpm = getExpectRPMFromEjectVelocity(queuedLinearVelocity);
+        while (keep_running) {
+            float rpm = getExpectRPMFromEjectVelocity(queued_linear_velocity);
             spinVelocityRPM(rpm);
             pros::delay(20);
         }
@@ -211,7 +243,7 @@ namespace Flywheel {
      * 
      */
     void startControlLoop() {
-        keepRunning = true;
+        keep_running = true;
         pros::Task loop(velocityControlLoop);
     }
 
@@ -220,6 +252,6 @@ namespace Flywheel {
      * 
      */
     void stopControlLoop() {
-        keepRunning = false;
+        keep_running = false;
     }
 }

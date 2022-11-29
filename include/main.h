@@ -47,6 +47,7 @@
 #include "../src/objects/graphical_interface/graphical_interface.h"
 
 #include "subsystems/globals.hpp"
+#include "subsystems/drivetrain.hpp"
 #include "subsystems/odometry.hpp"
 #include "subsystems/pathTracker.hpp"
 #include "subsystems/autoLib.hpp"

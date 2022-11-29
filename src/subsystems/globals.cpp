@@ -34,3 +34,19 @@ pros::ADIDigitalIn intake_sensor(intakeSensorPort);
 
 pros::Imu imu_sensor_1(imuSensorPort1);
 pros::Imu imu_sensor_2(imuSensorPort2);
+
+
+// drive model
+std::shared_ptr<ChassisController> drive =
+ChassisControllerBuilder()
+    .withMotors(
+        {frontLeftMotorPort, bottomLeftMotorPort},
+        {frontRightMotorPort, bottomRightMotorPort}
+    )
+    .withDimensions(chassis_motor_gearset, {{wheelDiameter, wheeltrackLength}, imev5BlueTPR})
+    .withGains(
+        {0.001, 0, 0.00001}, // Distance controller gains
+        {0.008, 0, 0.0001}, // Turn controller gains
+        {0.001, 0, 0.00001}  // Angle controller gains (helps drive straight)
+    )
+    .build();
