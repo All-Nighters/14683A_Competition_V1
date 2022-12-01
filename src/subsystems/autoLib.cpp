@@ -114,18 +114,11 @@ namespace Auto {
             prevErrorPosition = error_position;
 
 
-            LFMotor.moveVoltage(control_output_Left);
-            RFMotor.moveVoltage(control_output_Right);
-            LBMotor.moveVoltage(control_output_Left);
-            RBMotor.moveVoltage(control_output_Right);
+            Drivetrain::moveVoltage(control_output_Left, control_output_Right);
 
-            
             pros::delay(20);
         }
-        LFMotor.moveVoltage(0);
-        RFMotor.moveVoltage(0);
-        LBMotor.moveVoltage(0);
-        RBMotor.moveVoltage(0);
+        Drivetrain::moveVoltage(0);
 
         settled = true;
     }
@@ -167,18 +160,12 @@ namespace Auto {
 
             prev_error = error;
 
-            LFMotor.moveVoltage(control_output);
-            LBMotor.moveVoltage(control_output);
-            RFMotor.moveVoltage(-control_output);
-            RBMotor.moveVoltage(-control_output);
+            Drivetrain::moveVoltage(control_output, -control_output);
 
             pros::delay(20);
         }
 
-        LFMotor.moveVoltage(0);
-        RFMotor.moveVoltage(0);
-        LBMotor.moveVoltage(0);
-        RBMotor.moveVoltage(0);
+        Drivetrain::moveVoltage(0);
         
         settled = true;
     }
@@ -201,15 +188,9 @@ namespace Auto {
         prev_error = error;
 
         if (target_angle - positionSI.theta > 0) {
-            LFMotor.moveVoltage(control_output);
-            LBMotor.moveVoltage(control_output);
-            RFMotor.moveVoltage(-control_output);
-            RBMotor.moveVoltage(-control_output);
+            Drivetrain::moveVoltage(control_output, -control_output);
         } else {
-            LFMotor.moveVoltage(-control_output);
-            LBMotor.moveVoltage(-control_output);
-            RFMotor.moveVoltage(control_output);
-            RBMotor.moveVoltage(control_output);
+            Drivetrain::moveVoltage(-control_output, control_output);
         }
         return prev_error;
     }
@@ -233,31 +214,19 @@ namespace Auto {
 
             float deriv_error = error - prev_error;
 
-            float control_output = std::fmax(error * Rp + deriv_error * Rd, 3000);
+            float control_output = clamp(error * Rp + deriv_error * Rd, -12000, 12000);
 
-
-            prev_error = error;
-
-            if (target_angle - positionSI.theta > 0) {
-                LFMotor.moveVoltage(control_output);
-                LBMotor.moveVoltage(control_output);
-                RFMotor.moveVoltage(-control_output);
-                RBMotor.moveVoltage(-control_output);
-            } else {
-                LFMotor.moveVoltage(-control_output);
-                LBMotor.moveVoltage(-control_output);
-                RFMotor.moveVoltage(control_output);
-                RBMotor.moveVoltage(control_output);
+            if (abs(control_output) < 2000) {
+                control_output = control_output > 0 ? 2000 : -2000;
             }
 
+            Drivetrain::moveVoltage(control_output, -control_output);
+            prev_error = error;
 
             pros::delay(20);
         }
 
-        LFMotor.moveVoltage(0);
-        RFMotor.moveVoltage(0);
-        LBMotor.moveVoltage(0);
-        RBMotor.moveVoltage(0);
+        Drivetrain::moveVoltage(0);
         pros::delay(200);
         
         settled = true;
@@ -386,7 +355,6 @@ namespace Auto {
         float dist = sqrt(xDist*xDist + yDist*yDist);
 
         faceCoordinate(positionSI.xPercent - xDist, positionSI.yPercent - yDist, false);
-        printf("%f\n", dist);
         if (Intake::is_enabled()) {
             moveDistance(-dist, 3000);
         } else {

@@ -2,9 +2,9 @@
 
 namespace Flywheel {
     
-    float VpHI = 0.9;
+    float VpHI = 1.3;
     float ViHI = 0;
-    float VdHI = 0.05;
+    float VdHI = 0.2;
 
     float VpLO = 0.8;
     float ViLO = 0;

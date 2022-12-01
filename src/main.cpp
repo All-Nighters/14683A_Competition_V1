@@ -8,40 +8,38 @@
  */
 void initialize() {
 	GraphicalInterface selector;
-	printf("\nINITIALIZATION STARTED\n");
-	printf("======================\n");
+	// printf("\nINITIALIZATION STARTED\n");
+	// printf("======================\n");
 
-	// // Initialize subsystems
-	printf("1. Initializing odometry...");
-	Odom::init(MOTOR_IMU);
-	printf("OK\n");
+	// // // Initialize subsystems
+	// printf("1. Initializing odometry...");
+	// Odom::init(MOTOR_IMU);
+	// printf("OK\n");
 
-	printf("2. Starting flywheel control loop...");
-	Flywheel::startControlLoop();
-	printf("OK\n");
+	// printf("2. Starting flywheel control loop...");
+	// Flywheel::startControlLoop();
+	// printf("OK\n");
 	
-	printf("3. Starting flywheel grapher...");
-	Flywheel::grapher::start_graphing();
-	printf("OK\n");
+	// // printf("3. Starting flywheel grapher...");
+	// // Flywheel::grapher::start_graphing();
+	// // printf("OK\n");
 
-	printf("4. Initializing gun...");
-	Gun::init(FORCE_MODE);
-	printf("OK\n");
+	// printf("4. Initializing gun...");
+	// Gun::init(FORCE_MODE);
+	// printf("OK\n");
 
-	// Set motor brake modes
-	printf("5. Setting motor breakmode...");
-	// LFMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
-	// RFMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
-	// RBMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
-	// LBMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
-	IndexerMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::hold);
-	IntakeMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::hold);
-	RollerMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::hold);
-	Drivetrain::tarePosition();
+	// // Set motor brake modes
+	// printf("5. Setting motor breakmode...");
+	// Drivetrain::setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
 
-	printf("OK\n");
-	printf("\nReady to go!\n");
-	printf("======================\n\n");	
+	// IndexerMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::hold);
+	// IntakeMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::hold);
+	// RollerMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::hold);
+	// Drivetrain::tarePosition();
+
+	// printf("OK\n");
+	// printf("\nReady to go!\n");
+	// printf("======================\n\n");	
 }
 
 /**
@@ -307,13 +305,13 @@ void opcontrol() {
 		}
 
 
-		// if (pros::millis()-round_begin_milliseconds >= 90 * 1000 && controller.getDigital(ExpansionButton)) {
-		// 	printf("Trigger expansion\n");
+		if (pros::millis()-round_begin_milliseconds >= 90 * 1000 && controller.getDigital(ExpansionButton)) {
+			printf("Trigger expansion\n");
 
-		// 	// remember to change the value in autos.cpp
-		// 	piston1.set_value(true); 
-		// 	piston2.set_value(true);
-		// }
+			// remember to change the value in autos.cpp
+			piston1.set_value(true); 
+			piston2.set_value(true);
+		}
 
 		pros::delay(20);
 	}
