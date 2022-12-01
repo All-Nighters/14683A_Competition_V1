@@ -164,14 +164,12 @@ void competition_initialize() {
  * from where it left off.
  */
 void autonomous() {
-	pros::delay(3000);
 	printf("\nAUTONOMOUS\n");
 	printf("======================\n");
 	// readSelectorConfiguration();
 	// Auto::moveDistance(meterToPercentage(1));
-	Auto::turnAngle(160);
 	// pros::delay(1000);
-	// Autos::run(BLUE_SECOND_SCORING);
+	Autos::run(BLUE_SECOND_SCORING);
 }
 
 void ramsete_test() {
@@ -212,7 +210,6 @@ void ramsete_test() {
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-	autonomous();
 	// readSelectorConfiguration(); // remember to delete this in production
 
 	printf("\nDRIVER CONTROL\n");
@@ -220,7 +217,7 @@ void opcontrol() {
 	
 		
 	int round_begin_milliseconds = pros::millis();
-	auto xModel = std::dynamic_pointer_cast<XDriveModel>(drive->getModel());
+	auto xModel = std::dynamic_pointer_cast<XDriveModel>(Drivetrain::get_drive_model()->getModel());
 
 	
 	/*
@@ -250,9 +247,9 @@ void opcontrol() {
 	For controls, see globals.hpp
 	*/
 	while (true) {	
-		// Odom::debug();
+		Odom::debug();
 
-		drive->getModel()->arcade(controller.getAnalog(ForwardAxis), 0.5*controller.getAnalog(TurnAxis));
+		Drivetrain::get_drive_model()->getModel()->arcade(controller.getAnalog(ForwardAxis), 0.5*controller.getAnalog(TurnAxis));
 
 		// spin intake
 		if (controller.getDigital(IntakeButton)) {
@@ -278,7 +275,7 @@ void opcontrol() {
 		if (controller.getDigital(TripleShootButton)) {
 			printf("Shooting 3 disks\n");
 			Intake::turnOn();
-			Gun::shootDisk(3, FORCE_MODE);
+			Gun::shootDisk(4, FORCE_MODE);
 			Intake::turnOff();
 
 			Flywheel::setLinearEjectVelocity(0);

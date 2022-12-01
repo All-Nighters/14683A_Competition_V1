@@ -4,6 +4,9 @@ namespace Intake {
     float enabled = false;
     int diskHolding = 0;
 
+    bool is_enabled() {
+        return enabled;
+    }
     int getDiskHolding() {
         return diskHolding;  
     }

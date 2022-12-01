@@ -1,6 +1,30 @@
 #include "main.h"
 
 namespace Drivetrain {
+
+    // drive model
+    std::shared_ptr<ChassisController> drive =
+    ChassisControllerBuilder()
+        .withMotors(
+            {frontLeftMotorPort, bottomLeftMotorPort},
+            {frontRightMotorPort, bottomRightMotorPort}
+        )
+        .withDimensions(chassis_motor_gearset, {{wheelDiameter, wheeltrackLength}, imev5BlueTPR})
+        .withGains(
+            {0.001, 0, 0.00001}, // Distance controller gains
+            {0.008, 0, 0.0001}, // Turn controller gains
+            {0.001, 0, 0.00001}  // Angle controller gains (helps drive straight)
+        )
+        .build();
+
+    /**
+     * @brief Get the drive model object
+     * 
+     * @return drive model object
+     */
+    std::shared_ptr<ChassisController> get_drive_model() {
+        return drive;
+    }
     /**
      * @brief Tare motor position readings
      * 

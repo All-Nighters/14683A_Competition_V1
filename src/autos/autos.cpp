@@ -88,29 +88,35 @@ namespace Autos {
      */
     void blue_second_scoring() {
         Odom::set_state(39.44444444444444, 90.55555555555556, -90);
-        Auto::faceCoordinate(blueHighGoalPosition_percent[0], blueHighGoalPosition_percent[1], true);
         Flywheel::setLinearEjectVelocity(8);
-        pros::delay(3000);
-        Intake::turnOn();
-        Gun::shootDisk();
-        pros::delay(500);
-        Gun::shootDisk();
-        Flywheel::setLinearEjectVelocity(4);
-
-        Auto::turnAngle(160);
-        Auto::moveDistance(-34);
-        Intake::turnOff();
-
         Auto::faceCoordinate(blueHighGoalPosition_percent[0], blueHighGoalPosition_percent[1], true);
-        Flywheel::setLinearEjectVelocity(7);
-        pros::delay(3000);
+
+        pros::delay(4000);
+
         Intake::turnOn();
         Gun::shootDisk();
-        pros::delay(500);
+        pros::delay(800);
         Gun::shootDisk();
-        pros::delay(500);
-        Gun::shootDisk();
-        pros::delay(500);
+        Flywheel::setLinearEjectVelocity(0);
+
+        // Auto::simpleMoveToPointBackwards(39.44444444444444, 84.07);
+        // Auto::simpleMoveToPointBackwards(39.44444444444444, 78.14);
+        Auto::simpleMoveToPointBackwards(39.44444444444444, 60.55555555555556);
+        pros::delay(1000);
+        Intake::turnOff();
+        printf("%f %f\n", positionSI.xPercent, positionSI.yPercent);
+        Auto::simpleMoveToPointBackwards(24.62962962962963, 60.55555555555556);
+
+        // Auto::faceCoordinate(blueHighGoalPosition_percent[0], blueHighGoalPosition_percent[1], true);
+        // Flywheel::setLinearEjectVelocity(7);
+        // pros::delay(3000);
+        // Intake::turnOn();
+        // Gun::shootDisk();
+        // pros::delay(500);
+        // Gun::shootDisk();
+        // pros::delay(500);
+        // Gun::shootDisk();
+        // pros::delay(500);
     }
 
     /**
@@ -159,7 +165,7 @@ namespace Autos {
         RBMotor.moveVelocity(0);
         pros::delay(1000);
 
-        Auto::moveDistance(2);
+        Auto::moveDistance(2, 4000);
         controller.setText(0,0,std::to_string(positionSI.xPercent) + ", " + std::to_string(positionSI.yPercent));
 
         pros::delay(1000);

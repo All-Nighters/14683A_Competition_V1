@@ -7,6 +7,7 @@
 
 namespace Intake {
     int getDiskHolding();
+    bool is_enabled();
     void setDiskHolding(int disks);
     void toggle();
     void turnOn();

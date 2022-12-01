@@ -1,7 +1,7 @@
 #include "main.h"
 namespace Odom {
 
-	float WHEEL_RADIUS = trackingWheelDiameter.convert(meter) / 2.0;
+	float WHEEL_RADIUS = wheelDiameter.convert(meter) / 2.0;
 	//Starting angle (relative to field) (RADIANS)
 	float THETA_START = 0;
 
@@ -144,9 +144,8 @@ namespace Odom {
 			else {
 			//Calculate the changes in the X and Y values (meters)
 
-			deltaXLocal = 2 * sin(deltaTheta / 2.0) * ((deltaDistS / deltaTheta) + STrackRadius);
+			deltaXLocal = 2 * sin(deltaTheta / 2.0) * ((deltaDistS / deltaTheta) - STrackRadius);
 			deltaYLocal = 2 * sin(deltaTheta / 2.0) * ((deltaDistR / deltaTheta) + RTrackRadius);
-
 			}
 
 			//The average angle of the robot during it's arc (RADIANS)
@@ -216,7 +215,7 @@ namespace Odom {
 	 * 
 	 */
 	void debug() {
-		printf("Odometry: x=%f, y=%f, a=%f\n", positionSI.x, positionSI.y, positionSI.theta);
+		printf("Odometry: x=%f, y=%f, a=%f\n", positionSI.xPercent, positionSI.yPercent, positionSI.theta);
 		if (odometry_mode == THREEWHEEL) {
 			// printf("Encoder: l=%f, r=%f, m=%f, imu=%f\n",  leftTW.get(),  rightTW.get(), midTW.get());
 		}

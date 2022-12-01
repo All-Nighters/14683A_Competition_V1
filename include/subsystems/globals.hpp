@@ -143,8 +143,8 @@ extern OdomStateSI positionSI; // odometry state in SI units and percentage
 
 // chassis
 inline QLength wheelDiameter = 2.75_in;
-inline QLength wheeltrackLength = 33_cm;
-inline QLength middleEncoderDistance = 16.5_cm;
+inline QLength wheeltrackLength = 27_cm;
+inline QLength middleEncoderDistance = 12_cm;
 inline QLength trackingWheelDiameter = 2.75_in;
 inline float external_gear_ratio = 36/60.0 / 16 * 20;
 inline AbstractMotor::gearset chassis_motor_gearset = AbstractMotor::gearset::blue;

@@ -13,9 +13,9 @@ namespace Auto {
     float Fd = 300;
 
     // rotational PID Coefficients
-    float Rp = 300;
+    float Rp = 200;
     float Ri = 0;
-    float Rd = 300;
+    float Rd = 600;
 
 
     bool settled = true;
@@ -50,8 +50,9 @@ namespace Auto {
      * @brief PID for controlling forward distance
      * 
      * @param percentage forward distance in percentage unit
+     * @param max_voltage maximum voltage for forward movement
      */
-    void distancePID(float percentage) {
+    void distancePID(float percentage, float max_voltage) {
         float target_distance = fieldLength * percentage / 100;
         float revs;
         if (Odom::getOdomMode() == MOTOR_IMU) {
@@ -97,16 +98,16 @@ namespace Auto {
             float control_output = error_position * Tp + deriv_position * Td;
             float control_output_Facing = error_Facing * Fp + deriv_Facing * Fd;
 
-            float control_output_Left = direction * std::fmax(std::fmin(control_output, 8000), -8000) + std::fmax(std::fmin(control_output_Facing, 4000), -4000);
-            float control_output_Right = direction * std::fmax(std::fmin(control_output, 8000), -8000) - std::fmax(std::fmin(control_output_Facing, 4000), -4000);
+            float control_output_Left = direction * std::fmax(std::fmin(control_output, max_voltage), -max_voltage) + std::fmax(std::fmin(control_output_Facing, max_voltage * 0.25), -max_voltage * 0.25);
+            float control_output_Right = direction * std::fmax(std::fmin(control_output, max_voltage), -max_voltage) - std::fmax(std::fmin(control_output_Facing, max_voltage * 0.25), -max_voltage * 0.25);
 
-            if (abs(control_output_Left) < 4000 && direction < 0) {
-                control_output_Left = -4000;
-                control_output_Right = -4000;
+            if (abs(control_output_Left) < 2000 && direction < 0) {
+                control_output_Left = -2000;
+                control_output_Right = -2000;
             }
-            else if (abs(control_output_Left) < 4000 && direction > 0) {
-                control_output_Left = 4000;
-                control_output_Right = 4000;
+            else if (abs(control_output_Left) < 2000 && direction > 0) {
+                control_output_Left = 2000;
+                control_output_Right = 2000;
             }
 
 
@@ -132,10 +133,11 @@ namespace Auto {
      * @brief move the robot forward with a specific distance
      * 
      * @param percentage percentage forward distance in percentage unit
+     * @param max_voltage maximum voltage for forward movement
      */
-    void moveDistance(float percentage) {
+    void moveDistance(float percentage, float max_voltage) {
         
-        distancePID(percentage);
+        distancePID(percentage, max_voltage);
     }
 
     /**
@@ -383,8 +385,14 @@ namespace Auto {
         float yDist = yPercent - positionSI.yPercent;
         float dist = sqrt(xDist*xDist + yDist*yDist);
 
-        faceCoordinate(-xPercent, -yPercent, false);
-        moveDistance(-dist);
+        faceCoordinate(positionSI.xPercent - xDist, positionSI.yPercent - yDist, false);
+        printf("%f\n", dist);
+        if (Intake::is_enabled()) {
+            moveDistance(-dist, 3000);
+        } else {
+            moveDistance(-dist);
+        }
+        
 
     }
 
