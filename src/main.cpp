@@ -7,39 +7,41 @@
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
+	printf("\nINITIALIZATION STARTED\n");
+	printf("======================\n");
+
+	printf("1. Initializing selector...");
 	GraphicalInterface selector;
-	// printf("\nINITIALIZATION STARTED\n");
-	// printf("======================\n");
+	pros::delay(100);
 
-	// // // Initialize subsystems
-	// printf("1. Initializing odometry...");
-	// Odom::init(MOTOR_IMU);
-	// printf("OK\n");
+	printf("2. Initializing odometry...");
+	Odom::init(MOTOR_IMU);
+	printf("OK\n");
 
-	// printf("2. Starting flywheel control loop...");
-	// Flywheel::startControlLoop();
-	// printf("OK\n");
+	printf("3. Starting flywheel control loop...");
+	Flywheel::startControlLoop();
+	printf("OK\n");
 	
-	// // printf("3. Starting flywheel grapher...");
-	// // Flywheel::grapher::start_graphing();
-	// // printf("OK\n");
-
-	// printf("4. Initializing gun...");
-	// Gun::init(FORCE_MODE);
+	// printf("4. Starting flywheel grapher...");
+	// Flywheel::grapher::start_graphing();
 	// printf("OK\n");
 
-	// // Set motor brake modes
-	// printf("5. Setting motor breakmode...");
-	// Drivetrain::setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
+	printf("5. Initializing gun...");
+	Gun::init(FORCE_MODE);
+	printf("OK\n");
 
-	// IndexerMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::hold);
-	// IntakeMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::hold);
-	// RollerMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::hold);
-	// Drivetrain::tarePosition();
+	// Set motor brake modes
+	printf("6. Setting motor breakmode...");
+	Drivetrain::setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
 
-	// printf("OK\n");
-	// printf("\nReady to go!\n");
-	// printf("======================\n\n");	
+	IndexerMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::hold);
+	IntakeMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::hold);
+	RollerMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::hold);
+	Drivetrain::tarePosition();
+
+	printf("OK\n");
+	printf("\nReady to go!\n");
+	printf("======================\n\n");	
 }
 
 /**
@@ -108,21 +110,21 @@ void readSelectorConfiguration() {
 		}
 		auto_procedure_running = procedure_combinations[procedure_idx];
 	}	
-	if (procedure_idx == 0 || procedure_idx == 1 || procedure_idx == 2) { // red first
-		Odom::set_state(86.38888888888889, 76.2037037037037, 180);
-	}
-	else if (procedure_idx == 3 || procedure_idx == 4 || procedure_idx == 5) { // red second
-		Odom::set_state(58.05, 10.41, 90);
-	}
-	else if (procedure_idx == 6 || procedure_idx == 7 || procedure_idx == 8) { // blue first
-		Odom::set_state(10.10, 24.35, 0);
-	}
-	else if (procedure_idx == 9 || procedure_idx == 10 || procedure_idx == 11) { // blue second
-		Odom::set_state(41.9, 90.95, -90);
-	}
-	else if (procedure_idx == 12) { // skill
-		Odom::set_state(0, 0, 0);
-	}
+	// if (procedure_idx == 0 || procedure_idx == 1 || procedure_idx == 2) { // red first
+	// 	Odom::set_state(86.38888888888889, 76.2037037037037, 180);
+	// }
+	// else if (procedure_idx == 3 || procedure_idx == 4 || procedure_idx == 5) { // red second
+	// 	Odom::set_state(58.05, 10.41, 90);
+	// }
+	// else if (procedure_idx == 6 || procedure_idx == 7 || procedure_idx == 8) { // blue first
+	// 	Odom::set_state(10.10, 24.35, 0);
+	// }
+	// else if (procedure_idx == 9 || procedure_idx == 10 || procedure_idx == 11) { // blue second
+	// 	Odom::set_state(41.9, 90.95, -90);
+	// }
+	// else if (procedure_idx == 12) { // skill
+	// 	Odom::set_state(0, 0, 0);
+	// }
 	
 }
 
@@ -164,10 +166,13 @@ void competition_initialize() {
 void autonomous() {
 	printf("\nAUTONOMOUS\n");
 	printf("======================\n");
-	// readSelectorConfiguration();
+	readSelectorConfiguration();
+	printf("%d\n", auto_procedure_running);
+
+	// Flywheel::setLinearEjectVelocity(6.5);
 	// Auto::moveDistance(meterToPercentage(1));
 	// pros::delay(1000);
-	Autos::run(BLUE_SECOND_SCORING);
+	Autos::run(auto_procedure_running);
 }
 
 void ramsete_test() {
@@ -291,7 +296,7 @@ void opcontrol() {
 		// controlling flywheel velocity
 		if (isSpinning) {
 			controller.setText(0,0, "SPIN   ");
-			Flywheel::setLinearEjectVelocity(5);
+			Flywheel::setLinearEjectVelocity(6.8);
 		} else {
 			controller.setText(0,0, "STOP   ");
 			Flywheel::setLinearEjectVelocity(0);
@@ -305,12 +310,14 @@ void opcontrol() {
 		}
 
 
-		if (pros::millis()-round_begin_milliseconds >= 90 * 1000 && controller.getDigital(ExpansionButton)) {
+		if (controller.getDigital(ExpansionButton)) {
 			printf("Trigger expansion\n");
 
 			// remember to change the value in autos.cpp
-			piston1.set_value(true); 
+			// piston1.set_value(true); 
 			piston2.set_value(true);
+		} else {
+			piston2.set_value(false);
 		}
 
 		pros::delay(20);

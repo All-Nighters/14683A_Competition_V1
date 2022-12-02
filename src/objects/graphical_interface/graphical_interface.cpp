@@ -155,6 +155,8 @@ void GraphicalInterface::object_style(GraphicalInterface::InterfaceComponent obj
             this->interface_style.push_back(lv_style_t());
             lv_style_copy(&this->interface_style[object_style_offset + style_index], &lv_style_pretty);
         }
+
+        printf("%f\n", GraphicalInterface::InterfaceType::MENU_BUTTON);
         // styles by type
         switch (object_loop.object_type) {
             case GraphicalInterface::InterfaceType::MENU_CONTAINER:

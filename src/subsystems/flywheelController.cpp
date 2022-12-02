@@ -2,17 +2,17 @@
 
 namespace Flywheel {
     
-    float VpHI = 1.3;
+    float VpHI = 1;
     float ViHI = 0;
-    float VdHI = 0.2;
+    float VdHI = 0.5;
 
-    float VpLO = 0.8;
+    float VpLO = 1;
     float ViLO = 0;
-    float VdLO = 4;
+    float VdLO = 0;
 
-    float Vp = 0.8;
-    float Vi = 0;
-    float Vd = 4;
+    float Vp = VpLO;
+    float Vi = ViLO;
+    float Vd = VdLO;
 
     float idle_linear_velocity = 2;
 
@@ -132,6 +132,9 @@ namespace Flywheel {
         return velocity;
     }
 
+    float prev_vel = 0;
+    float prev_ctlout = 0;
+
     /**
      * @brief PID for controlling flywheel velocity
      * 
@@ -139,18 +142,25 @@ namespace Flywheel {
      */
     void velocityPID(float target_velocity) {
         
-        float current_velocity = getCurrentVelocity() / 15.0;
+        float a1 = 0.6;
+        float a2 = 0.6;
+        float current_velocity = a1 * (getCurrentVelocity() / 15.0) + ((1 - a1) * prev_vel);
 
         float v_error = std::fmax(std::fmin(target_velocity, 3000), 0) / 15.0 - current_velocity;
+        
+        float used_vp = queued_linear_velocity == 0 ? 100 : Vp;
+
         float deriv_error = v_error - prev_v_error;
         
-
-        v_control_coutput = clamp(v_control_coutput + (v_error * Vp + deriv_error * Vd), -12000.0, 12000.0);
+        printf("%f %f\n", current_velocity, getExpectRPMFromEjectVelocity(queued_linear_velocity));
+        v_control_coutput = a2 * clamp(v_control_coutput + (v_error * Vp + deriv_error * Vd), -12000.0, 12000.0) + (1 - a2) * prev_ctlout;
 
         FlywheelMotor1.moveVoltage(v_control_coutput);
         FlywheelMotor2.moveVoltage(v_control_coutput);
 
         prev_v_error = v_error;
+        prev_vel = current_velocity;
+        prev_ctlout = v_control_coutput;
     }
     
     /**
