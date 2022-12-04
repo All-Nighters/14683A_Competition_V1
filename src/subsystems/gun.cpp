@@ -49,7 +49,7 @@ namespace Gun {
      * @brief Fire the indexer for 1 time
      * 
      */
-    void trigger() {
+    void trigger(float indexer_power) {
         IndexerMotor.moveVoltage(8000); // move the indexer
         while (load_sensor.get_value() == 1) { 
             ; // wait until the disk is ejected
@@ -107,8 +107,10 @@ namespace Gun {
     /**
      * @brief Shoot 1 disk
      * 
+     * @param mode_override shoot mode override
+     * @param indexer_power indexer voltage
      */
-    void shootDisk(shootMode mode_override) {
+    void shootDisk(shootMode mode_override, float indexer_power) {
         shootMode mode = mode_override == shoot_mode ? shoot_mode : mode_override;
         
         if (mode == ACCURATE_MODE) {
@@ -132,8 +134,10 @@ namespace Gun {
      * @brief Shoot disks
      * 
      * @param diskCount number of disks to shoot
+     * @param mode_override shoot mode override
+     * @param indexer_power indexer voltage
      */
-    void shootDisk(int diskCount, shootMode mode_override) {
+    void shootDisk(int diskCount, shootMode mode_override, float indexer_power) {
         shootMode mode = mode_override == shoot_mode ? shoot_mode : mode_override;
 
         if (mode == ACCURATE_MODE) {

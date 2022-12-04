@@ -2,11 +2,11 @@
 
 namespace Flywheel {
     
-    float VpHI = 1;
+    float VpHI = 10;
     float ViHI = 0;
-    float VdHI = 0.5;
+    float VdHI = 0;
 
-    float VpLO = 1;
+    float VpLO = 1.5;
     float ViLO = 0;
     float VdLO = 0;
 
@@ -133,7 +133,10 @@ namespace Flywheel {
     }
 
     float prev_vel = 0;
+    float prev_prev_vel = 0;
     float prev_ctlout = 0;
+
+    float prev_curr_vel = 0;
 
     /**
      * @brief PID for controlling flywheel velocity
@@ -144,7 +147,12 @@ namespace Flywheel {
         
         float a1 = 0.6;
         float a2 = 0.6;
-        float current_velocity = a1 * (getCurrentVelocity() / 15.0) + ((1 - a1) * prev_vel);
+        
+        float vel_reading = getCurrentVelocity() / 15.0;
+        float current_velocity = std::fmax(std::fmin(vel_reading, prev_vel), std::fmin(std::fmax(getCurrentVelocity() / 15.0, prev_vel), prev_prev_vel));
+        current_velocity = a1 * current_velocity + (1-a1) * prev_curr_vel;
+        // float current_velocity = getCurrentVelocity() / 15.0;
+        
 
         float v_error = std::fmax(std::fmin(target_velocity, 3000), 0) / 15.0 - current_velocity;
         
@@ -152,14 +160,17 @@ namespace Flywheel {
 
         float deriv_error = v_error - prev_v_error;
         
-        printf("%f %f\n", current_velocity, getExpectRPMFromEjectVelocity(queued_linear_velocity));
-        v_control_coutput = a2 * clamp(v_control_coutput + (v_error * Vp + deriv_error * Vd), -12000.0, 12000.0) + (1 - a2) * prev_ctlout;
+        v_control_coutput = a2 * clamp(v_control_coutput + (v_error * Vp + deriv_error * Vd), 0, 12000.0) + (1 - a2) * prev_ctlout;
 
         FlywheelMotor1.moveVoltage(v_control_coutput);
-        FlywheelMotor2.moveVoltage(v_control_coutput);
+        FlywheelMotor2.moveVoltage(v_control_coutput * 0.8);
 
         prev_v_error = v_error;
-        prev_vel = current_velocity;
+        prev_prev_vel = prev_vel;
+        prev_vel = vel_reading;
+
+        prev_curr_vel = current_velocity;
+
         prev_ctlout = v_control_coutput;
     }
     

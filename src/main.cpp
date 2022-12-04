@@ -169,10 +169,13 @@ void autonomous() {
 	readSelectorConfiguration();
 	printf("%d\n", auto_procedure_running);
 
-	// Flywheel::setLinearEjectVelocity(6.5);
+	// Flywheel::setLinearEjectVelocity(7);
+	// pros::delay(4000);
+	// Gun::shootDisk();
 	// Auto::moveDistance(meterToPercentage(1));
 	// pros::delay(1000);
 	Autos::run(auto_procedure_running);
+	// Autos::run(BLUE_SECOND_SCORING);
 }
 
 void ramsete_test() {
@@ -242,15 +245,17 @@ void opcontrol() {
 	printf("Driver configuration finished\n");
 
 	bool flywheelEnabledButtonState = false;
+	bool flywheelFullPowerButtonState = false;
 
 	bool isSpinning = false;
+	bool isFullPower = false;
 	bool isEndGame = false;
 
 	/*
 	For controls, see globals.hpp
 	*/
 	while (true) {	
-		Odom::debug();
+		// Odom::debug();
 
 		Drivetrain::get_drive_model()->getModel()->arcade(controller.getAnalog(ForwardAxis), 0.5*controller.getAnalog(TurnAxis));
 
@@ -278,7 +283,8 @@ void opcontrol() {
 		if (controller.getDigital(TripleShootButton)) {
 			printf("Shooting 3 disks\n");
 			Intake::turnOn();
-			Gun::shootDisk(4, FORCE_MODE);
+			Gun::shootDisk(2, FORCE_MODE, 8000);
+			Gun::shootDisk(1, FORCE_MODE, 6000);
 			Intake::turnOff();
 
 			Flywheel::setLinearEjectVelocity(0);
@@ -293,10 +299,24 @@ void opcontrol() {
 			flywheelEnabledButtonState = false;
 		}
 
+		// flywheel fullpower button
+		if (controller.getDigital(FullPowerButton) && !flywheelFullPowerButtonState) {
+			flywheelFullPowerButtonState = true;
+			isFullPower = !isFullPower;
+		} else if (!controller.getDigital(FullPowerButton)) {
+			flywheelFullPowerButtonState = false;
+		}
+
 		// controlling flywheel velocity
 		if (isSpinning) {
-			controller.setText(0,0, "SPIN   ");
-			Flywheel::setLinearEjectVelocity(6.8);
+			if (isFullPower) {
+				controller.setText(0,0, "FULL   ");
+				Flywheel::setLinearEjectVelocity(7.8);
+			} else {
+				controller.setText(0,0, "NORM   ");
+				Flywheel::setLinearEjectVelocity(5);
+			}
+			
 		} else {
 			controller.setText(0,0, "STOP   ");
 			Flywheel::setLinearEjectVelocity(0);

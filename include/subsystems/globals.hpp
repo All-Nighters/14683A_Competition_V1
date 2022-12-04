@@ -105,8 +105,9 @@ inline ControllerDigital IntakeButtonRev = ControllerDigital::A;
 inline ControllerDigital AimButton = ControllerDigital::L1;
 inline ControllerDigital ShootButton = ControllerDigital::L2;
 inline ControllerDigital TripleShootButton = ControllerDigital::right;
+inline ControllerDigital FullPowerButton = ControllerDigital::X;
 inline ControllerDigital FlywheelStopButton = ControllerDigital::B;
-inline ControllerDigital ExpansionButton = ControllerDigital::X;
+inline ControllerDigital ExpansionButton = ControllerDigital::up;
 
 /**
  * Goal position corordinates
@@ -119,7 +120,7 @@ inline float blueHighGoalPosition_percent[] = {86, 14.54, 20.99};
 /**
  * Flywheel constants
 */
-inline float aimAngleDeviation = 1; // deviation of angle when aiming a point
+inline float aimAngleDeviation = 8; // deviation of angle when aiming a point
 inline float g = 9.81; // gravitational constant
 inline float maxEjectVel = 8; // maximum eject velocity in m/s
 inline float minEjectVel = 1; // minimum eject velocity in m/s

@@ -10,13 +10,15 @@ namespace Gun {
 
     void init(shootMode mode);
 
+    void trigger(float indexer_power = 8000);
+
     void reposition();
 
     bool readyToShoot();
 
-    void shootDisk(shootMode mode_override = shoot_mode);
+    void shootDisk(shootMode mode_override = shoot_mode, float indexer_power = 8000);
 
-    void shootDisk(int diskCount, shootMode mode_override = shoot_mode);
+    void shootDisk(int diskCount, shootMode mode_override = shoot_mode, float indexer_power = 8000);
 
     void shootDiskAsync();
 

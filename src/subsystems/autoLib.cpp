@@ -356,7 +356,7 @@ namespace Auto {
 
         faceCoordinate(positionSI.xPercent - xDist, positionSI.yPercent - yDist, false);
         if (Intake::is_enabled()) {
-            moveDistance(-dist, 4000);
+            moveDistance(-dist, 12000);
         } else {
             moveDistance(-dist);
         }

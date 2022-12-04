@@ -44,9 +44,6 @@ namespace Odom {
 	float xPosGlobal = X_START;
 	float yPosGlobal = Y_START;
 
-	// Only for MOTOR_IMU mode
-	float gear_ratio = 36/60.0;
-
 
 	odomMode odometry_mode = MOTOR_IMU;
 
@@ -164,19 +161,19 @@ namespace Odom {
 		}
 		return 1;
 	}
-	
+
 	/**
-	 * @brief Initializes odometry 
+	 * @brief tare sensor readings
 	 * 
 	 * @param mode odometry mode
 	 */
-	void init(odomMode mode) {
-		odometry_mode = mode;
-		switch (mode) {
+	void tare_sensors() {
+		switch (odometry_mode) {
 			case MOTOR_IMU:
 				imu_sensor_1.tare();
 				imu_sensor_2.tare();
 				Drivetrain::tarePosition();
+				midTW.reset();
 				break;
 			case LEFTTW_IMU:
 				imu_sensor_1.tare();
@@ -196,6 +193,16 @@ namespace Odom {
 				midTW.reset();
 				break;
 		}
+	}
+	
+	/**
+	 * @brief Initializes odometry 
+	 * 
+	 * @param mode odometry mode
+	 */
+	void init(odomMode mode) {
+		odometry_mode = mode;
+		tare_sensors();
 		
 		pros::Task tracking(position_tracking);
 	}
@@ -238,6 +245,7 @@ namespace Odom {
 	 * 
 	 */
 	void set_state(QLength x, QLength y, QAngle angle) {
+		tare_sensors();
 		X_START = x.convert(meter);
 		Y_START = y.convert(meter);
 		THETA_START = angle.convert(radian);
@@ -279,6 +287,7 @@ namespace Odom {
 	 * 
 	 */
 	void set_state(float x, float y, float angle) {
+		tare_sensors();
 		X_START = percentageToMeter(x);
 		Y_START = percentageToMeter(y);
 		THETA_START = angle * pi/180;
